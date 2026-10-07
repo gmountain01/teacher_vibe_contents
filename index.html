@@ -388,7 +388,7 @@ function renderToc(){
     const unused = DATA[k].ideas.filter(i => !used.has(i.n));
     const total = rows.length;
     return `<article class="book"><div class="eyebrow">${bi}권</div><h3>${esc(b.title)}</h3>
-      ${body ? `<div class="fold"><button type="button" data-fold="parts">파트만 보기</button><button type="button" data-fold="titles">[장] 제목 펼치기</button><button type="button" data-fold="all">[중] 제목 펼치기</button></div>` : ""}
+      ${body ? `<div class="fold"><button type="button" data-fold="parts">[파트] 제목 펼치기</button><button type="button" data-fold="titles">[장] 제목 펼치기</button><button type="button" data-fold="all">[중] 제목 펼치기</button></div>` : ""}
       <p class="sub">${parts.length}파트 · ${total}꼭지 · 아이디어 ${DATA[k].ideas.length - unused.length - outIds.size}/${DATA[k].ideas.length}개 반영${outIds.size ? ` · 재검토 ${outIds.size}개` : ""}</p>
       ${body || `<p class="emptybook">아직 확정한 꼭지가 없어요. 엑셀 ‘최종목차’ 탭의 ‘권’ 칸에 “${k}”를 적은 행이 여기에 나타납니다.</p>`}
       ${outs.length ? `<details class="unused out"><summary>재검토 아이디어 ${outs.length}개</summary><ul>${outs.map(r => {
