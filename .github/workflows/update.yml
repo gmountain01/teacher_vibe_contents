@@ -1,0 +1,41 @@
+name: 엑셀 데이터 갱신 및 배포
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 * * * *"   # 매시 17분(UTC 기준, 한국 시간도 매시 17분)
+  workflow_dispatch:        # Actions 탭에서 '지금 갱신' 수동 실행
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install openpyxl
+      - name: 드라이브 엑셀 → data.json
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          python scripts/build_data.py _site/data.json
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4
