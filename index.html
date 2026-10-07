@@ -94,6 +94,7 @@ details.unused ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
 details.unused.out ul{display:grid;gap:8px}
 details.unused.out b{color:var(--fg);font-weight:600}
 .alt{display:inline-block;margin-top:4px;color:var(--fg)}
+.where{display:inline-block;font-size:11.5px;font-weight:600;padding:0 7px;border-radius:4px;border:1px solid var(--accent);color:var(--accent);margin-right:6px;white-space:nowrap}
 .alt em{font-style:normal;font-size:11.5px;font-weight:600;padding:0 7px;border-radius:4px;background:var(--chalk);color:#2c4a3f;margin-right:6px;white-space:nowrap}
 .card.flash{border-color:var(--chalk);box-shadow:0 0 0 3px var(--chalk-soft)}
 .tabs{display:flex;gap:4px;margin-top:22px;flex-wrap:wrap}
@@ -392,6 +393,8 @@ function renderToc(){
       if (!p.desc && r.partDesc) p.desc = r.partDesc;
       p.rows.push(r);
     }
+    const pos = {};
+    parts.forEach((p, pi) => p.rows.forEach((r, ri) => { pos[r.title] = { pn: p.no || pi+1, pt: String(p.title || "").split(":")[0].trim(), num: r.no || `${pi+1}-${ri+1}` }; }));
     const body = parts.map((p, pi) => `<details class="part" open><summary class="ph"><span class="caret" aria-hidden="true"></span><span class="pn">PART ${esc(p.no || pi+1)}</span><span class="pt">${esc(p.title || "")}</span><span class="pc">${p.rows.length}꼭지</span></summary>${p.desc ? `<p class="pdesc">${esc(p.desc)}</p>` : ""}
       <ol>${p.rows.map((r, ri) => {
         const refs = parseRefs(r.ideas, k);
@@ -421,7 +424,8 @@ function renderToc(){
       ${outs.length ? `<details class="unused out"><summary>재검토 아이디어 ${outs.length}개</summary><ul>${outs.map(r => {
         const refs = parseRefs(r.ideas, k);
         const nm = refs.map(ref => { const i = (DATA[ref.book]?.ideas || []).find(x => x.n === ref.n); return i ? `#${ref.n} ${esc(i.name)} (${esc(i.who)})` : `#${ref.n}`; }).join(", ") || esc(r.title);
-        return `<li><b>${nm}</b>${r.note ? `<br><span>${esc(r.note)}</span>` : ""}${r.alt ? `<br><span class="alt"><em>대체 가능</em>${esc(r.alt)}</span>` : ""}</li>`;
+        return `<li><b>${nm}</b>${r.note ? `<br><span>${esc(r.note)}</span>` : ""}${r.alt ? (() => { const m = r.alt.match(/‘(.+?)’/), w = m && pos[m[1]];
+          return `<br><span class="alt"><em>대체 가능</em>${w ? `<span class="where">PART ${esc(w.pn)} ${esc(w.pt)} · ${esc(w.num)}</span>` : ""}${esc(r.alt)}</span>`; })() : ""}</li>`;
       }).join("")}</ul></details>` : ""}
       ${unused.length ? `<details class="unused"><summary>목차에 아직 넣지 않은 아이디어 ${unused.length}개</summary><ul>${unused.map(i => `<li>#${i.n} ${esc(i.name)} (${esc(i.who)})</li>`).join("")}</ul></details>` : ""}
     </article>`;
