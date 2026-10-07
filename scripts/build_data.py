@@ -79,7 +79,7 @@ def parse(wb) -> dict:
 FINAL_SHEET = "최종목차"
 FINAL_COLS = {  # 머리글 글자 → 키 (머리글에 이 글자가 들어 있으면 그 열로 인식, 열 순서는 자유)
     "권": "book", "파트 번호": "partNo", "파트 제목": "part", "파트 설명": "partDesc", "꼭지 번호": "no",
-    "꼭지 제목": "title", "세부": "items", "아이디어": "ideas", "저자": "author", "상태": "status", "비고": "note",
+    "꼭지 제목": "title", "세부": "items", "아이디어": "ideas", "저자": "author", "상태": "status", "비고": "note", "대체": "alt",
 }
 
 
