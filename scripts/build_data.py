@@ -133,10 +133,34 @@ def parse_final(wb) -> list:
     return out
 
 
+# 엑셀에서 다른 탭에 들어간 아이디어를 옮기는 규칙 (앱 이름 일부로 찾음)
+MOVES = [
+    {"from": "수업자동화", "to": "업무자동화", "name": "허들 게임", "who": "진정숙",
+     "cat": "미분류", "stage": "상시"},
+]
+
+
+def apply_moves(sheets: dict) -> dict:
+    for mv in MOVES:
+        src, dst = sheets.get(mv["from"]), sheets.get(mv["to"])
+        if not src or not dst:
+            continue
+        for idea in list(src["ideas"]):
+            if mv["name"] in idea["name"] and idea["who"] == mv["who"]:
+                src["ideas"].remove(idea)
+                moved = dict(idea)
+                moved["movedFrom"] = f'{mv["from"]} #{idea["n"]}'
+                moved["origCat"], moved["origStage"] = idea["cat"], idea["stage"]
+                moved["cat"], moved["stage"] = mv["cat"], mv["stage"]
+                moved["n"] = max([i["n"] for i in dst["ideas"]] + [0]) + 1
+                dst["ideas"].append(moved)
+    return sheets
+
+
 def main():
     dest = sys.argv[1] if len(sys.argv) > 1 else "data.json"
     wb = openpyxl.load_workbook(io.BytesIO(download(FILE_ID)), data_only=True)
-    sheets = parse(wb)
+    sheets = apply_moves(parse(wb))
     final = parse_final(wb)
     final_source = "sheet"
     draft = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "draft_toc.json")
