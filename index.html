@@ -73,6 +73,11 @@ details.part[open]>summary .caret{transform:rotate(90deg)}
 .fold button:hover{border-color:var(--accent);color:var(--fg)}
 .part ul.items{grid-column:2;margin:2px 0 2px;padding-left:16px;font-size:13.5px;color:var(--fg);display:grid;gap:1px}
 .part ul.items li{list-style:disc}
+.subj{display:inline-block;font-size:11.5px;font-weight:600;line-height:1.5;padding:0 7px;border-radius:4px;background:var(--accent);color:var(--surface);margin-right:6px;vertical-align:1px;white-space:nowrap}
+.subj.common{background:var(--accent-soft);color:var(--accent)}
+.subj.ext{background:transparent;color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);margin:0 0 0 4px;font-weight:500}
+.exts{white-space:nowrap}
+.exts::before{content:"↗";font-size:11px;color:var(--muted);margin-left:6px}
 .chips{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
 .chip{font:inherit;font-size:12.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;text-align:left}
 .chip:hover{border-color:var(--accent)}
@@ -346,6 +351,18 @@ function parseRefs(text, book){
   }
   return out;
 }
+// "[국어] 제목 (영어) (사회)" → 과목 라벨 + 제목 + 확장 과목 라벨
+function fmtTitle(t){
+  t = String(t || "");
+  let main = "", ext = [];
+  const m = t.match(/^\[([^\]]{1,8})\]\s*/);
+  if (m){ main = m[1]; t = t.slice(m[0].length); }
+  let mm;
+  while ((mm = t.match(/\s*\(([^()\s]{1,6})\)\s*$/))){ ext.unshift(mm[1]); t = t.slice(0, mm.index); }
+  return (main ? `<span class="subj${main === "공통" ? " common" : ""}">${esc(main)}</span>` : "")
+    + `<span class="ktx">${esc(t)}</span>`
+    + (ext.length ? `<span class="exts" title="이 과목으로도 바꿔 쓸 수 있어요">${ext.map(x => `<span class="subj ext">${esc(x)}</span>`).join("")}</span>` : "");
+}
 function renderToc(){
   $("#exampleBanner").hidden = !FINAL_IS_EXAMPLE;
   let bi = 0;
@@ -380,7 +397,7 @@ function renderToc(){
         const meta = [r.author && `저자 ${esc(r.author)}`, r.note && esc(r.note)].filter(Boolean).join(" · ");
         const items = Array.isArray(r.items) && r.items.length ? `<ul class="items">${r.items.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : "";
         const detail = items + (chips ? `<span class="chips">${chips}</span>` : "") + (meta ? `<span class="km">${meta}</span>` : "");
-        const head = `<span class="kn">${esc(r.no || `${pi+1}-${ri+1}`)}</span><span class="kt">${esc(r.title)}${st}</span>`;
+        const head = `<span class="kn">${esc(r.no || `${pi+1}-${ri+1}`)}</span><span class="kt">${fmtTitle(r.title)}${st}</span>`;
         return detail
           ? `<li><details class="ki"><summary>${head}<span class="kcaret" aria-hidden="true"></span></summary><div class="kd">${detail}</div></details></li>`
           : `<li><div class="ki">${head}</div></li>`;
