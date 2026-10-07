@@ -55,8 +55,11 @@ a.tab{text-decoration:none;display:inline-block}
 .part .kt{font-size:15px;line-height:1.45;min-width:0}
 .part .km{grid-column:2;font-size:12.5px;color:var(--muted);display:flex;gap:4px 10px;flex-wrap:wrap}
 .part .km .tg{color:var(--accent);font-weight:600}
-.logday h3{font-family:var(--f-display);font-size:20px;margin:24px 0 10px;display:flex;align-items:baseline;gap:8px}
-.logday h3 .n{font-family:var(--f-body);font-size:13px;color:var(--muted);font-weight:500}
+.logday{margin-top:14px}
+.logday>summary{font-family:var(--f-display);font-size:20px;font-weight:700;padding:10px 0;display:flex;align-items:center;gap:8px;cursor:pointer;list-style:none}
+.logday>summary::-webkit-details-marker{display:none}
+.logday[open]>summary .caret{transform:rotate(90deg)}
+.logday>summary .n{font-family:var(--f-body);font-size:13px;color:var(--muted);font-weight:500}
 .loglist{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:12px}
 .loglist>li{display:grid;grid-template-columns:4.2em 1fr;gap:10px;padding:12px 16px;border-top:1px solid var(--line)}
 .loglist>li:first-child{border-top:0}
@@ -482,12 +485,12 @@ document.querySelectorAll("#nav .tab").forEach(t => t.onclick = ev => { ev.preve
 
 function renderLog(){
   const days = [...new Set(WORKLOG.map(e => e.date))].sort().reverse();
-  $("#logList").innerHTML = days.map(d => {
+  $("#logList").innerHTML = days.map((d, di) => {
     const [y, m, dd] = d.split("-").map(Number);
     const es = WORKLOG.map((e, i) => ({ ...e, i })).filter(e => e.date === d).sort((a, b) => b.time.localeCompare(a.time) || b.i - a.i);
-    return `<section class="logday"><h3>${y}년 ${m}월 ${dd}일 <span class="n">${es.length}건</span></h3><ol class="loglist">${es.map(e => `
+    return `<details class="logday"${di === 0 ? " open" : ""}><summary><span class="caret" aria-hidden="true"></span>${y}년 ${m}월 ${dd}일 <span class="n">${es.length}건</span></summary><ol class="loglist">${es.map(e => `
       <li><span class="lt">${esc(e.time)}</span><div class="lb"><div class="lh"><span class="ltype ${e.type === "추가" ? "add" : "mod"}">${esc(e.type)}</span>${esc(e.title)}</div>
-      ${e.items && e.items.length ? `<ul>${e.items.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}</div></li>`).join("")}</ol></section>`;
+      ${e.items && e.items.length ? `<ul>${e.items.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}</div></li>`).join("")}</ol></details>`;
   }).join("");
 }
 function renderAll(){ renderTabs(); renderTop(); renderList(); renderRef(); renderToc(); renderLog(); }
