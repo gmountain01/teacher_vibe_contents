@@ -165,8 +165,8 @@ details.ref summary{cursor:pointer;padding:14px 0;font-weight:600}
 
 <header class="board"><div class="in">
   <h1>선생님을 위한 바이브 코딩 가목차</h1>
-  <p>선생님들이 엑셀에 적어 주신 웹앱 아이디어와, 그 아이디어로 엮은 최종 목차</p>
-  <p class="status" id="status" aria-live="polite"></p>
+  <p>선생님들이 엑셀에 적어 주신 웹앱 아이디어와, 가목차</p>
+  <p class="status" id="status">작성 날짜: 2026년 10월 7일</p>
   <nav class="tabs" id="nav" aria-label="페이지">
     <a class="tab" href="#ideas" data-view="ideas">목차 아이디어</a>
     <a class="tab" href="#toc" data-view="toc">최종 목차</a>
@@ -459,7 +459,6 @@ setView(view);
 
 /* ---------- data.json에서 최신 데이터 불러오기 ---------- */
 async function loadData(){
-  const st = $("#status");
   try {
     const res = await fetch(`data.json?_=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) throw new Error(`data.json 응답 ${res.status}`);
@@ -468,11 +467,7 @@ async function loadData(){
     if (Array.isArray(j.final) && j.final.length){ FINAL = j.final; FINAL_IS_EXAMPLE = j.final_source === "draft"; }
     state.cell = null;
     renderAll();
-    st.textContent = `드라이브 엑셀 기준 · ${j.updated} 갱신 (1시간마다 자동 갱신)`;
-    st.dataset.ok = "1";
   } catch (e){
-    st.textContent = "최신 데이터를 불러오지 못해 저장된 데이터(정리 시점 기준)를 보여 주고 있어요.";
-    st.dataset.ok = "0";
     console.warn(e);
   }
 }
