@@ -2,6 +2,8 @@
 
 선생님들이 엑셀(구글 드라이브)에 적어 주신 웹앱 아이디어를 보기 좋게 정리한 페이지입니다.
 
+사이트: https://gmountain01.github.io/teacher_vibe_contents/
+
 - 수업자동화 / 업무자동화 탭, 교과×단계 분포표, 단계·교과·제안자별 보기, 검색
 - GitHub Actions가 **매시 17분**에 드라이브 엑셀을 내려받아 `data.json`을 새로 만들고 다시 배포합니다.
 - 바로 갱신하려면: Actions 탭 → "엑셀 데이터 갱신 및 배포" → Run workflow
