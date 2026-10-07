@@ -71,6 +71,7 @@ details.part[open]>summary .caret{transform:rotate(90deg)}
 .fold{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
 .fold button{font:inherit;font-size:12.5px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer}
 .fold button:hover{border-color:var(--accent);color:var(--fg)}
+.fold button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600}
 .part ul.items{grid-column:2;margin:2px 0 2px;padding-left:16px;font-size:13.5px;color:var(--fg);display:grid;gap:1px}
 .part ul.items li{list-style:disc}
 .pdesc{margin:-2px 0 8px;padding:6px 10px;font-size:13px;color:var(--fg);background:var(--bg);border-radius:6px;border:1px dashed var(--line)}
@@ -364,6 +365,11 @@ function fmtTitle(t){
     + `<span class="ktx">${esc(t)}</span>`
     + (ext.length ? `<span class="exts" title="이 과목으로도 바꿔 쓸 수 있어요">${ext.map(x => `<span class="subj ext">${esc(x)}</span>`).join("")}</span>` : "");
 }
+function applyFold(book, mode){
+  book.querySelectorAll("details.part").forEach(d => d.open = mode !== "parts");
+  book.querySelectorAll("details.ki").forEach(d => d.open = mode === "all");
+  book.querySelectorAll(".fold button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.fold === mode)));
+}
 function renderToc(){
   $("#exampleBanner").hidden = !FINAL_IS_EXAMPLE;
   let bi = 0;
@@ -407,7 +413,7 @@ function renderToc(){
     const unused = DATA[k].ideas.filter(i => !used.has(i.n));
     const total = rows.length;
     return `<article class="book"><div class="eyebrow">${bi}권</div><h3>${esc(b.title)}</h3>
-      ${body ? `<div class="fold"><button type="button" data-fold="parts">[파트] 제목 펼치기</button><button type="button" data-fold="titles">[장] 제목 펼치기</button><button type="button" data-fold="all">[중] 제목 펼치기</button></div>` : ""}
+      ${body ? `<div class="fold"><button type="button" data-fold="parts" aria-pressed="false">[파트] 제목 펼치기</button><button type="button" data-fold="titles" aria-pressed="true">[장] 제목 펼치기</button><button type="button" data-fold="all" aria-pressed="false">[중] 제목 펼치기</button></div>` : ""}
       <p class="sub">${parts.length}파트 · ${total}꼭지 · 아이디어 ${DATA[k].ideas.length - unused.length - outIds.size}/${DATA[k].ideas.length}개 반영${outIds.size ? ` · 재검토 ${outIds.size}개` : ""}</p>
       ${body || `<p class="emptybook">아직 확정한 꼭지가 없어요. 엑셀 ‘최종목차’ 탭의 ‘권’ 칸에 “${k}”를 적은 행이 여기에 나타납니다.</p>`}
       ${outs.length ? `<details class="unused out"><summary>재검토 아이디어 ${outs.length}개</summary><ul>${outs.map(r => {
@@ -419,10 +425,10 @@ function renderToc(){
     </article>`;
   }).join("");
   $("#books").querySelectorAll(".fold button").forEach(btn => btn.onclick = () => {
-    const book = btn.closest(".book"), mode = btn.dataset.fold;
-    book.querySelectorAll("details.part").forEach(d => d.open = mode !== "parts");
-    book.querySelectorAll("details.ki").forEach(d => d.open = mode === "all");
+    applyFold(btn.closest(".book"), btn.dataset.fold);
   });
+  // 기본값: 1권·2권 모두 [장] 제목 펼치기
+  $("#books").querySelectorAll(".book").forEach(book => applyFold(book, "titles"));
   $("#books").querySelectorAll(".chip[data-id]").forEach(a => a.onclick = ev => {
     ev.preventDefault();
     state = { tab: a.dataset.book, group: "stage", q: "", who: "", cell: null };
