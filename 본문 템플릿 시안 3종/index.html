@@ -1,0 +1,1068 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}  /* 시안(HTML) 미리보기에서만 숨기는 그림 — 원고에는 그대로 둠 */
+  figure.pv-hide { display: none; }
+  /* C · 선생님 한마디: 말풍선 + 하늘색 아바타로 본문과 구분 */
+  .v-c .voice { grid-template-columns: 9mm 1fr; gap: 3mm; }
+  .v-c .voice-ic { width: 9mm; height: 9mm; background: var(--c2); color: #fff; font-size: 13pt; }
+  .v-c .voice-body { position: relative; padding: 2.2mm 3.4mm 2.4mm; background: #fff; border: .35mm solid var(--c2); border-radius: 3mm; }
+  .v-c .voice-body::before { content: ""; position: absolute; left: -1.75mm; top: 3mm; width: 3mm; height: 3mm; background: #fff; border-left: .35mm solid var(--c2); border-bottom: .35mm solid var(--c2); transform: rotate(45deg); }
+  .v-c .voice-body p { color: var(--ink); }
+  /* B · 증상·바꿔 쓰기 태그와 제목 사이 여백 */
+  .v-b h3 .tag { margin-right: 2.4mm; vertical-align: .12em; }
+  /* 강조 버튼: 샘플 디자인 참고 사항(필독) */
+  nav button.must-read { display: inline-flex; align-items: center; gap: 6px; border-color: #d9480f; background: #d9480f; color: #fff; font-weight: 700; }
+  nav button.must-read:hover { background: #c03f0c; }
+  nav button.must-read .badge { padding: 1px 6px; border-radius: 99px; background: #fff; color: #d9480f; font-size: 11px; font-weight: 800; }
+  nav a.btnlink { display: inline-flex; align-items: center; padding: 7px 12px; border: 1px solid var(--bar-line); border-radius: 6px; background: var(--btn); color: var(--bar-fg); font: inherit; text-decoration: none; cursor: pointer; }
+  nav a.btnlink:focus-visible { outline: 2px solid #2f5bd3; outline-offset: 2px; }
+  /* 안내 창: 샘플 디자인 보는 방법(필독) */
+  .guide-wrap { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px; }
+  .guide-wrap[hidden] { display: none; }
+  .guide-backdrop { position: absolute; inset: 0; background: rgba(15,18,26,.55); }
+  .guide { position: relative; width: min(660px, 100%); max-height: calc(100% - 32px); overflow: auto; padding: 30px 32px 26px; border-radius: 14px; background: var(--bar); color: var(--bar-fg); box-shadow: 0 18px 60px rgba(0,0,0,.35); font-size: 14px; line-height: 1.75; word-break: keep-all; }
+  .guide-x { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border: 0; border-radius: 8px; background: var(--btn); color: var(--bar-fg); font-size: 20px; line-height: 1; cursor: pointer; }
+  .guide-eyebrow { margin: 0 0 4px; color: #d9480f; font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+  .guide h2 { margin: 0 0 10px; font-size: 22px; line-height: 1.35; }
+  .guide-lead { margin: 0 0 20px; color: var(--bar-muted); }
+  .guide-lead b, .guide-note b { color: var(--bar-fg); }
+  .guide-list { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 12px; }
+  .guide-list li { display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding: 14px 16px; border: 1px solid var(--bar-line); border-radius: 10px; }
+  .guide-list li > div { min-width: 0; }
+  .gn { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: #d9480f; color: #fff; font-weight: 800; font-size: 14px; }
+  .guide-list h3 { margin: 3px 0 4px; font-size: 15px; line-height: 1.45; }
+  .guide-list p { margin: 0; color: var(--bar-muted); }
+  .guide-list p.more { margin-top: 6px; }
+  .guide-use { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 16px; }
+  .guide-use div { display: grid; gap: 2px; padding: 12px 14px; border-radius: 10px; background: var(--btn); }
+  .guide-use span { font-size: 12px; color: var(--bar-muted); }
+  .guide-use b { font-size: 14px; }
+  .guide-note { margin: 0 0 14px; color: var(--bar-muted); }
+  .guide-sign { margin: 0; text-align: right; color: var(--bar-muted); }
+  .guide-sign b { color: var(--bar-fg); }
+  .guide-actions { margin-top: 18px; display: flex; justify-content: center; }
+  .guide-ok { padding: 9px 22px; border: 0; border-radius: 8px; background: #d9480f; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .guide-ok:hover { background: #c03f0c; }
+  .guide-x:focus-visible, .guide-ok:focus-visible { outline: 2px solid #2f5bd3; outline-offset: 2px; }
+  @media (max-width: 560px) { .guide { padding: 24px 18px 20px; } .guide-use { grid-template-columns: 1fr; } }
+  .guide em.hl { font-style: normal; font-weight: 700; color: var(--bar-fg); background: linear-gradient(transparent 60%, rgba(217,72,15,.22) 60%); padding: 0 1px; }
+</style></head><body>
+<title>본문 템플릿 시안 3종</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;900&family=Nanum+Gothic:wght@400;700;800&family=Jua&family=Nanum+Pen+Script&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600&family=Hahmlet:wght@400;600;800&family=Gothic+A1:wght@400;500;700;800&display=swap">
+<style>
+  /* 레이아웃: 크라운판 176×248 펼침 한 장씩. 같은 원고를 네 가지 본문 체계(A~D)로 흘려 비교한다.
+     종이 위 색은 인쇄물이라 시안마다 고정, 책상·조작 막대만 화면 테마를 따른다.
+     제목 크기·여백은 스크립트의 VARIANTS 설정이 CSS 변수로 넣고, 스펙 패널도 같은 값을 읽는다. */
+  :root {
+    --page-w: 176mm; --page-h: 248mm;
+    --m-top: 21mm; --m-bottom: 22mm; --m-inner: 21mm; --m-outer: 18mm;
+    --desk: #e3e5ea; --bar: #ffffff; --bar-fg: #1d2230; --bar-muted: #6b7080; --bar-line: #d3d6df; --btn: #f2f3f6; --btn-on: #1d2230; --btn-on-fg: #ffffff; --shadow: rgba(29,34,48,.18);
+    --ui: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --desk: #16181d; --bar: #21242b; --bar-fg: #e8eaf0; --bar-muted: #9aa0ae; --bar-line: #353944; --btn: #2c3039; --btn-on: #e8eaf0; --btn-on-fg: #16181d; --shadow: rgba(0,0,0,.55); color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --desk: #16181d; --bar: #21242b; --bar-fg: #e8eaf0; --bar-muted: #9aa0ae; --bar-line: #353944; --btn: #2c3039; --btn-on: #e8eaf0; --btn-on-fg: #16181d; --shadow: rgba(0,0,0,.55); color-scheme: dark; }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--desk); color: var(--bar-fg); font-family: var(--ui); overflow: hidden; }
+  #stage { height: 100%; padding: 16px; display: flex; justify-content: center; align-items: flex-start; }
+  #book.ready .spread:not(.on) { display: none; }
+  #book { width: calc(var(--page-w) * 2); flex: none; }
+  .spread { display: flex; }
+  .page { box-shadow: 0 4px 22px var(--shadow); }
+  .page.filler { visibility: hidden; }
+
+  /* ───────── 시안별 색·서체 토큰 (종이 위, 고정) ───────── */
+  #book { --paper:#fff; --c1:#1f3a68; --c2:#e3a21a; --tint:#eef2f8; --tint2:#fdf4df; --warn:#c2452d; --warn-tint:#fbede9; --ink:#1c2233; --ink2:#474f63; --muted:#8b92a3; --rule:#d5dae4; --on-c1:#fff; --wing:0mm; }
+  #book.v-a { --c1:#1f3a68; --c2:#e0a01a; --tint:#eef2f8; --tint2:#fdf4df; --ink:#1c2233; --ink2:#474f63; --muted:#8b92a3; --rule:#d5dae4; }
+  #book.v-b { --c1:#17876b; --c2:#f0654a; --hl:#ffe17a; --tint:#e9f6f1; --tint2:#fff5d3; --warn:#dd5137; --warn-tint:#fff0ec; --ink:#22302c; --ink2:#4b5954; --muted:#8a9792; --rule:#d2ddd8; }
+
+  /* ───────── 공통 쪽 구조 ───────── */
+  .page { position: relative; width: var(--page-w); height: var(--page-h); background: var(--paper); color: var(--ink); overflow: hidden;
+          font-family: var(--f-body); font-size: var(--fs-body); line-height: var(--lh-body); letter-spacing: -0.01em; word-break: keep-all; overflow-wrap: break-word; }
+  .page.left  { padding: var(--m-top) var(--m-inner) var(--m-bottom) var(--m-outer); }
+  .page.right { padding: var(--m-top) var(--m-outer) var(--m-bottom) var(--m-inner); }
+  .body { position: relative; z-index: 1; height: 100%; overflow: hidden; display: flow-root; padding-left: var(--wing); }
+  .page::after { content: ""; position: absolute; top: 0; bottom: 0; width: 10mm; pointer-events: none; z-index: 2; }
+  .page.left::after  { right: 0; background: linear-gradient(to right, transparent, rgba(20,24,34,.07)); }
+  .page.right::after { left: 0;  background: linear-gradient(to left,  transparent, rgba(20,24,34,.07)); }
+  .page.filler { background: #f5f6f8; }
+  .page.filler .body { display: grid; place-items: center; color: #9aa0ae; font-size: 8pt; padding-left: 0; }
+
+  .running { position: absolute; z-index: 1; top: 10.5mm; display: flex; gap: 2.2mm; align-items: baseline; font-family: var(--f-label); font-size: 6.8pt; color: var(--muted); letter-spacing: 0; }
+  .running .rn { font-weight: 700; color: var(--c1); letter-spacing: .06em; }
+  .folio { position: absolute; z-index: 1; bottom: 10.5mm; font-family: var(--f-label); font-size: 7.5pt; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .left .folio { left: var(--m-outer); }
+  .right .folio { right: var(--m-outer); }
+  /* 하시라: 쪽 번호 옆 하단에 둔다 (왼쪽 쪽은 부, 오른쪽 쪽은 장) */
+  .running { top: auto; bottom: 10.6mm; }
+  .left .running { left: calc(var(--m-outer) + 7mm); }
+  .right .running { right: calc(var(--m-outer) + 7mm); }
+  .running::before { content: ""; align-self: center; width: .25mm; height: 2.6mm; background: var(--rule); order: -1; }
+  .right .running::before { order: 9; }
+  .tab { position: absolute; z-index: 1; top: 34mm; width: 6.5mm; height: 17mm; background: var(--c1); color: var(--on-c1); display: grid; place-items: center; font-family: var(--f-label); font-size: 7.5pt; font-weight: 700; }
+  .left .tab { display: none; } .right .tab { right: 0; }  /* 측면 탭은 오른쪽 쪽에만 */
+  .page.opener .tab { display: none; }
+
+  .ic { width: 1.15em; height: 1.15em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.18em; }
+
+  /* 제목 위계 — 크기·여백은 변수 */
+  h1 { margin: 0; font-family: var(--f-h1); font-weight: var(--w-h1); font-size: var(--fs-h1); line-height: 1.3; letter-spacing: -0.035em; text-wrap: balance; }
+  h2 { margin: var(--h2-b) 0 var(--h2-a); font-family: var(--f-h2); font-weight: var(--w-h2); font-size: var(--fs-h2); line-height: 1.35; letter-spacing: -0.03em; }
+  h3 { margin: var(--h3-b) 0 var(--h3-a); font-family: var(--f-h3); font-weight: var(--w-h3); font-size: var(--fs-h3); line-height: 1.45; letter-spacing: -0.025em; }
+  h4 { margin: var(--h4-b) 0 var(--h4-a); font-family: var(--f-h4); font-weight: var(--w-h4); font-size: var(--fs-h4); line-height: 1.5; letter-spacing: .01em; display: flex; align-items: center; gap: 1.6mm; }
+  h2 + h3, h3 + h4, h2 + p, h3 + p, h4 + p { margin-top: 0; }
+  h2 + h3 { margin-top: var(--hh); }
+  .body > :first-child { margin-top: 0 !important; }
+  .step-no b, .step-no small { font: inherit; }
+
+  p { margin: 0 0 var(--p-gap); text-align: justify; }
+  .lead { color: var(--ink2); }
+  ul, figure, .tbl, .request, .tip, .warn, .voice, .info { margin-top: var(--blk); margin-bottom: var(--blk); }
+  ul { padding: 0; list-style: none; }
+  ul li { position: relative; padding-left: 4mm; margin-bottom: .5mm; }
+  ul li::before { content: ""; position: absolute; left: .4mm; top: .7em; width: 1.4mm; height: 1.4mm; border-radius: 50%; background: var(--c1); transform: translateY(-50%); }
+  ul.checklist li { padding-left: 5mm; }
+  /* 확인 상자: TIP처럼 머리에 이름을 단다 (이름은 전 장 고정) */
+  .chk { margin-top: var(--blk); margin-bottom: var(--blk); break-inside: avoid; font-size: calc(var(--fs-body) - .4pt); }
+  .chk b { display: flex; align-items: center; gap: 1.6mm; margin-bottom: 1mm; font-size: calc(var(--fs-body) - .4pt); color: var(--ink); }
+  .chk .lbl { color: var(--c1); }
+  .chk ul.checklist { margin: 0; }
+  ul.checklist li::before { left: 0; width: 2.7mm; height: 2.7mm; border-radius: .5mm; background: var(--paper); border: .3mm solid var(--c1); }
+
+  .tbl { width: 100%; border-collapse: collapse; font-size: calc(var(--fs-body) - 1.1pt); line-height: 1.5; }
+  .tbl th, .tbl td { padding: 1.3mm 1.6mm; text-align: left; vertical-align: top; border-bottom: .2mm solid var(--rule); }
+  .tbl thead th { font-family: var(--f-label); font-size: 7.2pt; font-weight: 700; color: var(--c1); white-space: nowrap; border-bottom: .45mm solid var(--c1); }
+  .tbl td.num { width: 7mm; }
+  .tbl .circ { display: inline-grid; place-items: center; width: 4.2mm; height: 4.2mm; border-radius: 50%; background: var(--c1); color: var(--on-c1); font-family: var(--f-label); font-size: 7pt; font-weight: 700; }
+  .tbl .chip { font-family: var(--f-label); font-size: 7pt; font-weight: 700; color: var(--c1); white-space: nowrap; }
+  .tbl td.strong { font-weight: 700; }
+  .tbl td.after { color: var(--c1); }
+  .tbl tr.total td { border-top: .45mm solid var(--ink); border-bottom: 0; font-weight: 700; }
+
+  .request { position: relative; break-inside: avoid; }
+  .request-bar { display: flex; align-items: center; gap: 1.6mm; font-family: var(--f-label); font-size: 7.2pt; font-weight: 700; letter-spacing: .03em; }
+  .request-bar span:last-child { margin-left: auto; font-weight: 400; opacity: .75; }
+  .request p { margin: 0; text-align: left; font-weight: 500; }
+  .tip, .warn { font-size: calc(var(--fs-body) - .8pt); line-height: 1.65; }
+  .tip b, .warn b { display: flex; align-items: center; gap: 1.6mm; margin-bottom: .6mm; font-size: calc(var(--fs-body) - .4pt); }
+  .tip p, .warn p, .voice p { margin: 0; text-align: left; }
+  .warn q { quotes: "“" "”"; font-weight: 700; }
+  .voice { position: relative; font-size: calc(var(--fs-body) - .5pt); line-height: 1.7; color: var(--ink2); }
+  .voice b { display: block; font-family: var(--f-label); font-size: 7pt; font-weight: 700; color: var(--c1); letter-spacing: .03em; }
+
+  figure img { display: block; max-width: 100%; height: auto; border: .2mm solid var(--rule); border-radius: 1.5mm; }
+  .shot { display: grid; place-items: center; height: 40mm; border-radius: 1.5mm; border: .3mm dashed var(--c1); background: var(--tint); color: var(--c1); font-size: 7.6pt; opacity: .85; }
+  .memo { margin-top: .8mm; font-family: "IBM Plex Mono", monospace; font-size: 6.2pt; color: #c2306b; text-align: right; }
+  body.no-memo .memo { display: none; }
+
+  .lbl { font-style: normal; font-family: var(--f-label); font-size: 7pt; font-weight: 800; letter-spacing: .06em; }
+  .tip .lbl, .tip b .ic { color: var(--c1); }
+  .warn .lbl, .warn b .ic { color: var(--warn); }
+  :is(h2, h3, h4) + :is(ul, figure, .tbl, .request, .tip, .warn, .voice) { margin-top: 0; }
+  .v-a .ch-head { grid-template-areas: "text art"; }
+  .v-a .ch-no { display: none; }
+  .v-a .ch-text .ch-big { display: block; }
+  .v-b .ch-no { grid-column: 1; grid-row: 1; } .v-b .ch-text { grid-column: 2; grid-row: 1; } .v-b .ch-art { grid-row: 2; }
+  .ch-big { display: none; }
+  /* 진행 과정 번호: 1) 2) 3) — STEP마다 다시 1부터. 딸린 화면·요청 문장은 번호 뒤 글줄에 맞춰 들여 묶는다 */
+  p.act { position: relative; padding-left: 6mm; }
+  .act-n { position: absolute; left: 0; top: 0; font-family: var(--f-label); font-weight: 800; color: var(--c1); letter-spacing: 0; }
+  .in-act { margin-left: 6mm; }
+  p.act + .in-act { margin-top: 1.6mm; }
+  .v-b .act-n { color: var(--c2); }
+  .h4-in { display: inline-flex; align-items: center; gap: 1.4mm; }
+  /* 공통 블록: 요청 문장 네 가지 — 행 제목 4개는 전 장 고정, 장마다 오른쪽 두 칸만 채운다 */
+  .plan { margin-top: var(--blk); margin-bottom: var(--blk); break-inside: avoid; }
+  .plan-h { display: flex; align-items: center; gap: 1.4mm; margin-bottom: 1mm; font-family: var(--f-label); font-size: 7.6pt; font-weight: 800; color: var(--c1); letter-spacing: .02em; }
+  .plan-tbl { margin: 0; }
+  .plan-tbl tbody td:first-child { width: 24mm; font-weight: 700; color: var(--c1); white-space: nowrap; }
+  .plan-tbl tbody td:last-child { color: var(--ink2); }
+  .v-a .plan { padding: 2.5mm 3.5mm 1.5mm; border: .3mm solid var(--c1); border-radius: 1.5mm; }
+  .v-a .plan-tbl thead th { background: none; }
+  .v-b .plan { padding: 2.2mm 3.4mm 1.4mm; border: .35mm dashed var(--c1); border-radius: 3mm; }
+  .v-b .plan-tbl thead th { background: none; }
+  /* 장 도입 헤더 안의 정보 줄: 위 4칸 + 아래 학생 정보 한 줄. 색은 띠 위/종이 위에 맞춰 시안별 토큰으로 */
+  .meta { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr .95fr .8fr .85fr 1.6fr; margin: 7mm 0 0; border-top: .25mm solid var(--meta-line); border-bottom: .25mm solid var(--meta-line); font-size: 8pt; line-height: 1.5; }
+  .meta .m { padding: 2mm 3mm 2mm 0; min-width: 0; }
+  .meta .m + .m { padding-left: 3mm; border-left: .25mm solid var(--meta-line); }
+  .meta .m.wide { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 3mm; padding-left: 0; border-left: 0; border-top: .25mm solid var(--meta-line); }
+  .meta dt { margin-bottom: .6mm; font-family: var(--f-label); font-size: 6.6pt; font-weight: 700; letter-spacing: .06em; color: var(--meta-label); }
+  .meta .m.wide dt { margin: 0; flex: none; }
+  .meta dd { margin: 0; font-weight: 500; color: var(--meta-fg); }
+  .meta .stars i { color: var(--meta-empty); }
+  .meta .stars i.on { color: var(--c2); }
+  .meta .flag { margin: 0; background: var(--warn); border-color: var(--warn); color: #fff; }
+  .v-a .meta { --meta-line: rgba(255,255,255,.28); --meta-label: var(--c2); --meta-fg: #fff; --meta-empty: rgba(255,255,255,.28); }
+  .v-b .meta { --meta-line: #b9dccd; --meta-label: var(--c1); --meta-fg: var(--ink); --meta-empty: #cfe0d9; }
+  .v-a .ch-text { color: #fff; }
+  /* 요청 문장 미리보기 표: 가운데 '요청 내용' 열만 강조 */
+  .tbl.preview th:nth-child(2), .tbl.preview td:nth-child(2) { background: var(--tint); }
+  .tbl.preview thead th:nth-child(2) { background: var(--c1); color: #fff; border-bottom-color: var(--c1); }
+  .tbl.preview td:nth-child(2) { font-weight: 700; color: var(--ink); }
+  .tbl.preview td:nth-child(3) { color: var(--ink2); }
+  .v-b .tbl.preview thead th:nth-child(2) { background: var(--c1); color: #fff; }
+  /* 완성 화면 자리: 2쪽 남는 공간을 채우도록 시안별 높이 */
+  .v-a .shot-hero { height: 62mm; } .v-b .shot-hero { height: 52mm; } .v-c .shot-hero { height: 55mm; }
+  /* ───── 절·중 위계 정리: 절 > STEP(중) ≥ 일반 중 ─────
+     절: 가장 크고 굵은 선·번호. STEP: 일반 중 크기에 번호 배지만 더해 구분(띠·카드 없음). */
+  #book h3.step { display: grid; grid-template-columns: auto 1fr; column-gap: 2.6mm; row-gap: .3mm; align-items: center; margin-bottom: 2.4mm; padding: 0 0 1.6mm; background: none; border: 0; break-after: avoid; }
+  #book h3.step::before { display: none; }
+  #book h3.step .step-meta { display: contents; }
+  #book h3.step .step-no { grid-row: 1 / span 2; grid-column: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; padding: 0; border-radius: 0; background: none; }
+  #book h3.step .step-no small { font-size: 5.4pt; font-weight: 700; letter-spacing: .12em; writing-mode: horizontal-tb; transform: none; }
+  #book h3.step .step-no b { font-size: 12pt; margin-top: .3mm; }
+  #book h3.step .step-kind { grid-row: 1; grid-column: 2; align-self: end; font-size: 7pt; font-weight: 700; letter-spacing: .03em; }
+  #book h3.step .step-title { grid-row: 2; grid-column: 2; align-self: start; display: block; font-size: calc(var(--fs-h3) + .5pt); }
+
+  /* A */
+  #book.v-a h2 { padding-bottom: 2.4mm; border-bottom-width: .8mm; gap: 3mm; }
+  #book.v-a .h2-n { width: 10mm; height: 10mm; font-size: 13pt; }
+  #book.v-a h3.step { border-bottom: .25mm dotted var(--c1); }
+  #book.v-a h3.step .step-no { width: 9mm; height: 9mm; border-radius: 1.2mm; background: var(--c1); color: #fff; font-family: "Noto Sans KR", sans-serif; }
+  #book.v-a h3.step .step-no small { color: var(--c2); }
+  #book.v-a h3.step .step-kind { color: var(--c1); font-family: "Noto Sans KR", sans-serif; }
+  #book.v-a h3.step .step-title { color: var(--ink); }
+
+  /* B */
+  #book.v-b .h2-n { width: 10mm; height: 10mm; font-size: 14pt; }
+  #book.v-b h2 { padding-bottom: 2mm; border-bottom: .5mm dashed var(--c1); }
+  #book.v-b h3.step { border-bottom: .45mm dotted var(--c1); }
+  #book.v-b h3.step .step-no { width: 9mm; height: 9mm; border-radius: 50%; background: var(--c2); color: #fff; font-family: "Jua", sans-serif; font-weight: 400; }
+  #book.v-b h3.step .step-no small { font-family: "Nanum Gothic", sans-serif; font-weight: 800; font-size: 4.8pt; }
+  #book.v-b h3.step .step-no b { font-size: 11pt; margin-top: 0; }
+  #book.v-b h3.step .step-kind { color: var(--c1); font-size: 7pt; }
+  #book.v-b h3.step .step-title { font-family: "Nanum Gothic", sans-serif; font-weight: 800; color: var(--ink); }
+
+  /* C */
+
+  /* ═════ 장 도입 구조 재설계: B = 세로 띠, C = 타이포 중심 (A는 가로 띠 유지) ═════ */
+  /* B · 세로 띠: 바깥쪽 50mm 초록 기둥에 장 번호와 정보를 세로로 쌓고, 제목·도입은 오른쪽 */
+  #book.v-b .page.opener::before { inset: 0 auto 0 0; width: 50mm; height: auto; border-bottom: 0;
+     background-color: var(--c1); background-image: linear-gradient(rgba(255,255,255,.09) .25mm, transparent .25mm), linear-gradient(90deg, rgba(255,255,255,.09) .25mm, transparent .25mm); background-size: 5mm 5mm; }
+  #book.v-b .page.opener .body { padding-left: calc(50mm - var(--m-outer) + 6mm); }
+  #book.v-b .ch-head { position: static; height: auto; display: block; padding: 1mm 0 2mm; }
+  #book.v-b .ch-no { position: absolute; left: 1mm; top: 1mm; width: 24mm; height: 24mm; }
+  #book.v-b .ch-text { padding-top: 2mm; }
+  #book.v-b .ch-label { margin-bottom: 2mm; }
+  #book.v-b .meta { position: absolute; left: 0; top: 36mm; width: 26mm; margin: 0; display: block; border-top: .25mm solid var(--meta-line); border-bottom: 0; --meta-line: rgba(255,255,255,.32); --meta-label: var(--hl); --meta-fg: #fff; --meta-empty: rgba(255,255,255,.32); }
+  #book.v-b .meta .m { padding: 1.8mm 0; border-left: 0; border-bottom: .25mm solid var(--meta-line); }
+  #book.v-b .meta .m + .m { padding-left: 0; border-left: 0; }
+  #book.v-b .meta dd { font-size: 7.8pt; }
+  #book.v-b .page.opener .folio, #book.v-b .page.opener .running { color: #fff; }
+  #book.v-b .page.opener .running .rn { color: var(--hl); }
+  #book.v-b .page.opener .running::before { background: rgba(255,255,255,.4); }
+
+  /* C · 타이포 중심: 색 띠 없이, 거대한 장 번호가 쪽 모서리에서 잘려 걸리고, 제목 옆에 정보 세로 목록 */
+     font-family: "Hahmlet", serif; font-weight: 800; font-size: 230pt; line-height: 1; letter-spacing: -0.06em; color: var(--c1); }
+
+  /* 장 도입 공통 */
+  .ch-head { position: relative; }
+  .ch-label { font-family: var(--f-label); font-size: 7.2pt; font-weight: 700; letter-spacing: .14em; }
+  .ch-no { font-variant-numeric: lining-nums; line-height: .85; }
+  .ch-art svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .info { font-size: calc(var(--fs-body) - .8pt); line-height: 1.55; }
+  .info-row { display: grid; grid-template-columns: 18mm 1fr; column-gap: 3mm; padding: 1.5mm 0; align-items: baseline; }
+  .info-row dt { font-family: var(--f-label); font-size: 7pt; font-weight: 700; color: var(--muted); }
+  .info-row dd { margin: 0; }
+  .info-pair { display: grid; grid-template-columns: 1fr 1fr; column-gap: 5mm; }
+  .dots { display: inline-flex; gap: 1mm; vertical-align: -0.2mm; margin-right: 1.5mm; }
+  .dots i { width: 2.2mm; height: 2.2mm; border-radius: 50%; border: .3mm solid var(--c1); }
+  .dots i.on { background: var(--c1); }
+  .dots-text { font-size: 7pt; color: var(--muted); }
+  .info .info-pair > .info-row + .info-row { border-top: 0 !important; }
+  .stars { display: inline-flex; gap: .4mm; font-size: 9pt; line-height: 1; letter-spacing: 0; }
+  .stars i { font-style: normal; color: var(--rule); }
+  .stars i.on { color: var(--c1); }
+  .time { display: flex; align-items: center; gap: 2.4mm; flex-wrap: wrap; }
+  .t-item { display: inline-flex; align-items: baseline; gap: 1.2mm; }
+  .t-item em { font-style: normal; font-family: var(--f-label); font-size: 6.6pt; font-weight: 700; letter-spacing: .06em; color: var(--muted); text-transform: uppercase; }
+  .t-val { font-weight: 700; color: var(--ink2); font-variant-numeric: tabular-nums; }
+  .t-item.after em { color: var(--c1); }
+  .t-item.after .t-val { color: var(--c1); }
+  .t-arrow { width: 5mm; height: .3mm; background: var(--rule); position: relative; }
+  .t-arrow::after { content: ""; position: absolute; right: 0; top: 50%; width: 1.4mm; height: 1.4mm; border-top: .3mm solid var(--rule); border-right: .3mm solid var(--rule); transform: translate(0, -50%) rotate(45deg); }
+  .t-note { padding-left: 2.4mm; border-left: .25mm solid var(--rule); font-size: 7.2pt; color: var(--muted); }
+  .flag { display: inline-block; padding: 0 1.6mm; margin-right: 1.6mm; border: .25mm solid var(--warn); color: var(--warn); border-radius: .8mm; font-size: 7pt; font-weight: 700; line-height: 1.6; }
+
+  /* 그림 요소(장 도입 일러스트) 기본 */
+  .art-sheet { fill: #fff; } .art-line { stroke-width: 1.6; stroke-linecap: round; } .art-arrow { fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .art-btn-t { font-family: var(--f-label); font-size: 7.5px; font-weight: 700; }
+
+  /* ═════════ A · 교과서형 ═════════ */
+  .v-a .page.opener::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 98mm; background: var(--c1); }
+  .v-a .ch-head { height: calc(98mm - var(--m-top)); display: grid; grid-template-columns: 1fr; gap: 0; align-content: end; padding-bottom: 6mm; color: #fff; }
+  .v-a .ch-label { color: var(--c2); margin-bottom: 2mm; }
+  .v-a .ch-big { font-family: "Noto Serif KR", serif; font-weight: 900; font-size: 64pt; line-height: .85; margin-bottom: 3mm; }
+  .v-a .ch-art { align-self: end; margin-bottom: -8mm; }
+  .v-a .lead:first-of-type { margin-top: 8mm; }
+  .v-a .info { background: var(--tint); border-radius: 1.5mm; padding: 2.5mm 3.5mm; }
+  .v-a .info dt { color: var(--c1); }
+  .v-a .info-row + .info-row, .v-a .info-pair + .info-row, .v-a .info-pair + .info-pair { border-top: .2mm solid #d7deea; }
+  .v-a .art-line { stroke: #c9d3e4; } .v-a .art-num { fill: #e3e8f1; } .v-a .art-hl { fill: var(--c2); opacity: .55; }
+  .v-a .art-btn { fill: var(--c2); } .v-a .art-btn-t { fill: var(--c1); } .v-a .art-arrow { stroke: rgba(255,255,255,.7); }
+  .v-a .art-grp { fill: none; stroke: #c9d3e4; stroke-width: 1; } .v-a .dot-m { fill: var(--c1); } .v-a .dot-f { fill: var(--c2); } .v-a .art-flag { fill: var(--c2); }
+  .v-a h2 { display: flex; align-items: center; gap: 2.6mm; padding-bottom: 2mm; border-bottom: .4mm solid var(--c1); color: var(--c1); }
+  .v-a .h2-n { display: grid; place-items: center; width: 7.5mm; height: 7.5mm; flex: none; background: var(--c1); color: #fff; font-family: "Noto Sans KR", sans-serif; font-size: 11pt; font-weight: 700; }
+  .v-a h3 { display: flex; align-items: baseline; gap: 2.2mm; }
+  .v-a h3::before { content: ""; flex: none; width: 1.3mm; height: .95em; background: var(--c2); transform: translateY(.12em); }
+  .v-a h3.step { display: block; padding-bottom: 1.8mm; border-bottom: .25mm dotted var(--c1); }
+  .v-a h3.step::before, .v-a h3.trouble::before, .v-a h3.apply::before { display: none; }
+  .v-a .step-meta { display: flex; align-items: center; gap: 2mm; margin-bottom: 1mm; font-family: "Noto Sans KR", sans-serif; }
+  .v-a .step-no { padding: .3mm 2mm; background: var(--c1); color: #fff; border-radius: 99px; font-size: 7.4pt; font-weight: 700; letter-spacing: .04em; }
+  .v-a .step-kind { font-size: 7.6pt; font-weight: 700; color: var(--c1); }
+  .v-a .step-title { display: block; font-size: calc(var(--fs-h3) + .6pt); }
+  .v-a .tag { display: inline-flex; align-items: center; gap: 1mm; padding: .2mm 1.6mm; border-radius: 99px; font-family: "Noto Sans KR", sans-serif; font-size: 7pt; font-weight: 700; color: #fff; background: var(--c1); transform: translateY(-.2em); }
+  .v-a h3.trouble .tag { background: var(--warn); }
+  .v-a h4 { color: var(--c1); }
+  .v-a h4 .ic { color: var(--c2); stroke-width: 2.4; }
+  .v-a .request { border: .35mm solid var(--c1); border-radius: 1.2mm; overflow: hidden; }
+  .v-a .request-bar { padding: .9mm 3mm; background: var(--c1); color: #fff; }
+  .v-a .request p { padding: 2.3mm 3.2mm 2.5mm; }
+  .v-a .tip { padding: 2.4mm 3.2mm; background: var(--tint2); border-radius: 1.2mm; }
+  .v-a .tip b .ic { color: var(--c2); stroke-width: 2.2; }
+  .v-a .warn { padding: 2.4mm 3.2mm; background: var(--warn-tint); border-radius: 1.2mm; }
+  .v-a .voice { display: grid; grid-template-columns: 9mm 1fr; gap: 2.4mm; align-items: start; }
+  .v-a .voice-ic { display: grid; place-items: center; width: 9mm; height: 9mm; border-radius: 50%; background: var(--tint); color: var(--c1); font-size: 13pt; }
+  .v-a .voice-body { position: relative; padding: 1.8mm 3mm; border: .25mm solid var(--rule); border-radius: 2mm; }
+  .v-a .voice-body::before { content: ""; position: absolute; left: -1.5mm; top: 3mm; width: 2.6mm; height: 2.6mm; background: #fff; border-left: .25mm solid var(--rule); border-bottom: .25mm solid var(--rule); transform: rotate(45deg); }
+  .v-a .tbl thead th { background: var(--tint); border-bottom-width: .35mm; }
+  .v-a .chk { background: var(--tint); padding: 2.4mm 3.2mm 1.8mm; border-radius: 1.2mm; }
+  .v-a .chk b .ic { color: var(--c1); stroke-width: 2.2; }
+
+  /* ═════════ B · 연습장형 ═════════ */
+  .v-b .page.opener::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 86mm;
+     background-color: #f6fbf9; background-image: linear-gradient(#dcefe7 .25mm, transparent .25mm), linear-gradient(90deg, #dcefe7 .25mm, transparent .25mm); background-size: 5mm 5mm; border-bottom: .5mm solid var(--c1); }
+  .v-b .ch-head { height: calc(86mm - var(--m-top)); display: grid; grid-template-columns: 24mm 1fr; grid-template-rows: 1fr auto; align-items: center; column-gap: 5mm; row-gap: 0; padding: 4mm 0 6mm; }
+  .v-b .ch-no { display: grid; place-items: center; width: 24mm; height: 24mm; border-radius: 50%; background: var(--c2); color: #fff; font-family: "Jua", sans-serif; font-size: 34pt; transform: rotate(-6deg); line-height: 1; padding-top: 1.5mm; }
+  .v-b .ch-text { align-self: center; }
+  .v-b .ch-label { color: var(--c1); margin-bottom: 1.5mm; }
+  .v-b h1 span { background: linear-gradient(transparent 60%, var(--hl) 60%); -webkit-box-decoration-break: clone; box-decoration-break: clone; padding: 0 .6mm; }
+  .v-b .ch-art { grid-column: 1 / -1; align-self: end; background: #fff; border: .4mm solid var(--ink); border-radius: 3mm; padding: 2mm 4mm; }
+  .v-b .lead:first-of-type { margin-top: 8mm; }
+  .v-b .info { border: .35mm dashed var(--c1); border-radius: 3mm; padding: 2mm 3.5mm; }
+  .v-b .info dt { color: var(--c1); }
+  .v-b .art-sheet { stroke: var(--ink); stroke-width: 1.1; } .v-b .art-line { stroke: #bfe0d4; } .v-b .art-num { fill: none; stroke: #9fcfbf; stroke-width: .9; } .v-b .art-hl { fill: var(--hl); }
+  .v-b .art-btn { fill: var(--c2); } .v-b .art-btn-t { fill: #fff; font-family: "Jua", sans-serif; font-weight: 400; font-size: 8.5px; } .v-b .art-arrow { stroke: var(--ink); stroke-dasharray: 2.5 2.5; }
+  .v-b .art-grp { fill: var(--tint); stroke: var(--c1); stroke-width: 1.2; } .v-b .dot-m { fill: var(--c1); } .v-b .dot-f { fill: var(--c2); } .v-b .art-flag { fill: var(--c2); }
+  .v-b h2 { display: flex; align-items: center; gap: 2.4mm; color: var(--ink); }
+  .v-b h2 .h2-t { background: linear-gradient(transparent 58%, var(--hl) 58%); padding: 0 .8mm; }
+  .v-b .h2-n { display: grid; place-items: center; width: 8mm; height: 8mm; flex: none; border-radius: 50%; background: var(--c1); color: #fff; font-size: 12pt; padding-top: .4mm; }
+  .v-b h3 { color: var(--c1); }
+  .v-b h3 .h3-t { border-bottom: .55mm dotted var(--c1); padding-bottom: .3mm; }
+  .v-b h3.step { padding: 2.2mm 3mm; background: var(--tint); border-radius: 3mm; }
+  .v-b .step-meta { display: flex; align-items: center; gap: 2mm; margin-bottom: .8mm; }
+  .v-b .step-no { padding: .5mm 2.6mm .2mm; background: var(--c1); color: #fff; border-radius: 99px; font-family: "Jua", sans-serif; font-weight: 400; font-size: 8.5pt; }
+  .v-b .step-kind { font-size: 7.4pt; font-weight: 800; color: var(--c2); }
+  .v-b .step-title { display: block; font-family: "Jua", sans-serif; font-weight: 400; font-size: calc(var(--fs-h3) + 1.5pt); color: var(--ink); }
+  .v-b .tag { display: inline-flex; align-items: center; gap: 1mm; padding: .3mm 2mm; border-radius: 99px; background: var(--c1); color: #fff; font-size: 7pt; font-weight: 800; }
+  .v-b h3.trouble .tag { background: var(--c2); }
+  .v-b h3.trouble .h3-t, .v-b h3.apply .h3-t { border: 0; color: var(--ink); }
+  .v-b h4 { display: inline-flex; padding: .4mm 2.6mm .4mm 2mm; border: .35mm solid var(--c1); border-radius: 99px; color: var(--c1); }
+  .v-b h4 + p { margin-top: var(--h4-a); }
+  .v-b .request { border: .45mm solid var(--c1); border-radius: 3mm; background: #fff; padding: 2.2mm 3.4mm 2.6mm; }
+  .v-b .request-bar { display: inline-flex; padding: .3mm 2.6mm; margin-bottom: 1.4mm; background: var(--c1); color: #fff; border-radius: 99px; font-family: "Jua", sans-serif; font-weight: 400; font-size: 8pt; }
+  .v-b .request-bar span:last-child { display: none; }
+  .v-b .tip { padding: 2.6mm 3.4mm; background: var(--tint2); border-radius: 1mm; border-top: 1.2mm solid var(--hl); }
+  .v-b .tip b { color: var(--ink); } .v-b .tip b .ic { color: var(--c2); stroke-width: 2.2; }
+  .v-b .warn { padding: 2.4mm 3.2mm; border: .4mm dashed var(--warn); border-radius: 3mm; background: var(--warn-tint); }
+  .v-b .voice { display: grid; grid-template-columns: 1fr 10mm; gap: 2.4mm; align-items: end; }
+  .v-b .voice-ic { grid-column: 2; grid-row: 1; display: grid; place-items: center; width: 10mm; height: 10mm; border-radius: 50%; border: .4mm solid var(--c2); color: var(--c2); font-size: 14pt; background: #fff; }
+  .v-b .voice-body { grid-column: 1; grid-row: 1; position: relative; padding: 2mm 3.4mm; background: var(--tint); border-radius: 4mm 4mm 1mm 4mm; }
+  .v-b .tbl thead th { background: var(--tint); color: var(--c1); border-bottom: .4mm solid var(--c1); }
+  .v-b .tbl td { border-bottom-style: dashed; }
+  .v-b .tbl .circ { background: var(--c2); }
+  .v-b ul li::before { background: var(--c2); }
+  .v-b .chk { background: var(--tint); padding: 2.4mm 3.4mm 1.8mm; border-radius: 3mm; }
+  .v-b .chk b .ic { color: var(--c2); stroke-width: 2.2; }
+  .v-b ul.checklist li::before { background: var(--paper); border-color: var(--c2); border-radius: 1mm; border-width: .4mm; }
+  .v-b .running .rn { font-family: "Jua", sans-serif; font-weight: 400; font-size: 8pt; letter-spacing: 0; }
+  .v-b .tab { background: var(--c2); border-radius: 0 2mm 2mm 0; font-family: "Jua", sans-serif; font-weight: 400; font-size: 9pt; }
+  .v-b .right .tab { border-radius: 2mm 0 0 2mm; }
+
+  
+  /* ═════════ C · 차분형 (아래 블록) ═════════ */
+
+  /* ───────── 조작 막대 · 스펙 패널 ───────── */
+  nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap;
+        padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--bar); border-top: 1px solid var(--bar-line); color: var(--bar-fg); font-size: 13px; }
+  nav button { padding: 7px 12px; border: 1px solid var(--bar-line); border-radius: 6px; background: var(--btn); color: var(--bar-fg); font: inherit; cursor: pointer; }
+  nav button:disabled { opacity: .35; cursor: default; }
+  nav button:focus-visible { outline: 2px solid #2f5bd3; outline-offset: 2px; }
+  nav .seg { display: inline-flex; border: 1px solid var(--bar-line); border-radius: 7px; overflow: hidden; }
+  nav .seg button { border: 0; border-radius: 0; border-left: 1px solid var(--bar-line); }
+  nav .seg button:first-child { border-left: 0; }
+  nav .seg button[aria-pressed="true"] { background: var(--btn-on); color: var(--btn-on-fg); }
+  #where { min-width: 104px; text-align: center; font-variant-numeric: tabular-nums; }
+  nav .sep { width: 1px; height: 22px; background: var(--bar-line); }
+  #spec { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: 12px; z-index: 9; width: min(330px, calc(100vw - 24px)); max-height: calc(100% - 110px); overflow: auto;
+          background: var(--bar); color: var(--bar-fg); border: 1px solid var(--bar-line); border-radius: 10px; padding: 14px 16px; font-size: 12px; line-height: 1.55; box-shadow: 0 8px 28px var(--shadow); }
+  #spec h5 { margin: 0 0 2px; padding-right: 28px; font-size: 15px; }
+  .spec-close { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border: 0; border-radius: 6px; background: var(--btn); color: var(--bar-fg); font-size: 18px; line-height: 1; cursor: pointer; }
+  .spec-close:focus-visible { outline: 2px solid #2f5bd3; outline-offset: 2px; }
+  /* 넓은 화면: 스펙을 열면 펼침이 옆으로 비켜 줄어든다 (겹치지 않음) */
+  @media (min-width: 900px) {
+    body.spec-open #stage { padding-right: calc(330px + 28px); }
+    #spec { max-height: calc(100% - 100px); }
+  }
+  #spec .concept { margin: 0 0 10px; color: var(--bar-muted); }
+  #spec table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  #spec th, #spec td { padding: 5px 4px; border-top: 1px solid var(--bar-line); text-align: left; vertical-align: top; }
+  #spec th { width: 44px; font-weight: 600; white-space: nowrap; }
+  #spec td small { color: var(--bar-muted); display: block; }
+  #spec .note { margin: 10px 0 0; color: var(--bar-muted); }
+  #spec h6 { margin: 14px 0 4px; font-size: 12px; }
+  #spec .map td { padding: 4px; }
+  #spec .map td:first-child { width: 44px; font-weight: 600; white-space: nowrap; }
+  #spec .note b { color: var(--bar-fg); }
+
+  /* ═════════ C · 산뜻형: 하늘색 + 레몬 노랑, 장식 최소, 굵은 고딕 ═════════ */
+  #book.v-c { --c1:#1d3b5a; --c2:#1a7fd6; --hl:#ffc23a; --hl-ink:#b07800; --tint:#eaf4fd; --tint2:#fff5d9; --warn:#e0533a; --warn-tint:#fff0ec; --ink:#1c2430; --ink2:#4c5868; --muted:#8a96a5; --rule:#dce5ee; }
+  .v-c .page.opener::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4mm; background: var(--c2); }
+  .v-c .ch-head { display: block; padding: 14mm 0 0; }
+  .v-c .ch-no { display: none; }
+  .v-c .ch-label { color: var(--c2); letter-spacing: .16em; margin-bottom: 2.4mm; }
+  .v-c .ch-big { display: block; font-family: "Gothic A1", sans-serif; font-weight: 800; font-size: 44pt; line-height: .9; letter-spacing: -0.03em; color: var(--c2); margin-bottom: 4mm; }
+  .v-c h1 { color: var(--ink); }
+  .v-c .meta { grid-template-columns: repeat(3, 1fr); margin-top: 9mm; border-top: .6mm solid var(--c1); border-bottom: 0; --meta-line: var(--rule); --meta-label: var(--c2); --meta-fg: var(--ink); --meta-empty: var(--rule); }
+  .v-c .meta .m, .v-c .meta .m + .m { padding: 2.2mm 3mm 2.2mm 0; border-left: 0; border-bottom: .2mm solid var(--rule); }
+  .v-c .meta .m:nth-child(5) { grid-column: span 2; }
+  .v-c .meta .stars i.on { color: var(--hl); }
+  .v-c .lead:first-of-type { margin-top: 8mm; }
+
+  .v-c h2 { padding-top: 3mm; border-top: .5mm solid var(--c1); color: var(--ink); }
+  .v-c .h2-n { display: block; margin-bottom: 1mm; font-family: "Gothic A1", sans-serif; font-size: 7pt; font-weight: 800; letter-spacing: .2em; color: var(--c2); }
+  .v-c .h2-n::before { content: "SECTION "; }
+  .v-c h3 { display: flex; align-items: baseline; gap: 2mm; color: var(--ink); }
+  .v-c h3:not(.step):not(.trouble):not(.apply)::before { content: ""; flex: none; width: 1.6mm; height: 1.6mm; border-radius: 50%; background: var(--c2); transform: translateY(-.15em); }
+  .v-c .tag { display: inline-flex; align-items: center; gap: 1mm; padding: .2mm 1.6mm; border: .3mm solid var(--c2); border-radius: .8mm; color: var(--c2); font-size: 6.8pt; font-weight: 800; transform: translateY(-.2em); }
+  .v-c h3.trouble .tag { border-color: var(--warn); color: var(--warn); }
+  #book.v-c h3.step { border-bottom: .25mm solid var(--rule); }
+  #book.v-c h3.step .step-no { width: 9mm; height: 9mm; border: .35mm solid var(--c2); border-radius: 50%; color: var(--c2); font-family: "Gothic A1", sans-serif; }
+  #book.v-c h3.step .step-no small { font-size: 4.8pt; font-weight: 800; }
+  #book.v-c h3.step .step-no b { font-size: 11pt; font-weight: 800; margin-top: 0; }
+  #book.v-c h3.step .step-kind { color: var(--c2); font-family: "Gothic A1", sans-serif; }
+  #book.v-c h3.step .step-title { color: var(--ink); }
+
+  .v-c .request { padding: 2.4mm 3.4mm 2.6mm; background: var(--tint); border-left: 1mm solid var(--c2); }
+  .v-c .request-bar { margin-bottom: 1mm; color: var(--c2); }
+  .v-c .request-bar span:last-child { color: var(--muted); }
+  .v-c .tip { padding: 2.4mm 3.2mm; background: var(--tint2); border-radius: 1mm; }
+  .v-c .tip .lbl, .v-c .tip b .ic { color: var(--hl-ink); stroke-width: 2.2; }
+  .v-c .warn { padding: 2.4mm 3.2mm; background: var(--warn-tint); border-radius: 1mm; }
+  .v-c .voice { display: grid; grid-template-columns: 8mm 1fr; gap: 2.6mm; align-items: start; }
+  .v-c .voice-ic { display: grid; place-items: center; width: 8mm; height: 8mm; border-radius: 50%; background: var(--tint); color: var(--c2); font-size: 12pt; }
+  .v-c .voice b { color: var(--c2); }
+  .v-c .chk { padding: 2.4mm 3.2mm 1.8mm; background: var(--tint); border-radius: 1mm; }
+  .v-c .chk .lbl, .v-c .chk b .ic { color: var(--c2); stroke-width: 2.2; }
+  .v-c ul li::before { background: var(--c2); }
+  .v-c ul.checklist li::before { background: var(--paper); border-color: var(--c2); }
+  .v-c .tbl thead th { color: var(--ink); border-bottom-color: var(--c1); }
+  .v-c .tbl .circ { background: var(--c2); }
+  .v-c .tbl .chip, .v-c .tbl td.after { color: var(--c2); }
+  .v-c .tbl.preview thead th:nth-child(2) { background: var(--c2); color: #fff; border-bottom-color: var(--c2); }
+  .v-c .act-n { color: var(--c2); }
+  .v-c .tab { background: var(--c2); }
+  .v-c .shot-hero { height: 75mm; }
+
+  /* C · 차분형 보강: 색 면을 몇 군데에만 더해 밋밋함을 덜어 냄 */
+  .v-c .page.opener::before { height: 6mm; }
+  .v-c .ch-head { padding-top: 10mm; }
+  .v-c .ch-text { display: grid; grid-template-columns: 30mm 1fr; column-gap: 6mm; align-items: end; }
+  .v-c .ch-label { grid-column: 1 / -1; }
+  .v-c .ch-big { grid-column: 1; grid-row: 2; display: grid; place-items: center; width: 30mm; height: 30mm; margin: 0; background: var(--c2); color: #fff; font-size: 40pt; border-radius: 1.5mm; }
+  .v-c h1 { grid-column: 2; grid-row: 2; align-self: end; padding-bottom: .5mm; }
+  .v-c .meta { margin-top: 8mm; padding: 0 4mm; background: var(--tint); border-top: .8mm solid var(--c2); }
+  .v-c .meta .m, .v-c .meta .m + .m { border-bottom-color: #cfe2f5; }
+  .v-c .meta .m:nth-child(n+4) { border-bottom: 0; }
+
+  .v-c h2 { display: grid; grid-template-columns: auto 1fr; column-gap: 3mm; align-items: end; padding-top: 3.4mm; border-top: .5mm solid var(--c1); }
+  .v-c .h2-n { grid-row: 1 / span 2; margin: 0; font-size: 26pt; font-weight: 800; letter-spacing: -0.02em; line-height: .9; color: var(--c2); }
+  .v-c .h2-n::before { content: "0"; }
+  .v-c .h2-t { align-self: end; }
+  .v-c h3:not(.step):not(.trouble):not(.apply)::before { width: 1.2mm; height: .95em; border-radius: 0; transform: translateY(.12em); }
+
+  .v-c .request { padding: 0; background: var(--tint); border-left: 0; border-radius: 1.2mm; overflow: hidden; }
+  .v-c .request-bar { margin: 0; padding: 1mm 3.2mm; background: var(--c2); color: #fff; }
+  .v-c .request-bar span:last-child { color: rgba(255,255,255,.75); }
+  .v-c .request p { padding: 2.2mm 3.4mm 2.5mm; }
+  .v-c .tip { border-left: 1mm solid var(--hl); border-radius: 0 1mm 1mm 0; }
+  .v-c .tbl thead th { background: var(--tint); }
+</style>
+
+<div id="stage"><div id="book"></div></div>
+<aside id="spec" aria-live="polite" hidden></aside>
+<div id="guide" class="guide-wrap" hidden>
+  <div class="guide-backdrop" data-close></div>
+  <section class="guide" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+    <button type="button" class="guide-x" data-close aria-label="안내 닫기">×</button>
+    <p class="guide-eyebrow">샘플 원고 · 디자인 시안 안내</p>
+    <h2 id="guide-title">선생님들, 안녕하세요.</h2>
+    <p class="guide-lead">샘플 원고와 디자인 시안에 관해 안내드립니다. 기존 샘플 원고를 책의 지면에 배치하기 좋은 형태로 정리했습니다. 집필하실 때 <b>수정된 샘플 원고</b>를 참고해 주시면 감사하겠습니다.</p>
+    <ol class="guide-list">
+      <li><span class="gn">1</span><div><h3>디자인 시안은 참고용입니다.</h3><p>현재 시안은 디자인팀과 지면 구성 및 디자인 방향을 논의하기 위해 준비한 <em class="hl">임시 시안</em>으로, <em class="hl">최종 디자인은 아닙니다</em>. 실제 출판을 고려해 글자 크기와 판형을 설정했으며, 현재 시안의 12쪽은 최종 편집 시 <em class="hl">약 14쪽 분량</em>이 될 것으로 예상합니다.</p><p class="more">당초 전체 분량을 300쪽 미만으로 계획했으나, 집필된 원고의 분량과 내용을 검토하여 <em class="hl">전체 쪽수를 늘리거나 수록 예제를 줄이는 방안</em>을 검토할 예정입니다. 구체적인 조정 방향은 편집을 진행하면서 선생님들께 공유드리겠습니다.</p></div></li>
+      <li><span class="gn">2</span><div><h3>원고는 책 전체의 구성에 맞춰 편집할 예정입니다.</h3><p>현재 시안은 <em class="hl">13장 원고를 기준</em>으로 작성했습니다. 선생님들의 원고를 취합한 뒤, 여러 장에서 반복되는 <em class="hl">공통 내용은 책의 앞부분으로</em> 옮겨 정리할 수 있습니다. 분량이 긴 부분은 정해진 형식과 지면에 맞춰 기획 편집자 조아리 팀장이 <em class="hl">문장을 다듬거나 내용을 재구성</em>할 예정입니다. 예제의 난이도 조정이 필요한 경우에는 <em class="hl">담당 선생님과 상의</em>하겠습니다.</p></div></li>
+      <li><span class="gn">3</span><div><h3>집필 단계에서는 분량을 줄이기보다 충분히 설명해 주세요.</h3><p>안내드린 형식을 지켜 주시되, <em class="hl">샘플 원고보다 길게 작성하셔도 괜찮습니다</em>. 설명과 실습 과정이 충분히 담겨 있어야 편집할 때 필요한 내용을 살릴 수 있으므로, <em class="hl">분량에 대한 부담 없이</em> 작성해 주시면 됩니다.</p></div></li>
+      <li><span class="gn">4</span><div><h3>AI 요청 문장도 편집 과정에서 조정될 수 있습니다.</h3><p>AI에게 입력하는 요청 문장 역시 <em class="hl">가독성과 지면 분량을 고려해 수정</em>할 수 있습니다. 다만, 수정한 문장은 <em class="hl">충분히 테스트</em>하여 원래 의도와 실습 결과가 유지되는지 확인하겠습니다.</p></div></li>
+      <li><span class="gn">5</span><div><h3>독자의 눈높이를 예상보다 한 단계 낮춰 설명해 주세요.</h3><p>선생님들께서 예상하신 독자 수준보다 <em class="hl">한 단계 더 기초적인 수준</em>을 기준으로 작성해 주시면 감사하겠습니다. 처음 바이브 코딩을 접하는 독자는 익숙한 용어나 간단한 조작에서도 어려움을 느낄 수 있습니다. 새로운 용어는 <em class="hl">처음 나올 때 쉽게 풀어</em> 주시고, 실습 과정은 <em class="hl">어디를 클릭하고 무엇을 입력해야 하는지</em> 순서대로 안내해 주세요. 실행 후 <em class="hl">어떤 화면이나 결과가 나와야 하는지</em>도 함께 설명해 주시면 좋습니다.</p><p class="more">내용 자체를 쉽게 바꾸기보다는, 독자가 사전 지식 없이도 이해하고 따라 할 수 있도록 <em class="hl">설명 사이의 빈틈을 채워</em> 주신다고 생각해 주세요.</p></div></li>
+    </ol>
+    <div class="guide-use">
+      <div><span>수정된 샘플 원고</span><b>집필 형식을 참고하는 용도</b></div>
+      <div><span>디자인 시안</span><b>지면 구성을 살펴보는 용도</b></div>
+    </div>
+    <p class="guide-note">샘플 원고는 아래 <b>[샘플 원고 다운로드]</b> 버튼을 클릭하시면 내려받으실 수 있습니다. 궁금한 점은 언제든 편하게 문의해 주세요.</p>
+    <p class="guide-sign">감사합니다.<br><b>기획 편집자 조아리 드림</b></p>
+    <div class="guide-actions"><button type="button" class="guide-ok" data-close>확인했습니다</button></div>
+  </section>
+</div>
+<nav>
+  <button id="guide-btn" class="must-read" type="button" aria-haspopup="dialog">샘플 디자인 보는 방법<span class="badge">필독</span></button>
+  <span class="seg" role="group" aria-label="시안 고르기">
+    <button type="button" data-v="a" aria-pressed="true">A 교과서</button><button type="button" data-v="b" aria-pressed="false">B 연습장</button><button type="button" data-v="c" aria-pressed="false">C 산뜻</button>
+  </span>
+  <span class="sep"></span>
+  <button id="prev" type="button" aria-label="이전 펼침">◀</button>
+  <span id="where"></span>
+  <button id="next" type="button" aria-label="다음 펼침">▶</button>
+  <span class="sep"></span>
+  <button id="specbtn" type="button" aria-pressed="false">스펙 보기</button>
+  <button id="memo" type="button">메모 숨기기</button>
+  <button id="notes" class="must-read" type="button" title="내용은 나중에 연결합니다">샘플 디자인 참고 사항<span class="badge">필독</span></button>
+  <a id="dl-sample" class="btnlink" href="https://drive.usercontent.google.com/download?id=1Af8qCMwjyPHjyGuXo1_sJqDcxEeWpzA3&amp;export=download&amp;confirm=t" target="_blank" rel="noopener" title="구글 드라이브에서 샘플 원고를 내려받습니다">샘플 원고 다운로드</a>
+</nav>
+<template id="src">
+<div class="ch-head">
+  <div class="ch-no">13</div>
+  <div class="ch-text"><div class="ch-label">PART 01 · CHAPTER</div><div class="ch-big">13</div><h1>현장학습 조 편성,<br>10초 만에 끝내기</h1></div>
+  <dl class="meta">
+    <div class="m"><dt>사용 도구</dt><dd>챗GPT 코덱스</dd></div>
+    <div class="m"><dt>난이도</dt><dd><span class="stars" aria-label="난이도 5점 만점에 2점"><i class="on">★</i><i class="on">★</i><i>★</i><i>★</i><i>★</i></span></dd></div>
+    <div class="m"><dt>학생 정보</dt><dd>포함</dd></div>
+    <div class="m"><dt>만드는 시간</dt><dd>약 20분</dd></div>
+    <div class="m"><dt>실행 방식</dt><dd>인터넷 없이 여는 HTML 파일</dd></div>
+  </dl>
+</div>
+<p class="lead">다음 주 금요일은 국립중앙박물관 견학입니다. 박물관에서는 한 조에 6명 안팎으로 움직여 달라고 안내했고, 학년 부장님은 오늘까지 반별 조 편성표를 달라고 합니다. 명단을 펼쳐 인원을 맞추고 남녀 학생을 고르게 섞다 보니, 학생 몇 명만 옮겨도 인원수를 다시 세어야 합니다. 조마다 인솔 선생님도 배정해야 하고요.</p>
+<p class="lead">이 장에서는 명단을 붙여 넣고 버튼을 누르면 조 편성과 인솔 교사 배정이 끝나는 도구를 챗GPT 코덱스로 만들어 봅니다. 이 과정에서 ‘조별 인원 차이 1명 이내’처럼 기준을 구체적으로 적는 법과, 기본 기능부터 만든 뒤 하나씩 추가하는 요령을 익힙니다.</p>
+<div class="voice"><b>선생님 한마디</b><p>작년에 4개 반 조 편성을 맡았는데, 전날 인솔 선생님 한 분이 출장을 가시는 바람에 표를 전부 다시 만들었어요. 그때 '버튼 하나로 다시 짜 주면 좋겠다'는 생각을 했습니다.</p></div>
+
+<h2>만들 도구 살펴보기</h2>
+<h3>완성된 도구 미리보기</h3>
+<p>이 장을 마치면 아래와 같은 도구가 생깁니다. 왼쪽에 명단과 조건을 넣고 버튼을 누르면, 오른쪽에 조별 표가 나옵니다.</p>
+<figure><div class="shot shot-hero">완성 화면 · 번호 말풍선 ①~⑥</div><figcaption class="memo">img: 13_00.jpg (신규 — 완성 화면에 번호 말풍선 ①~⑥)</figcaption></figure>
+<table class="tbl"><thead><tr><th>번호</th><th>화면에 있는 것</th><th>하는 일</th><th>만드는 곳</th></tr></thead><tbody>
+<tr><td class="num"><span class="circ">1</span></td><td class="strong">학생 명단 칸</td><td>엑셀에서 복사한 번호·이름·성별을 붙여 넣음</td><td><span class="chip">STEP 1</span></td></tr>
+<tr><td class="num"><span class="circ">2</span></td><td class="strong">조 수 칸</td><td>몇 개 조로 나눌지 적음</td><td><span class="chip">STEP 1</span></td></tr>
+<tr><td class="num"><span class="circ">3</span></td><td class="strong">조 편성·다시 섞기 버튼</td><td>인원 차이 1명 이하로 무작위 편성</td><td><span class="chip">STEP 1</span></td></tr>
+<tr><td class="num"><span class="circ">4</span></td><td class="strong">조별 남·여 인원</td><td>조마다 남녀가 고르게 섞였는지 보여 줌</td><td><span class="chip">STEP 2</span></td></tr>
+<tr><td class="num"><span class="circ">5</span></td><td class="strong">인솔 교사 칸과 조별 교사 이름</td><td>조마다 인솔 교사 1명 배정</td><td><span class="chip">STEP 3</span></td></tr>
+<tr><td class="num"><span class="circ">6</span></td><td class="strong">인쇄 버튼</td><td>조별 표만 종이로 출력</td><td><span class="chip">STEP 4</span></td></tr>
+</tbody></table>
+<p>선생님이 만든 도구의 색이나 칸 위치는 이 그림과 다를 수 있습니다. 표에 적힌 여섯 가지가 화면에 있고 제대로 움직이면 같은 도구입니다.</p>
+<h3>기본 요청 내용 살펴보기</h3>
+<p>프로그램을 만들기 전에, AI에게 무엇을 요청하면 좋을지 미리 살펴봐요. 누가 사용할지, 어떤 정보를 입력할지, 어떤 규칙으로 작동하고 결과를 어떻게 보여 줄지 정리하면 원하는 도구를 만드는 데 도움이 됩니다.</p>
+<table class="tbl preview"><thead><tr><th>요청할 항목</th><th>이번 도구의 요청 내용</th><th>요청하는 이유</th></tr></thead><tbody>
+<tr><td class="strong">사용자와 사용 환경</td><td>코딩을 모르는 담임교사, 학교 컴퓨터, 인터넷 없이 사용</td><td>별도 설치나 인터넷 연결 없이 쉽게 사용하기 위해</td></tr>
+<tr><td class="strong">입력할 정보</td><td>학생 명단, 조 수</td><td>입력한 명단을 원하는 수의 조로 나누기 위해</td></tr>
+<tr><td class="strong">작동 규칙</td><td>무작위로, 인원 차이 1명 이내</td><td>학생을 무작위로 섞으면서 조별 인원을 비슷하게 맞추기 위해</td></tr>
+<tr><td class="strong">결과와 기능</td><td>조별 명단을 표로 표시, 다시 섞기 버튼 제공</td><td>조 편성 결과를 한눈에 확인하고, 필요하면 다시 편성하기 위해</td></tr>
+</tbody></table>
+
+<h2>요청하며 만들기</h2>
+<p>STEP은 모두 같은 순서로 진행합니다. 왜 필요한지 읽고, 요청 문장을 넣고, 체크리스트로 확인합니다. STEP 하나에 요청은 한 번입니다.</p>
+<h3 class="step"><span class="step-meta"><span class="step-no"><small>STEP</small> <b>1</b></span><span class="step-kind">첫 요청하기</span></span><span class="step-title">기본 조 편성 만들기</span></h3>
+<p>먼저 기본 뼈대만 요청합니다. 기본 기능부터 확인해야, 나중에 기능을 더했을 때 생긴 문제를 찾기 쉽습니다.</p>
+<p class="act">챗GPT 왼쪽 메뉴에서 코덱스를 엽니다.</p>
+<figure><img src="img/13_01.jpg" alt="챗GPT 왼쪽 메뉴의 코덱스" style="width:121.9mm"><figcaption class="memo">img: 13_01.jpg</figcaption></figure>
+<p class="act">입력 칸에 아래 문장을 넣고 실행합니다.</p>
+<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>박물관 견학 조 편성을 도와주는 웹페이지를 HTML 파일 하나로 만들어 줘. 쓰는 사람은 코딩을 모르는 담임교사이고, 학교 컴퓨터에서 파일을 더블클릭해 크롬으로 연다. 인터넷 연결이나 설치 없이 동작해야 한다. 엑셀에서 복사한 학생 명단(번호, 이름, 성별)을 붙여 넣는 칸과 조 수를 적는 칸을 만들고, 학생을 무작위로 섞어 조마다 인원 차이가 1명 이하가 되게 나눠 줘. 결과는 조별 명단 표로 보여 주고 '다시 섞기' 버튼을 넣어 줘. 화면은 한국어, 글씨는 크게.</p></div>
+<figure class="pv-hide"><img src="img/13_02.jpg" alt="코덱스 입력 칸에 요청 문장을 넣은 화면" style="width:121.9mm"><figcaption class="memo">img: 13_02.jpg</figcaption></figure>
+<p class="act">코덱스가 작업을 마치면 만든 파일 이름(예: index.html)과 작업 내용을 알려 줍니다. 설명에 '인터넷 연결 없이', '파일 하나'가 빠져 있다면 그 조건을 지켰는지 다시 물어봅니다.</p>
+<figure><img src="img/13_03.jpg" alt="코덱스 작업 결과 화면" style="width:137mm"><figcaption class="memo">img: 13_03.jpg</figcaption></figure>
+<div class="tip"><b>기다리는 동안</b><p>코덱스는 요청을 받으면 스스로 계획을 세우고 파일을 만듭니다. 몇 분이 걸릴 수 있으니 창을 닫지 말고 기다리세요. 작업 중에 무엇을 하고 있는지 화면에 표시됩니다.</p></div>
+<p class="act">파일은 코덱스에서 고른 프로젝트 폴더 안에 만들어집니다. 작업 결과 아래의 '다음에서 열기'를 눌러 크롬을 고르거나, 폴더에서 파일을 찾아 더블클릭하면 열립니다. 뒤의 STEP에서 고쳐 달라고 하면 같은 파일이 바뀌므로, 열어 둔 크롬 창에서 새로 고침(F5)만 하면 됩니다.</p>
+<p class="act">만든 파일을 크롬으로 엽니다.</p>
+<figure><img src="img/13_04.jpg" alt="크롬으로 연 조 편성 도구" style="width:74.9mm"><figcaption class="memo">img: 13_04.jpg</figcaption></figure>
+<p class="act">가명 명단 28명을 붙여 넣고 조 수에 5를 적은 뒤 버튼을 누릅니다. 28명을 5개 조로 나누면 6명 조 3개, 5명 조 2개가 나와야 합니다.</p>
+<figure class="pv-hide"><img src="img/13_05.jpg" alt="명단과 조 수를 넣은 화면" style="width:130.7mm"><figcaption class="memo">img: 13_05.jpg</figcaption></figure>
+<figure><img src="img/13_06.jpg" alt="조별 명단 결과" style="width:57.7mm"><figcaption class="memo">img: 13_06.jpg</figcaption></figure>
+<ul class="checklist"><li>입력 칸이 두 개(학생 명단, 조 수)이고 버튼 이름이 한국어인가?</li><li>글씨가 충분히 큰가?</li><li>6명 조 3개, 5명 조 2개가 나왔는가?</li><li>28명이 빠짐없이 한 번씩만 들어갔는가?</li><li>다시 섞기를 누르면 조 구성이 바뀌는가?</li></ul>
+<p>빠지거나 두 번 들어간 학생은 화면만으로는 잘 보이지 않으니, 조별 인원을 더해 28명인지 확인하세요. 하나라도 맞지 않으면 다음 STEP으로 가기 전에 고쳐 달라고 요청합니다.</p>
+<div class="tip"><b>계산으로 먼저 확인</b><p>학생 수를 조 수로 나눈 값을 미리 계산해 두면, 결과가 맞는지 바로 알 수 있습니다. 28 ÷ 5 = 5 나머지 3이므로 6명 조가 3개입니다.</p></div>
+<p>기본 조 편성이 제대로 되면, 이제 조건을 하나씩 더해 갑니다.</p>
+<h3 class="step"><span class="step-meta"><span class="step-no"><small>STEP</small> <b>2</b></span><span class="step-kind">고쳐 달라고 요청하기</span></span><span class="step-title">남녀 인원 고르게 섞기</span></h3>
+<p>결과를 보면 어떤 조는 남학생이 5명, 어떤 조는 여학생이 5명일 수 있습니다. 이번에는 네 가지 가운데 '어떤 규칙으로'를 고칩니다.</p>
+<p class="act">같은 코덱스 작업 창에서 이어서 요청합니다. 새로 만들지 않고 지금 도구를 고치는 요청이라, 현재 문제를 먼저 말하고 바꿀 규칙을 숫자로 덧붙입니다.</p>
+<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>지금은 조마다 남녀가 치우칠 때가 있어. 성별 칸을 읽어서, 조끼리 비교했을 때 남학생 수 차이도 1명 이하, 여학생 수 차이도 1명 이하가 되게 나눠 줘. 조마다 전체 인원 차이 1명 이하는 그대로 지켜 줘. 조별 표 아래에 조마다 남·여 인원도 적어 줘.</p></div>
+<p class="act">고친 파일을 다시 열어 같은 가명 명단(남 15명, 여 13명)으로 시험합니다. 15 ÷ 5 = 3이므로 남학생은 조마다 3명씩, 13 ÷ 5 = 2 나머지 3이므로 여학생은 3명 조가 3개, 2명 조가 2개여야 합니다.</p>
+<figure><img src="img/13_07.png" alt="남녀 인원이 표시된 조별 표" style="width:112mm"><figcaption class="memo">img: 13_07.png</figcaption></figure>
+<ul class="checklist"><li>남학생이 조마다 3명인가?</li><li>여학생이 3·3·3·2·2명으로 나뉘었는가?</li><li>조별 전체 인원이 여전히 6·6·6·5·5명인가?</li><li>다시 섞기를 여러 번 눌러도 위 숫자가 유지되는가?</li></ul>
+<h3 class="step"><span class="step-meta"><span class="step-no"><small>STEP</small> <b>3</b></span><span class="step-kind">고쳐 달라고 요청하기</span></span><span class="step-title">인솔 교사 배정 더하기</span></h3>
+<p>조마다 인솔 선생님을 붙여야 조 편성표가 완성됩니다. 이번에는 '무엇을 넣나'에 인솔 교사가 더해지고, 그에 따른 규칙이 하나 붙습니다.</p>
+<p class="act">새 입력 칸이 필요한 기능이라 '칸을 추가해 줘'로 시작하고, 교사가 조보다 적을 때 어떻게 할지도 적습니다.</p>
+<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>인솔 교사 이름을 한 줄에 한 명씩 적는 칸을 추가해 줘. 조 편성 버튼을 누르면 조마다 인솔 교사를 1명씩 배정하고, 교사가 조보다 적으면 한 교사가 여러 조를 맡게 해 줘. 조별 표 맨 위에 인솔 교사 이름을 보여 줘.</p></div>
+<p class="act">인솔 교사를 3명 적고 5개 조로 편성합니다.</p>
+<figure><img src="img/13_09.jpg" alt="인솔 교사 입력 칸" style="width:137mm"><figcaption class="memo">img: 13_09.jpg</figcaption></figure>
+<figure><img src="img/13_10.jpg" alt="인솔 교사가 배정된 조별 표" style="width:132.5mm"><figcaption class="memo">img: 13_10.jpg</figcaption></figure>
+<ul class="checklist"><li>조별 표 맨 위에 인솔 교사 이름이 보이는가?</li><li>교사 두 명이 2개 조씩, 한 명이 1개 조를 맡았는가?</li><li>교사를 1명만 적으면 모든 조에 같은 이름이 나오는가?</li><li>STEP 2의 남·여 인원이 그대로 유지되는가?</li></ul>
+<p>여기까지 되면 기능은 모두 갖춰졌습니다.</p>
+<h3 class="step"><span class="step-meta"><span class="step-no"><small>STEP</small> <b>4</b></span><span class="step-kind">저장하고 쓰기</span></span><span class="step-title">인쇄하고 실명 명단으로 쓰기</span></h3>
+<p>조 편성표는 종이로 뽑아 학년 부장님과 인솔 선생님께 드려야 합니다. 이번에는 '무엇이 나오나'에 인쇄를 더합니다.</p>
+<p class="act">인쇄물에는 입력 칸과 버튼이 필요 없으니, 인쇄할 때만 숨겨 달라고 요청합니다.</p>
+<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>'인쇄' 버튼을 추가해 줘. 인쇄할 때는 입력 칸과 버튼은 숨기고 조별 명단 표만 나오게 해 줘.</p></div>
+<figure><img src="img/13_11.jpg" alt="인쇄 버튼이 추가된 화면" style="width:137mm"><figcaption class="memo">img: 13_11.jpg</figcaption></figure>
+<p class="act">고친 파일을 다시 열어 가명 명단으로 한 번 더 시험합니다.</p>
+<figure><img src="img/13_12.jpg" alt="인쇄 미리보기" style="width:137mm"><figcaption class="memo">img: 13_12.jpg</figcaption></figure>
+<ul class="checklist"><li>인쇄 미리보기에 입력 칸과 버튼 없이 조별 표만 나오는가?</li><li>인터넷을 끊고 파일을 열어도 조 편성이 되는가?</li></ul>
+<p>두 가지가 확인되면 파일을 바탕화면이나 학년 공유 폴더에 저장합니다. 이제 학교 컴퓨터에서 실제 학급 명단을 붙여 넣고, 조 편성 → 인쇄 순서로 사용합니다. 결석생이 생기면 명단에서 그 줄을 지우고 버튼을 다시 누르면 됩니다. 다음 견학 때는 파일을 열고 명단만 바꿔 넣으면 됩니다.</p>
+<div class="tip"><b>파일 이름에 날짜를</b><p>'견학조편성_2026-10.html'처럼 파일 이름에 날짜를 붙여 두면, 다음 행사 때 어느 버전인지 헷갈리지 않습니다.</p></div>
+
+<h2>막힐 때 해결하기</h2>
+<p>항목마다 증상, 원인, 해결 순서로 적었습니다.</p>
+<h3 class="trouble">내 화면이 책과 달라요</h3>
+<p>코덱스는 같은 요청 문장을 받아도 색, 칸 위치, 버튼 이름을 매번 조금씩 다르게 만듭니다. 각 STEP의 확인 체크리스트가 모두 맞으면 그대로 쓰면 됩니다. 모양을 책과 맞추고 싶을 때만 아래처럼 요청합니다.</p>
+<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>버튼 이름을 '조 편성'으로 바꾸고, 학생 명단 칸을 화면 맨 위에 놓아 줘.</p></div>
+<h3 class="trouble">더블클릭했더니 글자만 가득한 화면이 열려요</h3>
+<p>HTML 파일이 크롬이 아니라 메모장 같은 프로그램으로 열린 것입니다. 파일은 정상입니다. 파일을 마우스 오른쪽 버튼으로 누르고 '연결 프로그램'에서 크롬을 고릅니다. 코덱스에 다시 요청할 필요는 없습니다.</p>
+<h3 class="trouble">명단을 붙여 넣었더니 한 줄로 합쳐져요</h3>
+<p>엑셀에서 복사한 명단은 칸 사이가 눈에 보이지 않는 탭으로 구분됩니다. 도구가 쉼표만 구분자로 읽으면 번호·이름·성별이 한 덩어리가 됩니다.</p>
+<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>엑셀에서 복사해 붙여 넣으면 번호, 이름, 성별이 한 칸으로 합쳐져. 탭, 쉼표, 공백을 모두 칸 구분으로 읽어 줘. 첫 줄이 '번호, 이름, 성별' 같은 제목이면 건너뛰어 줘.</p></div>
+<h3 class="trouble">인원이 나누어떨어지지 않으면 한 조만 적어요</h3>
+<p>28명을 5개 조로 나누면 6명 조와 5명 조가 섞이는 것은 정상입니다. 그런데 6명, 6명, 6명, 6명, 4명처럼 한 조만 2명 이상 적다면 규칙이 지켜지지 않은 것입니다. 남는 인원을 마지막 조에서 한꺼번에 빼면서 생기는 오류입니다.</p>
+<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>28명을 5개 조로 나눴더니 6, 6, 6, 6, 4명이 나왔어. 남는 인원을 앞 조부터 1명씩 나눠서 조마다 인원 차이가 1명 이하가 되게 고쳐 줘.</p></div>
+<div class="tip"><b>오류는 숫자로 알려 주기</b><p>"이상해"보다 "28명, 5개 조, 결과 6·6·6·6·4"처럼 넣은 값과 나온 값을 함께 적으면 코덱스가 원인을 더 빨리 찾습니다. 이때도 학생 이름은 적지 않고 숫자만 적습니다.</p></div>
+<h3 class="trouble">인쇄하면 표가 잘려요</h3>
+<p>조가 많으면 표가 한 장에 다 들어가지 않습니다. 쪽을 어디서 나눌지 정해 주지 않았기 때문에, 한 조의 표 중간에서 종이가 넘어갑니다.</p>
+<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>인쇄할 때 한 조의 표가 두 장에 걸쳐 잘리지 않게 해 줘. 한 장에 조 두 개씩 들어가게 하고, 페이지 위에 행사 이름과 날짜를 적는 칸도 넣어 줘.</p></div>
+
+<h2>정리하고 넓히기</h2>
+<h3>이 장에서 익힌 요령</h3>
+<table class="tbl"><thead><tr><th>요령</th><th>이 장에서 쓴 곳</th><th>다른 도구를 만들 때</th></tr></thead><tbody>
+<tr><td class="strong">규칙은 숫자로 적기</td><td>STEP 1 '인원 차이 1명 이하', STEP 2 '남학생 수 차이 1명 이하'</td><td>요청하기 전에 "맞게 나왔는지 무엇을 세어 보면 알 수 있나?"를 먼저 정함</td></tr>
+<tr><td class="strong">뼈대부터 만들고 하나씩 고치기</td><td>STEP 1에서 기본 편성만, STEP 2~4에서 조건을 하나씩</td><td>STEP 하나에 요청 한 번, 확인이 끝나야 다음으로</td></tr>
+</tbody></table>
+<h3>줄어든 시간</h3>
+<p>한 반 28명, 5개 조, 인솔 교사 3명을 기준으로 30분이 걸리던 일이 1분으로 줄었습니다. 버튼을 누르고 조 편성이 끝나기까지는 10초면 됩니다.</p>
+<table class="tbl"><thead><tr><th>할 일</th><th>Before</th><th>After</th></tr></thead><tbody>
+<tr><td class="strong">명단 준비</td><td>출력하고 확인 5분</td><td class="after">엑셀에서 복사해 붙여 넣기 50초</td></tr>
+<tr><td class="strong">조 나누기</td><td>번호 옆에 조 적기 10분</td><td class="after">조 편성 버튼 10초</td></tr>
+<tr><td class="strong">인원·남녀 맞추기</td><td>옮기고 다시 세기 5분</td><td class="after">자동</td></tr>
+<tr><td class="strong">인솔 교사 배정·표 만들기</td><td>한글 문서로 표 만들기 10분</td><td class="after">자동, 인쇄 버튼</td></tr>
+<tr class="total"><td>합계</td><td>30분</td><td class="after">1분</td></tr>
+</tbody></table>
+<p>줄어든 시간보다 더 큰 변화는 조건이 바뀌어도 부담이 없다는 점입니다. 결석생이 생기거나 인솔 선생님이 바뀌어도 명단만 고쳐 버튼을 다시 누르면 됩니다.</p>
+<div class="voice"><b>선생님 한마디</b><p>인솔 선생님이 바뀌었다는 연락을 받고도 이름만 고쳐 다시 누르니 1분 만에 새 표가 나왔어요.</p></div>
+<h3>우리 반에 맞게 조건 더하기</h3>
+<p>같은 도구에 조건을 더 얹을 수도 있습니다. STEP 2~4와 같은 방법으로, 한 번에 하나씩 요청하고 확인합니다. 같은 조가 되면 곤란한 학생들이 있을 때는 떼어 놓을 짝을 적는 칸을 만듭니다.</p>
+<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>같은 조가 되면 안 되는 학생 번호를 한 줄에 한 쌍씩 적는 칸을 추가해 줘. 예를 들어 '3, 17'이라고 적으면 3번과 17번은 서로 다른 조에 넣어 줘. 인원과 남녀 규칙은 그대로 지켜 줘.</p></div>
+<p>마음에 드는 결과가 나왔는데 실수로 다시 섞기를 누를까 걱정될 때는 결과를 잠급니다.</p>
+<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>'확정' 버튼을 추가해 줘. 확정을 누르면 다시 섞기 버튼이 잠기고, '확정 풀기'를 눌러야 다시 섞을 수 있게 해 줘.</p></div>
+<p>이 도구는 '명단을 규칙대로 나누는' 모든 업무에 쓸 수 있습니다. 아래 세 가지는 요청 문장의 입력과 규칙만 바꾼 것입니다.</p>
+<h3 class="apply">수학여행 방 배정</h3>
+<p>수학여행 방 배정도 조 편성과 같은 일입니다. 명단을 정해진 인원으로 나누는 것이죠. 다른 점은 두 가지입니다. 방마다 정원이 다르고, 같은 성별끼리만 방을 써야 합니다.</p>
+<p>그래서 요청 문장에서는 '조 수' 대신 '방 번호와 정원'을 넣고, 성별 규칙을 '고르게 섞기'에서 '같은 성별끼리'로 바꿉니다.</p>
+<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>이 도구를 수학여행 방 배정용으로 바꿔 줘. 방 번호와 방마다 정원을 적는 칸을 만들고, 같은 성별끼리만 방을 배정해 줘.</p></div>
+<p>정원을 모두 더한 값이 학생 수보다 적으면 방을 배정받지 못하는 학생이 생깁니다. 이럴 때 경고를 띄워 달라고 한 줄 더 요청해 두면 좋습니다.</p>
+<h3 class="apply">체육대회 반 대항 팀 나누기</h3>
+<p>체육대회 반 대항전은 조 편성보다 단순합니다. 여러 조가 아니라 두 팀으로 나누되, 팀 사이에 전체 인원과 남녀 인원을 맞추면 됩니다.</p>
+<p>요청 문장에서는 '조 수'를 없애고 '두 팀'으로 고정한 뒤, 팀 이름을 선생님이 바꿀 수 있게 해 둡니다.</p>
+<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>조 대신 청팀·백팀 두 팀으로 나누고, 팀마다 남녀 인원을 맞춰 줘. 팀 이름은 내가 입력할 수 있게 해 줘.</p></div>
+<p>종목마다 선수 명단이 다르다면, 종목별로 팀을 여러 번 나눌 수 있게 '종목 이름' 칸을 추가해 달라고 요청해도 좋습니다.</p>
+<h3 class="apply">학년 합동 견학 조 편성</h3>
+<p>학년 전체가 함께 가는 견학에서는 여러 반 학생을 섞어 조를 짜기도 합니다. 이때는 명단에 '반' 칸이 하나 더 필요하고, 한 조에 한 반 학생만 몰리지 않게 하는 규칙이 더해집니다.</p>
+<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>명단에 반 칸을 추가해 줘. 여러 반 학생을 섞어서 조를 짜되, 조마다 각 반 학생이 고르게 들어가게 해 줘.</p></div>
+<p>반 칸이 생기면 조별 표에 반도 함께 보여 달라고 요청해 두세요. 인솔 선생님이 조를 확인할 때 어느 반 학생인지 바로 알 수 있습니다.</p>
+</template>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M8 10.5h8"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5 2.5 20h19z"/><path d="M12 10v4.5M12 17.2v.1"/></symbol>
+  <symbol id="i-teacher" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20.5c.9-4 3.7-6 7-6s6.1 2 7 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="m8 12.2 2.8 2.8L16.5 9"/></symbol>
+  <symbol id="i-cursor" viewBox="0 0 24 24"><path d="M5 4.5 11 20l2.3-6.7L20 11z"/></symbol>
+  <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5l3 3 5.8-5.8a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></symbol>
+  <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M18 4l3 3-3 3M18 14l3 3-3 3"/></symbol>
+</svg>
+
+<script>
+  /* 시안 설정: 서체·크기(pt)·여백(mm). 이 값이 CSS 변수와 스펙 패널을 함께 만든다. */
+  const VARIANTS = {
+    a: { name: "A · 교과서형", concept: "남색 띠로 여는 장 도입, 명조 제목과 고딕 본문. 가장 익숙하고 정돈된 실용서 문법.",
+         body: { f: "Noto Sans KR", size: 9.2, lh: 1.75 }, label: "Noto Sans KR",
+         h1: { f: "Noto Serif KR", w: 900, size: 21 },
+         h2: { f: "Noto Serif KR", w: 900, size: 17, b: 12, a: 5 },
+         h3: { f: "Noto Serif KR", w: 600, size: 11.5, b: 7, a: 2.2 },
+         h4: { f: "Noto Sans KR", w: 700, size: 8.8, b: 4, a: 1.5 },
+         p: 1.6, blk: 3, hh: 3, artRx: 4,
+         marks: "장: 남색 전면 띠 + 명조 숫자 · 절: 번호 사각형 + 남색 밑줄 · 중: 겨자색 세로 막대 · 소: 아이콘 + 굵은 고딕" },
+    b: { name: "B · 연습장형", concept: "바깥쪽 초록 세로 기둥에 장 번호와 장 정보를 세로로 쌓는 장 도입. 형광펜 밑줄과 둥근 서체로 처음 코딩하는 선생님께 부담을 덜어 주는 손맛.",
+         body: { f: "Nanum Gothic", size: 9.4, lh: 1.8 }, label: "Nanum Gothic",
+         h1: { f: "Jua", w: 400, size: 24 },
+         h2: { f: "Jua", w: 400, size: 19, b: 13, a: 5 },
+         h3: { f: "Nanum Gothic", w: 800, size: 11.5, b: 7.5, a: 2.4 },
+         h4: { f: "Nanum Gothic", w: 800, size: 8.6, b: 4.5, a: 2 },
+         p: 1.8, blk: 3.4, hh: 3, artRx: 13,
+         marks: "장: 바깥쪽 세로 초록 기둥(장 번호·정보) · 절: 원 번호 + 형광펜 · 중: 점선 밑줄, STEP은 색인 탭 · 소: 테두리 알약" },
+    c: { name: "C · 산뜻형", concept: "하늘색과 레몬 노랑의 밝은 조합. 굵은 고딕 제목과 넓은 여백, 색 면을 몇 군데에만 써서 가볍고 산뜻하게 읽힌다.",
+         body: { f: "Gothic A1", size: 9.1, lh: 1.8 }, label: "Gothic A1",
+         h1: { f: "Gothic A1", w: 800, size: 24 },
+         h2: { f: "Gothic A1", w: 800, size: 18, b: 13, a: 5 },
+         h3: { f: "Gothic A1", w: 700, size: 11.5, b: 7.5, a: 2.2 },
+         h4: { f: "Gothic A1", w: 800, size: 8.4, b: 4.5, a: 1.6 },
+         p: 1.7, blk: 3.2, hh: 3, artRx: 3,
+         marks: "장: 하늘색 사각 장 번호 + 연한 하늘색 정보 패널 · 절: 큰 하늘색 번호 01 + 남색 윗선 · 중: 하늘색 세로 막대, STEP은 하늘색 원 테두리 번호 · 소: 사용 안 함" }
+  };
+  const FIRST_FOLIO = 1, CH = "13";  // 좌수 배치: 1쪽이 왼쪽
+  const RUNNING = ['<span class="rn">PART 01</span>', '<span>현장학습 조 편성, 10초 만에 끝내기</span><span class="rn">CHAPTER 13</span>'];
+  const book = document.getElementById("book");
+  const SRC = document.getElementById("src");
+  let bodies = [], cur = 0, vkey = "a";
+
+  const icon = id => `<svg class="ic" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+
+  /* 장 도입 그림: 형광펜 칠한 명단 → [조 편성] → 남녀가 고르게 섞인 다섯 조 */
+  /* 시리즈 공통 모티프 — 장 내용과 무관, 모든 장에 같은 그림. 시안마다 콘셉트가 다르다 */
+  function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+  const PEN = "'Nanum Pen Script', 'Gaegu', cursive";
+  function art(k) {
+    if (k === "a") { // 칠판 앞 선생님: 손글씨 요청이 칠판 위에서 코드로 바뀐다
+      let g = `<rect x="6" y="10" width="150" height="94" rx="3" style="fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.7);stroke-width:.9"/>`;
+      g += `<line x1="0" y1="108" x2="162" y2="108" style="stroke:rgba(255,255,255,.7);stroke-width:.9"/>`;
+      g += `<text x="16" y="38" textLength="96" lengthAdjust="spacingAndGlyphs" style="font-family:${PEN};font-size:16px;fill:#fff">› 우리 반에 맞는</text><text x="16" y="57" textLength="82" lengthAdjust="spacingAndGlyphs" style="font-family:${PEN};font-size:16px;fill:#fff">도구를 만들어 줘</text>`;
+      g += `<rect x="102" y="45.5" width="1.6" height="13" style="fill:var(--c2)"/>`;
+      [[72, [[16, 14, 1], [34, 32, .55], [70, 20, .3]]], [81, [[24, 22, .55], [50, 14, 1], [68, 30, .3]]], [90, [[24, 36, .3], [64, 18, .55]]]].forEach(([y, bars]) =>
+        bars.forEach(([x, w, o]) => g += `<rect x="${x}" y="${y}" width="${w}" height="3.4" rx="1.7" style="fill:${o === 1 ? "var(--c2)" : `rgba(255,255,255,${o})`}"/>`));
+      g += `<path d="M146 14l1.8 4.6 4.6 1.8-4.6 1.8-1.8 4.6-1.8-4.6-4.6-1.8 4.6-1.8z" style="fill:var(--c2)"/><path d="M134 30l1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1 2.4-1z" style="fill:#fff;opacity:.7"/>`;
+      g += `<circle cx="180" cy="66" r="9" style="fill:var(--c2)"/>`;
+      g += `<path d="M163 82q17-7 34 0l4 74h-42z" style="fill:#fff"/>`;
+      g += `<path d="M167 88 141 71" style="stroke:#fff;stroke-width:5;stroke-linecap:round;fill:none"/><circle cx="140" cy="70" r="3" style="fill:#fff"/>`;
+      g += `<path d="M171 82l9 12 9-12" style="fill:none;stroke:var(--c2);stroke-width:2"/>`;
+      return `<svg viewBox="0 0 205 158" role="img" aria-label="칠판 앞에서 선생님이 손글씨 요청을 가리키고, 그 아래 코드가 생겨나는 그림">${g}</svg>`;
+    }
+    if (k === "b") { // 연습장 손글씨 → 코드 편집기 (바이브 코딩)
+      let g = `<rect x="14" y="10" width="118" height="100" rx="4" style="fill:#fff;stroke:var(--ink);stroke-width:1.1"/>`;
+      g += `<line x1="30" y1="10" x2="30" y2="110" style="stroke:var(--c2);stroke-width:.7;opacity:.7"/>`;
+      [42, 68, 94].forEach(y => g += `<line x1="18" y1="${y}" x2="128" y2="${y}" style="stroke:#cfe6dc;stroke-width:.8"/>`);
+      for (let y = 20; y < 108; y += 12) g += `<circle cx="14" cy="${y}" r="2.4" style="fill:#f6fbf9;stroke:var(--ink);stroke-width:.8"/>`;
+      g += `<text x="36" y="39" textLength="84" lengthAdjust="spacingAndGlyphs" style="font-family:${PEN};font-size:16px;fill:var(--ink)">우리 반 명단으로</text><text x="36" y="65" textLength="72" lengthAdjust="spacingAndGlyphs" style="font-family:${PEN};font-size:16px;fill:var(--ink)">바로 쓰는 도구</text><text x="36" y="91" textLength="50" lengthAdjust="spacingAndGlyphs" style="font-family:${PEN};font-size:16px;fill:var(--c1)">만들어 줘!</text>`;
+      g += `<path d="M36 95q14 3 30-1" style="fill:none;stroke:var(--hl);stroke-width:3.4;stroke-linecap:round;opacity:.9"/>`;
+      g += `<path d="M139 64c9-16 22-16 30-4" style="fill:none;stroke:var(--ink);stroke-width:1.3;stroke-dasharray:3 3;stroke-linecap:round"/><path d="M164 55l5 5 1-7" style="fill:none;stroke:var(--ink);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round"/>`;
+      g += `<rect x="176" y="12" width="112" height="96" rx="5" style="fill:var(--ink)"/>`;
+      ["var(--c2)", "var(--hl)", "var(--c1)"].forEach((c, i) => g += `<circle cx="${185 + i * 7}" cy="20" r="2.2" style="fill:${c}"/>`);
+      const R = rng(7), pal = ["var(--c1)", "var(--c2)", "var(--hl)", "#8fd3bd", "rgba(255,255,255,.55)"];
+      for (let r = 0; r < 9; r++) {
+        const y = 32 + r * 8.4; let x = 196 + [0, 6, 6, 12, 12, 6, 0, 6, 0][r];
+        g += `<rect x="182" y="${y - 1.5}" width="6" height="3" rx="1" style="fill:rgba(255,255,255,.18)"/>`;
+        const n = 2 + Math.floor(R() * 3);
+        for (let t = 0; t < n && x < 278; t++) { const w = 8 + Math.floor(R() * 22); g += `<rect x="${x}" y="${y - 1.7}" width="${Math.min(w, 282 - x)}" height="3.4" rx="1.7" style="fill:${pal[Math.floor(R() * pal.length)]}"/>`; x += w + 4; }
+      }
+      return `<svg viewBox="0 0 300 120" role="img" aria-label="연습장에 적은 손글씨 요청이 코드 편집기의 코드로 바뀌는 그림">${g}</svg>`;
+    }
+    if (k === "c") { // 하프톤 점으로 만든 프롬프트 커서 ›_ (AI가 만들어 내는 화면)
+      const segs = [[58, 20, 96, 55], [96, 55, 58, 90], [112, 88, 172, 88]];
+      const dseg = (px, py, [x1, y1, x2, y2]) => { const dx = x2 - x1, dy = y2 - y1, t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy))); return Math.hypot(px - x1 - t * dx, py - y1 - t * dy); };
+      const R = rng(11); let g = "";
+      for (let y = 4; y < 108; y += 5) for (let x = 4; x < 300; x += 5) {
+        const d = Math.min(...segs.map(sg => dseg(x, y, sg)));
+        let r = d < 7 ? 2.3 : Math.max(.35, 2.1 - (d - 7) * .085);
+        const far = x > 190 ? (x - 190) / 110 : 0;
+        r = Math.max(.3, r * (1 - far * .55) + (R() - .5) * .25);
+        if (x > 200 && R() < .06) r = 1.4 + R() * .8;
+        g += `<circle cx="${x}" cy="${y}" r="${r.toFixed(2)}" style="fill:${d < 7.5 || r > 1.35 ? "var(--c1)" : "var(--ink)"};opacity:${d < 7.5 ? 1 : (.25 + r * .25).toFixed(2)}"/>`;
+      }
+      return `<svg viewBox="0 0 300 110" role="img" aria-label="하프톤 점이 모여 프롬프트 커서 모양을 이루는 그림">${g}</svg>`;
+    }
+    // d: 선생님의 사과를 이루는 별자리(신경망) — 교사 + 인공지능
+    const inside = (x, y) => (Math.hypot(x - 136, y - 74) < 40 || Math.hypot(x - 164, y - 74) < 40) && Math.hypot(x - 150, y - 30) > 13 && Math.hypot(x - 150, y - 119) > 9;
+    const pts = [];
+    for (let i = 0; i < 44; i++) {
+      const a = (i / 44) * Math.PI * 2; let lo = 0, hi = 70;
+      for (let k2 = 0; k2 < 18; k2++) { const m = (lo + hi) / 2; inside(150 + Math.cos(a) * m, 76 + Math.sin(a) * m) ? lo = m : hi = m; }
+      pts.push([150 + Math.cos(a) * lo, 76 + Math.sin(a) * lo]);
+    }
+    const R = rng(23);
+    for (let tries = 0; pts.length < 84 && tries < 4000; tries++) {
+      const x = 105 + R() * 90, y = 38 + R() * 80;
+      if (inside(x, y) && pts.every(([px, py]) => Math.hypot(px - x, py - y) > 8.5)) pts.push([x, y]);
+    }
+    let lines = "", seen = new Set();
+    pts.forEach(([x, y], i) => {
+      pts.map(([px, py], j) => [Math.hypot(px - x, py - y), j]).filter(([, j]) => j !== i).sort((a, b) => a[0] - b[0]).slice(0, 3).forEach(([, j]) => {
+        const key = i < j ? i + "-" + j : j + "-" + i; if (seen.has(key)) return; seen.add(key);
+        lines += `<line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${pts[j][0].toFixed(1)}" y2="${pts[j][1].toFixed(1)}"/>`;
+      });
+    });
+    let nodes = "";
+    pts.forEach(([x, y], i) => { const hot = i > 44 && i % 6 === 0; nodes += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${hot ? 2.3 : 1.25}" style="fill:${hot ? "var(--c2)" : "#a6e0d3"}"/>`; });
+    let g = `<ellipse cx="150" cy="76" rx="128" ry="30" transform="rotate(-10 150 76)" style="fill:none;stroke:rgba(255,255,255,.2);stroke-width:.6"/>`;
+    g += `<g style="stroke:rgba(255,255,255,.3);stroke-width:.55">${lines}</g>${nodes}`;
+    g += `<path d="M150 40c0-9 2-15 6-20" style="fill:none;stroke:#fff;stroke-width:1.6;stroke-linecap:round"/>`;
+    g += `<path d="M155 27c9-12 23-12 28-8-7 11-19 13-28 8z" style="fill:none;stroke:var(--c2);stroke-width:1.2"/>`;
+    g += `<circle cx="27" cy="94" r="2.6" style="fill:var(--c2)"/><path d="M262 34l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6z" style="fill:#fff"/>`;
+    return `<svg viewBox="0 0 300 128" role="img" aria-label="점과 선의 신경망이 선생님의 사과 모양을 이루는 그림">${g}</svg>`;
+  }
+
+  /* 원고 구조에 그림 요소를 덧붙인다 */
+  function decorate(root, cfg) {
+    root.querySelectorAll(".ch-art").forEach(el => el.remove());
+    root.querySelectorAll("figure.pv-hide").forEach(el => el.remove());  // 시안에서만 숨기는 그림은 쪽 계산에서도 뺌
+    let n = 0;
+    root.querySelectorAll("h2").forEach(h => { n++; h.innerHTML = `<span class="h2-n">${n}</span><span class="h2-t">${h.textContent}</span>`; });
+    root.querySelectorAll("h3:not(.step)").forEach(h => {
+      const tag = h.classList.contains("trouble") ? `<span class="tag">${icon("wrench")}증상</span>` : h.classList.contains("apply") ? `<span class="tag">${icon("shuffle")}바꿔 쓰기</span>` : "";
+      h.innerHTML = `${tag}<span class="h3-t">${h.textContent}</span>`;
+    });
+    root.querySelectorAll("h4").forEach(h => { h.innerHTML = `<span class="h4-in">${icon(h.classList.contains("ask") ? "cursor" : "check")}<span>${h.textContent}</span></span>`; });
+    root.querySelectorAll("ul.checklist").forEach(ul => {
+      const box = document.createElement("div"); box.className = "chk";
+      box.innerHTML = `<b>${icon("check")}<em class="lbl">CHECK</em><span>이렇게 나오면 성공</span></b>`;
+      ul.replaceWith(box); box.append(ul);
+      // 확인 상자는 그 STEP의 맨 끝(다음 STEP·절 제목 바로 앞)으로 옮긴다
+      let end = box.nextElementSibling;
+      while (end && !/^H[23]$/.test(end.tagName)) end = end.nextElementSibling;
+      end ? end.before(box) : box.parentElement.append(box);
+    });
+    root.querySelectorAll(".plan-h").forEach(h => h.insertAdjacentHTML("afterbegin", icon("chat")));
+    root.querySelectorAll(".request-bar span:first-child").forEach(s => s.insertAdjacentHTML("afterbegin", icon("chat")));
+    root.querySelectorAll(".tip > b").forEach(b => b.innerHTML = `${icon("bulb")}<em class="lbl">TIP</em><span>${b.textContent}</span>`);
+    root.querySelectorAll(".warn > b").forEach(b => b.innerHTML = `${icon("alert")}<em class="lbl">주의</em><span>${b.textContent}</span>`);
+    root.querySelectorAll(".voice").forEach(v => { const inner = v.innerHTML; v.innerHTML = `<span class="voice-ic">${icon("teacher")}</span><div class="voice-body">${inner}</div>`; });
+    let actN = 0, inAct = false;
+    [...root.children].forEach(el => {
+      if (el.tagName === "H4" || el.tagName === "H3" || el.tagName === "H2") { actN = 0; inAct = false; return; }
+      if (el.classList.contains("act")) { actN++; inAct = true; el.insertAdjacentHTML("afterbegin", `<span class="act-n">${actN})</span>`); return; }
+      if (inAct && (el.tagName === "FIGURE" || el.classList.contains("request"))) { el.classList.add("in-act"); return; }
+      inAct = false;
+    });
+    root.querySelectorAll(".v-b-hl, h1").forEach(h => { h.innerHTML = `<span>${h.innerHTML}</span>`; });
+  }
+
+  function addPage(extra = "") {
+    const n = bodies.length, left = n % 2 === 0;
+    if (left) book.insertAdjacentHTML("beforeend", '<div class="spread"></div>');
+    book.lastElementChild.insertAdjacentHTML("beforeend",
+      `<section class="page ${left ? "left" : "right"} ${extra}" data-ch="${CH}"><div class="running">${RUNNING[n % 2]}</div><div class="tab">${CH}</div><div class="body"></div><div class="folio">${n + FIRST_FOLIO}</div></section>`);
+    const body = book.lastElementChild.lastElementChild.querySelector(".body");
+    bodies.push(body);
+    return body;
+  }
+
+  /* 캡처 크기 자동 조정: 넘칠 때는 줄여서(최소 62%) 같은 쪽에 넣고,
+     쪽을 넘길 때는 그 쪽의 캡처를 키워(판면 폭·원래 크기의 140%까지) 아래 여백을 메운다 */
+  const fits = body => body.scrollHeight <= body.clientHeight + 1;
+  let TH = { single: 0.62, group: 0.65 };  // 줄이기 하한 — 시안마다 여러 값으로 쪽을 나눠 보고 여백이 가장 적은 쪽을 고른다
+  const TH_CANDIDATES = [{ single: 0.62, group: 0.65 }, { single: 0.55, group: 0.6 }, { single: 0.5, group: 0.55 }];
+  function gapScore() {
+    let sum = 0; const bs = bodies.filter(b => b.lastElementChild);
+    bs.slice(0, -1).forEach(b => { sum += Math.max(0, b.getBoundingClientRect().bottom - b.lastElementChild.getBoundingClientRect().bottom); });
+    return sum + bs.length * 200;  // 쪽수가 늘어나는 것도 손해로 계산
+  }
+  function tryShrink(el, body) {
+    const shot = el.tagName === "FIGURE" && el.querySelector(".shot-hero");
+    if (shot) {  // 완성 화면 자리: 남은 높이에 맞춰 줄임(최소 30mm)
+      const nh = shot.offsetHeight - (body.scrollHeight - body.clientHeight) - 2;
+      if (nh < 113) return false;
+      const prev = shot.style.height; shot.style.height = nh + "px";
+      if (fits(body)) return true;
+      shot.style.height = prev; return false;
+    }
+    const img = el.tagName === "FIGURE" && el.querySelector("img");
+    if (!img) return false;
+    const over = body.scrollHeight - body.clientHeight, h = img.offsetHeight, w = img.offsetWidth;
+    const ratio = (h - over - 2) / h;
+    if (ratio >= TH.single) {
+      const prev = img.style.width;
+      img.style.width = (w * ratio) + "px";
+      if (fits(body)) return true;
+      img.style.width = prev;
+    }
+    // 한 장만 줄여서 안 되면, 그 쪽의 캡처를 모두 같은 비율로 줄여 본다(최소 65%)
+    const all = [...body.querySelectorAll("figure img")];
+    const total = all.reduce((t, im) => t + im.offsetHeight, 0);
+    const r = (total - over - 2) / total;
+    if (all.length < 2 || r < TH.group) return false;
+    const prevs = all.map(im => im.style.width);
+    all.forEach(im => im.style.width = (im.offsetWidth * r) + "px");
+    if (fits(body)) return true;
+    all.forEach((im, i) => im.style.width = prevs[i]); return false;
+  }
+  function fillGap(body) {
+    for (const sh of body.querySelectorAll(".shot-hero")) {  // 완성 화면 자리는 남는 높이만큼 키움
+      const last = body.lastElementChild;
+      const free = body.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom - parseFloat(getComputedStyle(last).marginBottom || 0) - 4;
+      if (free < 12) break;
+      const prev = sh.style.height; sh.style.height = Math.min(sh.offsetHeight + free, 321) + "px";  // 최대 85mm
+      if (!fits(body)) sh.style.height = prev;
+    }
+    const imgs = [...body.querySelectorAll("figure img")];
+    for (const img of imgs) {
+      const last = body.lastElementChild;
+      const free = body.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom - parseFloat(getComputedStyle(last).marginBottom || 0) - 4;
+      if (free < 12) return;
+      if (!img.dataset.w0) img.dataset.w0 = img.offsetWidth;
+      const w = img.offsetWidth, h = img.offsetHeight;
+      const maxW = Math.min(img.parentElement.clientWidth, img.dataset.w0 * 1.4);
+      const f = Math.min(maxW / w, 1 + free / h);
+      if (f < 1.03) continue;
+      const prev = img.style.width;
+      img.style.width = (w * f) + "px";
+      if (!fits(body)) img.style.width = prev;
+    }
+  }
+  function paginate() {
+    book.innerHTML = ""; bodies = [];
+    const frag = SRC.content.cloneNode(true);
+    const holder = document.createElement("div"); holder.append(frag);
+    decorate(holder, VARIANTS[vkey]);
+    let body = addPage("opener");
+    for (const el of [...holder.children]) {
+      // (C 산뜻형) 절 제목은 쪽에 남은 공간이 60mm 미만이면 다음 쪽에서 시작
+      if (vkey === "c" && el.tagName === "H2" && body.lastElementChild) {
+        const left = body.getBoundingClientRect().bottom - body.lastElementChild.getBoundingClientRect().bottom;
+        if (left < 227) { fillGap(body); body = addPage(); }
+      }
+      body.append(el);
+      if (fits(body) || body.children.length === 1) continue;
+      if (tryShrink(el, body)) continue;
+      const carry = [el]; el.remove();
+      while (body.children.length > 1) {
+        const last = body.lastElementChild;
+        const lead = last.tagName === "P" && /아래|다음/.test(last.textContent) && last.textContent.length < 60;
+        const actLead = last.classList.contains("act") && (el.tagName === "FIGURE" || el.classList.contains("request") || carry[0].classList.contains("in-act"));
+        if (/^H[234]$/.test(last.tagName) || lead || actLead) { carry.unshift(last); last.remove(); } else break;
+      }
+      fillGap(body);
+      body = addPage(); body.append(...carry);
+    }
+    if (bodies.length % 2) { const b = addPage(); b.parentElement.querySelectorAll(".running, .folio, .tab").forEach(e => e.remove()); }
+  }
+
+  function applyVars(cfg) {
+    const s = book.style, set = (k, v) => s.setProperty(k, v);
+    const fam = (f, fb) => `"${f}", ${fb}`;
+    const sans = '"Apple SD Gothic Neo", "Malgun Gothic", sans-serif', serif = '"AppleMyungjo", "Batang", serif';
+    const fb = f => /Serif|Hahmlet/.test(f) ? serif : sans;
+    set("--f-body", fam(cfg.body.f, fb(cfg.body.f))); set("--fs-body", cfg.body.size + "pt"); set("--lh-body", cfg.body.lh);
+    set("--f-label", fam(cfg.label, fb(cfg.label)));
+    for (const k of ["h1", "h2", "h3", "h4"]) {
+      const h = cfg[k];
+      set(`--f-${k}`, fam(h.f, fb(h.f))); set(`--w-${k}`, h.w); set(`--fs-${k}`, h.size + "pt");
+      if (h.b != null) { set(`--${k}-b`, h.b + "mm"); set(`--${k}-a`, h.a + "mm"); }
+    }
+    set("--p-gap", cfg.p + "mm"); set("--blk", cfg.blk + "mm"); set("--hh", cfg.hh + "mm");
+  }
+
+  function renderSpec(cfg) {
+    const row = (lv, h, extra = "") => `<tr><th>${lv}</th><td>${h.f} ${h.w} · ${h.size}pt${h.b != null ? `<small>위 ${h.b}mm · 아래 ${h.a}mm${extra}</small>` : extra ? `<small>${extra}</small>` : ""}</td></tr>`;
+    document.getElementById("spec").innerHTML =
+      `<button type="button" class="spec-close" aria-label="스펙 닫기">×</button><h5>${cfg.name}</h5><p class="concept">${cfg.concept}</p><table>
+       ${row("장", cfg.h1, "장 도입 쪽 전용, 오른쪽 쪽에서 시작")}
+       ${row("절", cfg.h2)}${row("중", cfg.h3, " · 절 바로 뒤에선 위 " + cfg.hh + "mm")}${row("소(예비)", cfg.h4, cfg.h4.a === 0 ? " · 날개에 걸려 본문 첫 줄과 나란히" : "")}
+       <tr><th>본문</th><td>${cfg.body.f} · ${cfg.body.size}pt / 행간 ${Math.round(cfg.body.lh * 100)}%<small>문단 사이 ${cfg.p}mm · 상자·표·그림 위아래 ${cfg.blk}mm</small></td></tr>
+       <tr><th>라벨</th><td>${cfg.label}<small>면주·쪽 번호·표 머리·상자 이름</small></td></tr></table>
+       <p class="note">${cfg.marks}</p>
+       <h6>원고 스타일 → 템플릿 스타일</h6>
+       <table class="map"><tbody>
+         <tr><td>[장]</td><td>장 제목 · 마스터 '장 도입'</td></tr>
+         <tr><td>[절]</td><td>절 제목 · 번호 자동</td></tr>
+         <tr><td>[중]</td><td>중 제목 / STEP 제목 / 증상 제목 / 바꿔 쓰기 제목</td></tr>
+         <tr><td>[소]</td><td>— (사용 안 함, STEP 아래는 진행 단계로 바로 시작)</td></tr>
+         <tr><td>[본문]</td><td>본문 / 진행 단계(1) 2) 3), STEP마다 새로) / 목록 / 체크리스트</td></tr>
+         <tr><td>상자</td><td>요청 문장 · TIP · 확인(CHECK) · 주의 · 선생님 한마디 (개체 스타일 5종)</td></tr>
+         <tr><td>표</td><td>일반 표 · 시간 비교표 (표 스타일 2종)</td></tr>
+       </tbody></table>
+       <p class="note"><b>장마다 바뀌는 것</b> 장 번호 · 장 제목 · 측면 탭 숫자, 그리고 캡처 배치. 나머지는 모두 템플릿 고정.</p>`;
+  }
+
+  const spreads = () => [...book.children];
+  function show(i) {
+    const all = spreads();
+    cur = Math.max(0, Math.min(all.length - 1, i || 0));
+    all.forEach((x, k) => x.classList.toggle("on", k === cur));
+    const a = cur * 2 + FIRST_FOLIO;
+    const total = book.querySelectorAll(".page .folio").length;
+    document.getElementById("where").textContent = `${a}–${a + 1}쪽 · ${cur + 1}/${all.length}`;
+    document.getElementById("prev").disabled = cur === 0;
+    document.getElementById("next").disabled = cur === all.length - 1;
+    try { history.replaceState(null, "", "#" + vkey + (cur + 1)); } catch (e) {}
+    fit();
+  }
+  function fit() {
+    book.style.zoom = 1;
+    const sp = book.querySelector(".spread.on") || book.firstElementChild;
+    if (!sp) return;
+    const navH = document.querySelector("nav").offsetHeight;
+    const stage = document.getElementById("stage");
+    stage.style.paddingBottom = (navH + 16) + "px";
+    const st = getComputedStyle(stage);
+    const availW = stage.clientWidth - parseFloat(st.paddingLeft) - parseFloat(st.paddingRight);
+    book.style.zoom = Math.min(1.3, availW / book.offsetWidth, (innerHeight - navH - 32) / sp.offsetHeight);
+  }
+
+  function fontsFor(cfg) {
+    const list = [cfg.body, cfg.h1, cfg.h2, cfg.h3, cfg.h4].map(h => `${h.w || 400} 16px "${h.f}"`);
+    list.push(`700 16px "${cfg.label}"`);
+    list.push(`400 16px "Nanum Pen Script"`);
+    if (!document.fonts) return Promise.resolve();
+    const all = Promise.all(list.map(f => document.fonts.load(f, "가나다 Ab12").catch(() => {})));
+    return Promise.race([all, new Promise(r => setTimeout(r, 3500))]);
+  }
+
+  let busy = Promise.resolve();
+  function setVariant(k, keepPage) {
+    busy = busy.then(async () => {
+      vkey = k;
+      const cfg = VARIANTS[k];
+      book.className = "v-" + k;
+      document.querySelectorAll("[data-v]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === k)));
+      applyVars(cfg); renderSpec(cfg);
+      await fontsFor(cfg);
+      book.style.zoom = 1;
+      let best = null;
+      for (const c of TH_CANDIDATES) { TH = c; paginate(); const sc = gapScore(); if (!best || sc < best.sc) best = { c, sc }; }
+      TH = best.c; paginate();
+      book.classList.add("ready");
+      show(keepPage ? cur : 0);
+    });
+  }
+
+  const imgs = [...SRC.content.querySelectorAll("img")];
+  Promise.all(imgs.map(t => new Promise(r => { const i = new Image(); i.onload = i.onerror = r; i.src = t.getAttribute("src"); }))).then(() => {
+    const m = /^#([abc])(\d+)?$/.exec(location.hash);
+    if (m) { cur = (parseInt(m[2]) || 1) - 1; setVariant(m[1], true); } else setVariant("a", false);
+  });
+
+  addEventListener("resize", fit);
+  document.getElementById("prev").onclick = () => show(cur - 1);
+  document.getElementById("next").onclick = () => show(cur + 1);
+  document.querySelectorAll("[data-v]").forEach(b => b.onclick = () => setVariant(b.dataset.v, true));
+  const memoBtn = document.getElementById("memo");
+  memoBtn.onclick = () => { const off = document.body.classList.toggle("no-memo"); memoBtn.textContent = off ? "메모 보기" : "메모 숨기기"; };
+  const specBtn = document.getElementById("specbtn"), spec = document.getElementById("spec");
+  function toggleSpec(open) {
+    spec.hidden = !open;
+    document.body.classList.toggle("spec-open", open);
+    specBtn.setAttribute("aria-pressed", String(open));
+    specBtn.textContent = open ? "스펙 닫기" : "스펙 보기";
+    fit();
+  }
+  specBtn.onclick = () => toggleSpec(spec.hidden);
+  spec.addEventListener("click", e => { if (e.target.closest(".spec-close")) toggleSpec(false); });
+  addEventListener("keydown", e => { if (e.key === "Escape" && !spec.hidden) toggleSpec(false); });
+  addEventListener("keydown", e => {
+    if (e.key === "ArrowLeft" || e.key === "PageUp") show(cur - 1);
+    if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); show(cur + 1); }
+    if ("123".includes(e.key) && e.key.length === 1) setVariant("abc"["123".indexOf(e.key)], true);
+  });
+  /* 안내 창 열고 닫기 */
+  const guide = document.getElementById("guide"), guideBtn = document.getElementById("guide-btn");
+  function openGuide() { guide.hidden = false; const g = guide.querySelector(".guide"); g.scrollTop = 0; guide.querySelector(".guide-x").focus({ preventScroll: true }); }
+  function closeGuide() { guide.hidden = true; guideBtn.focus(); }
+  guideBtn.addEventListener("click", openGuide);
+  guide.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeGuide(); });
+  addEventListener("keydown", e => { if (e.key === "Escape" && !guide.hidden) closeGuide(); });
+</script>
+
+</body></html>

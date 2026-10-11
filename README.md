@@ -14,6 +14,7 @@
 
 ## 파일
 - `index.html` — 페이지 (`data.json`을 읽어 그림. 못 읽으면 내장된 정리 시점 데이터 표시)
+- `본문 템플릿 시안 3종/` — '집필 방법' 탭에 띄우는 시안 뷰어(`index.html`, `img/`)
 - `scripts/build_data.py` — 엑셀 → `data.json` 변환
 - `.github/workflows/update.yml` — 1시간마다 갱신·배포
 
