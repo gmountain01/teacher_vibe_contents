@@ -7,6 +7,7 @@ import io
 import json
 import os
 import re
+import subprocess
 import sys
 import urllib.request
 from datetime import datetime, timedelta, timezone
@@ -133,6 +134,18 @@ def parse_final(wb) -> list:
     return out
 
 
+def shared_date() -> str:
+    """깃허브에 마지막으로 올린 날(마지막 커밋 날짜, 한국 시간). 알 수 없으면 빈 문자열."""
+    try:
+        return subprocess.run(
+            ["git", "log", "-1", "--format=%cd", "--date=format-local:%Y-%m-%d"],
+            capture_output=True, text=True, check=True, env={**os.environ, "TZ": "Asia/Seoul"},
+            cwd=os.path.dirname(os.path.abspath(__file__)),
+        ).stdout.strip()
+    except Exception:  # noqa: BLE001
+        return ""
+
+
 def main():
     dest = sys.argv[1] if len(sys.argv) > 1 else "data.json"
     wb = openpyxl.load_workbook(io.BytesIO(download(FILE_ID)), data_only=True)
@@ -145,7 +158,7 @@ def main():
             final = json.load(f)
         final_source = "draft"
     kst = datetime.now(timezone(timedelta(hours=9)))
-    payload = {"updated": kst.strftime("%Y-%m-%d %H:%M"), "sheets": sheets, "final": final, "final_source": final_source}
+    payload = {"updated": kst.strftime("%Y-%m-%d %H:%M"), "sheets": sheets, "final": final, "final_source": final_source, "shared": shared_date()}
     os.makedirs(os.path.dirname(os.path.abspath(dest)), exist_ok=True)
     with open(dest, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False)
