@@ -102,7 +102,7 @@
   #book.v-a .meta { margin-top: 7mm; }
   #book.v-a .meta .m { padding-top: 2.2mm; padding-bottom: 2.2mm; }
   #book.v-b .ch-head { padding: 4mm 0 4mm; }
-  #book.v-b h1 { font-size: calc(var(--fs-h1) + 2pt); }
+  #book.v-b h1 { font-size: var(--fs-h1); }
   #book.v-c .page.opener::before { height: 6mm; }
   #book.v-c .ch-head { padding-top: 8mm; }
   #book.v-c .ch-text { grid-template-columns: 28mm 1fr; column-gap: 5mm; }
@@ -115,6 +115,88 @@
   figure.illo { width: auto; margin: 7mm 0 0; }
   figure.illo img { width: 100%; height: auto; display: block; border: 0; border-radius: 0; }
   .illo-box { max-height: 52mm; }
+  /* 174mm 판형: A 장 번호·제목 한 줄, 정보 5칸 한 줄 유지 */
+  #book.v-a .ch-big { font-size: 54pt; }
+  #book.v-a .meta { grid-template-columns: .95fr .85fr .75fr .8fr 1.75fr; }
+  #book.v-a .meta .m { padding-right: 2mm; } #book.v-a .meta .m + .m { padding-left: 2.4mm; }
+  #book.v-a .meta dd { white-space: nowrap; }
+  figure.illo img { margin-left: auto; margin-right: auto; }
+
+  /* ── 파트 도비라 (2쪽) ── */
+  #book .page.part .part-cover { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 34mm 20mm 24mm 22mm; }
+  #book .part-cover .pc-label { font-family: var(--f-label); font-size: 9pt; font-weight: 800; letter-spacing: .4em; }
+  #book .part-cover .pc-no { line-height: .9; }
+  #book .part-cover .pc-title { margin: 0; font-family: var(--f-h1); font-weight: var(--w-h1); font-size: 30pt; line-height: 1.2; letter-spacing: -0.03em; border: 0; padding: 0; display: block; }
+  #book .part-cover .pc-sub { margin: 2.4mm 0 0; font-size: 12pt; font-weight: 600; }
+  #book .part-cover .pc-rule { display: block; width: 18mm; height: .9mm; margin: 7mm 0 6mm; }
+  #book .part-cover .pc-desc { margin: 0; max-width: 104mm; font-size: 9.4pt; line-height: 1.85; text-align: left; word-break: keep-all; }
+  #book .part-cover .pc-list { margin-top: auto; padding-top: 4mm; }
+  #book .part-cover .pc-list-h { font-family: var(--f-label); font-size: 7.5pt; font-weight: 800; letter-spacing: .08em; margin-bottom: 2.4mm; }
+  #book .part-cover ul { list-style: none; margin: 0; padding: 0; }
+  #book .part-cover li::before { content: none; display: none; }
+  #book.v-a .part-cover .pc-title { color: #fff; font-family: "Noto Serif KR", serif; font-weight: 900; }
+  #book .part-cover li { padding-left: 0; display: flex; align-items: baseline; gap: 3mm; padding: 2.2mm 0; font-size: 10pt; font-weight: 600; }
+  #book .part-cover .pc-cn { font-family: var(--f-label); font-weight: 800; font-size: 9pt; min-width: 9mm; }
+  /* A 교과서: 남색 전면, 겨자색 숫자, 명조 제목 */
+  #book.v-a .page.part { background: var(--c1); }
+  #book.v-a .part-cover { color: #fff; }
+  #book.v-a .part-cover .pc-label, #book.v-a .part-cover .pc-cn, #book.v-a .part-cover .pc-list-h { color: var(--c2); }
+  #book.v-a .part-cover .pc-no { margin: 1mm 0 10mm -1mm; font-family: "Noto Serif KR", serif; font-weight: 900; font-size: 110pt; color: var(--c2); }
+  #book.v-a .part-cover .pc-sub { color: rgba(255,255,255,.82); }
+  #book.v-a .part-cover .pc-rule { background: var(--c2); }
+  #book.v-a .part-cover .pc-desc { color: rgba(255,255,255,.78); }
+  #book.v-a .part-cover .pc-list { border-top: .3mm solid rgba(255,255,255,.28); }
+  #book.v-a .part-cover li { border-bottom: .25mm solid rgba(255,255,255,.16); }
+  /* B 연습장: 초록 모눈, 코랄 동그라미 숫자, 형광펜 제목 */
+  #book.v-b .page.part { background-color: var(--c1); background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.09) 0 .25mm, transparent .25mm 5mm), repeating-linear-gradient(90deg, rgba(255,255,255,.09) 0 .25mm, transparent .25mm 5mm); }
+  #book.v-b .part-cover { color: #fff; }
+  #book.v-b .part-cover .pc-head { display: flex; flex-direction: column; align-items: flex-start; gap: 3mm; margin-bottom: 11mm; }
+  #book.v-b .part-cover .pc-label { color: var(--hl); }
+  #book.v-b .part-cover .pc-no { display: grid; place-items: center; width: 40mm; height: 40mm; border-radius: 50%; background: var(--c2); font-family: "Jua", sans-serif; font-size: 58pt; color: #fff; transform: rotate(-6deg); padding-top: 2mm; }
+  #book.v-b .part-cover .pc-title { font-family: "Jua", sans-serif; font-weight: 400; font-size: 34pt; display: inline; color: var(--ink); background: linear-gradient(transparent 12%, var(--hl) 12%, var(--hl) 92%, transparent 92%); padding: 0 1.6mm; }
+  #book.v-b .part-cover .pc-main { margin-left: -1.6mm; }
+  #book.v-b .part-cover .pc-sub { margin-top: 4mm; margin-left: 1.6mm; color: #fff; }
+  #book.v-b .part-cover .pc-rule { margin-left: 1.6mm; height: 0; border-top: .6mm dashed var(--hl); }
+  #book.v-b .part-cover .pc-desc { margin-left: 1.6mm; color: rgba(255,255,255,.88); }
+  #book.v-b .part-cover .pc-list { padding: 4mm 5mm 3mm; background: #fff; border-radius: 3mm; color: var(--ink); }
+  #book.v-b .part-cover .pc-list-h { color: var(--c1); }
+  #book.v-b .part-cover .pc-cn { display: grid; place-items: center; min-width: 0; width: 7mm; height: 7mm; border-radius: 50%; background: var(--c2); color: #fff; font-size: 8pt; align-self: center; }
+  #book.v-b .part-cover li { align-items: center; padding: 1.4mm 0; }
+  /* C 산뜻: 위쪽 하늘색 면 + 레몬 띠, 흰 큰 숫자 */
+  #book.v-c .page.part .part-cover { padding-top: 0; }
+  #book.v-c .part-cover .pc-head { position: relative; margin: 0 -20mm 12mm -22mm; padding: 30mm 20mm 8mm 22mm; background: var(--c2); color: #fff; }
+  #book.v-c .part-cover .pc-head::after { content: ""; position: absolute; left: 22mm; bottom: -2.5mm; width: 46mm; height: 5mm; background: var(--hl); }
+  #book.v-c .part-cover .pc-label { color: var(--hl); }
+  #book.v-c .part-cover .pc-no { margin-top: 2mm; font-family: "Gothic A1", sans-serif; font-weight: 800; font-size: 120pt; letter-spacing: -0.04em; }
+  #book.v-c .part-cover .pc-title { color: var(--ink); font-family: "Gothic A1", sans-serif; font-weight: 800; }
+  #book.v-c .part-cover .pc-sub { color: var(--c2); }
+  #book.v-c .part-cover .pc-rule { background: var(--hl); width: 12mm; }
+  #book.v-c .part-cover .pc-desc { color: var(--ink2); }
+  #book.v-c .part-cover .pc-list { border-top: .5mm solid var(--c2); }
+  #book.v-c .part-cover .pc-list-h { color: var(--c2); }
+  #book.v-c .part-cover .pc-cn { color: var(--c2); }
+  #book.v-c .part-cover li { border-bottom: .25mm solid var(--rule); color: var(--ink); }
+  /* STEP 제목: 종류 라벨 없이 번호 옆에 한 줄로 */
+  #book h3.step .step-title { grid-row: 1 / span 2; align-self: center; }
+  /* B · 라벨 구분: 요청 프롬프트=상자 위에 붙은 탭, 바꿔 쓰기=테두리만 있는 각진 배지, 증상=코랄 알약(그대로) */
+  #book.v-b .request { position: relative; margin-top: calc(var(--blk) + 4mm); padding-top: 3mm; }
+  #book.v-b .request-bar { position: absolute; left: 3.4mm; top: calc(-4.6mm - .45mm); margin: 0; padding: .7mm 3mm .5mm; border-radius: 2mm 2mm 0 0; line-height: 1.5; }
+  #book.v-b h3.apply .tag { background: #fff; color: var(--c1); border: .35mm solid var(--c1); border-radius: .8mm; padding: .2mm 1.8mm; }
+  /* 13_06: 원본 맨 위에 반쯤 잘린 줄(합계·다시 섞기 버튼)이 있어 시안에서만 가림 */
+  #book img.crop-top { aspect-ratio: 694 / 840; height: auto; object-fit: cover; object-position: bottom; }
+  /* STEP 과정 번호: 01, 02 … 두 자리, 색상·굵게 */
+  #book p.act { padding-left: 7.5mm; }
+  #book .in-act { margin-left: 7.5mm; }
+  #book .act-n { font-weight: 900; font-size: 1.08em; letter-spacing: -0.02em; line-height: inherit; }
+  /* 절 번호를 13.1 형식으로 */
+  #book.v-a .h2-n { width: auto; min-width: 10mm; padding: 0 2.4mm; font-size: 12.5pt; letter-spacing: -0.01em; }
+  #book.v-b .h2-n { width: auto; min-width: 10mm; padding: .4mm 2.6mm 0; border-radius: 99px; font-size: 12.5pt; }
+  #book.v-c .h2-n::before { content: none; }
+  #book.v-c .h2-n { font-size: 24pt; letter-spacing: -0.03em; }
+  /* 파트 도비라 자리(1·2쪽) */
+  #book .page.blank .blank-note { position: absolute; inset: 18mm; display: grid; place-content: center; gap: 2mm; text-align: center; border: .3mm dashed var(--rule); border-radius: 3mm; color: var(--muted); font-family: var(--f-label); }
+  #book .page.blank .blank-note b { font-size: 12pt; color: var(--ink2); letter-spacing: .04em; }
+  #book .page.blank .blank-note span { font-size: 8pt; }
 
   /* ── 주의 박스: 팁보다 한 단계 강하게 ── */
   #book .warn { position: relative; }
@@ -137,7 +219,7 @@
      종이 위 색은 인쇄물이라 시안마다 고정, 책상·조작 막대만 화면 테마를 따른다.
      제목 크기·여백은 스크립트의 VARIANTS 설정이 CSS 변수로 넣고, 스펙 패널도 같은 값을 읽는다. */
   :root {
-    --page-w: 176mm; --page-h: 248mm;
+    --page-w: 174mm; --page-h: 232mm;  /* 크라운 변형판 174×232 */
     --m-top: 21mm; --m-bottom: 22mm; --m-inner: 21mm; --m-outer: 18mm;
     --desk: #e3e5ea; --bar: #ffffff; --bar-fg: #1d2230; --bar-muted: #6b7080; --bar-line: #d3d6df; --btn: #f2f3f6; --btn-on: #1d2230; --btn-on-fg: #ffffff; --shadow: rgba(29,34,48,.18);
     --ui: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
@@ -573,6 +655,17 @@
   .v-c .request p { padding: 2.2mm 3.4mm 2.5mm; }
   .v-c .tip { border-left: 1mm solid var(--hl); border-radius: 0 1mm 1mm 0; }
   .v-c .tbl thead th { background: var(--tint); }
+  /* 174×232 판형: 파트 도비라 여백·숫자 크기 줄임 */
+  #book .page.part .part-cover { padding-top: 24mm; padding-bottom: 20mm; }
+  #book.v-a .part-cover .pc-no { font-size: 92pt; margin-bottom: 7mm; }
+  #book.v-b .part-cover .pc-head { margin-bottom: 8mm; }
+  #book.v-b .part-cover .pc-no { width: 32mm; height: 32mm; font-size: 46pt; }
+  #book.v-c .page.part .part-cover { padding-top: 0; }
+  #book.v-c .part-cover .pc-head { padding-top: 20mm; padding-bottom: 6mm; margin-bottom: 10mm; }
+  #book.v-c .part-cover .pc-no { font-size: 96pt; }
+  #book .part-cover .pc-rule { margin: 5mm 0 4.5mm; }
+  #book .part-cover .pc-list { padding-top: 3mm; }
+  #book.v-b .part-cover .pc-list { padding-top: 4mm; }
 </style>
 
 <div id="stage"><div id="book"></div></div>
@@ -612,12 +705,12 @@
   <span class="sep"></span>
   <button id="specbtn" type="button" aria-pressed="false">스펙 보기</button>
   <button id="memo" type="button">메모 숨기기</button>
-  <a id="dl-sample" class="btnlink" href="https://drive.usercontent.google.com/download?id=1uJGbDk-a3rmWR11wg6R6YSvXUoIB-2j7&amp;export=download&amp;confirm=t" target="_blank" rel="noopener" title="구글 드라이브에서 샘플 원고를 내려받습니다">샘플 원고 다운로드</a>
+  <a id="dl-sample" class="btnlink" href="https://drive.usercontent.google.com/download?id=1dwyGROjowFOVx5tw1ZnT1v7PRzzNKMjS&amp;export=download&amp;confirm=t" target="_blank" rel="noopener" title="구글 드라이브에서 샘플 원고를 내려받습니다">샘플 원고 다운로드</a>
 </nav>
 <template id="src">
 <div class="ch-head">
   <div class="ch-no">13</div>
-  <div class="ch-text"><div class="ch-label">PART 01 · CHAPTER</div><div class="ch-big">13</div><h1>현장학습 조 편성, 10초 만에 끝내기</h1></div>
+  <div class="ch-text"><div class="ch-label">PART 02 · CHAPTER</div><div class="ch-big">13</div><h1>현장학습 조 편성, 10초 만에 끝내기</h1></div>
   <dl class="meta">
     <div class="m"><dt>사용 도구</dt><dd>챗GPT 코덱스</dd></div>
     <div class="m"><dt>난이도</dt><dd><span class="stars" aria-label="난이도 5점 만점에 2점"><i class="on">★</i><i class="on">★</i><i>★</i><i>★</i><i>★</i></span></dd></div>
@@ -632,9 +725,8 @@
 <figure class="illo"><img src="img/13_il.jpg" alt="선생님이 버튼을 누르자 학생들이 인솔 교사와 함께 조별로 나뉘어 박물관 앞에 선 모습"><figcaption class="memo">illust: 13_il.jpg (샘플 삽화)</figcaption></figure>
 
 <h2 class="newpage">만들 도구 살펴보기</h2>
-<h3>완성된 도구 미리보기</h3>
-<p>이 장을 마치면 아래와 같은 도구가 생깁니다. 왼쪽에 명단과 조건을 넣고 버튼을 누르면, 오른쪽에 조별 표가 나옵니다.</p>
 <figure><div class="shot shot-hero">완성 화면 · 번호 말풍선 ①~⑥</div><figcaption class="memo">img: 13_00.jpg (신규 — 완성 화면에 번호 말풍선 ①~⑥)</figcaption></figure>
+<p>선생님이 만든 도구의 색이나 칸 위치는 이 그림과 다를 수 있습니다. 표에 적힌 여섯 가지가 화면에 있고 제대로 움직이면 같은 도구입니다.</p>
 <table class="tbl"><thead><tr><th>번호</th><th>화면에 있는 것</th><th>하는 일</th><th>만드는 곳</th></tr></thead><tbody>
 <tr><td class="num"><span class="circ">1</span></td><td class="strong">학생 명단 칸</td><td>엑셀에서 복사한 번호·이름·성별을 붙여 넣음</td><td><span class="chip">STEP 1</span></td></tr>
 <tr><td class="num"><span class="circ">2</span></td><td class="strong">조 수 칸</td><td>몇 개 조로 나눌지 적음</td><td><span class="chip">STEP 1</span></td></tr>
@@ -643,9 +735,7 @@
 <tr><td class="num"><span class="circ">5</span></td><td class="strong">인솔 교사 칸과 조별 교사 이름</td><td>조마다 인솔 교사 1명 배정</td><td><span class="chip">STEP 3</span></td></tr>
 <tr><td class="num"><span class="circ">6</span></td><td class="strong">인쇄 버튼</td><td>조별 표만 종이로 출력</td><td><span class="chip">STEP 4</span></td></tr>
 </tbody></table>
-<p>선생님이 만든 도구의 색이나 칸 위치는 이 그림과 다를 수 있습니다. 표에 적힌 여섯 가지가 화면에 있고 제대로 움직이면 같은 도구입니다.</p>
-<h3>기본 요청 내용 살펴보기</h3>
-<p>프로그램을 만들기 전에, AI에게 무엇을 요청하면 좋을지 미리 살펴봐요. 누가 사용할지, 어떤 정보를 입력할지, 어떤 규칙으로 작동하고 결과를 어떻게 보여 줄지 정리하면 원하는 도구를 만드는 데 도움이 됩니다.</p>
+<p class="keep">프로그램을 만들기 전에, AI에게 무엇을 요청하면 좋을지 미리 살펴봐요. 누가 사용할지, 어떤 정보를 입력할지, 어떤 규칙으로 작동하고 결과를 어떻게 보여 줄지 정리하면 원하는 도구를 만드는 데 도움이 됩니다.</p>
 <table class="tbl preview"><thead><tr><th>요청할 항목</th><th>이번 도구의 요청 내용</th><th>요청하는 이유</th></tr></thead><tbody>
 <tr><td class="strong">사용자와 사용 환경</td><td>코딩을 모르는 담임교사, 학교 컴퓨터, 인터넷 없이 사용</td><td>별도 설치나 인터넷 연결 없이 쉽게 사용하기 위해</td></tr>
 <tr><td class="strong">입력할 정보</td><td>학생 명단, 조 수</td><td>입력한 명단을 원하는 수의 조로 나누기 위해</td></tr>
@@ -654,109 +744,78 @@
 </tbody></table>
 
 <h2>요청하며 만들기</h2>
-<p>STEP은 모두 같은 순서로 진행합니다. 왜 필요한지 읽고, 요청 문장을 넣고, 체크리스트로 확인합니다. STEP 하나에 요청은 한 번입니다.</p>
-<h3 class="step"><span class="step-meta"><span class="step-no"><small>STEP</small> <b>1</b></span><span class="step-kind">첫 요청하기</span></span><span class="step-title">기본 조 편성 만들기</span></h3>
+<p>STEP은 모두 같은 순서로 진행합니다. 왜 필요한지 읽고, 요청 프롬프트을 넣고, 체크리스트로 확인합니다. STEP 하나에 요청은 한 번입니다.</p>
+<h3 class="step"><span class="step-meta"><span class="step-no"><small>STEP</small> <b>1</b></span></span><span class="step-title">기본 조 편성 만들기</span></h3>
 <p>먼저 기본 뼈대만 요청합니다. 기본 기능부터 확인해야, 나중에 기능을 더했을 때 생긴 문제를 찾기 쉽습니다.</p>
 <p class="act">챗GPT 왼쪽 메뉴에서 코덱스를 엽니다.</p>
-<figure><img src="img/13_01.jpg" alt="챗GPT 왼쪽 메뉴의 코덱스" style="width:121.9mm"><figcaption class="memo">img: 13_01.jpg</figcaption></figure>
+<figure class="fit-here"><img src="img/13_01.jpg" alt="챗GPT 왼쪽 메뉴의 코덱스" style="width:60mm"><figcaption class="memo">img: 13_01.jpg</figcaption></figure>
 <p class="act">입력 칸에 아래 문장을 넣고 실행합니다.</p>
-<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>코딩을 모르는 교사가 인터넷 없이 크롬으로 여는 조 편성 페이지를 HTML 파일 하나로 만들어 줘. 엑셀 명단(번호, 이름, 성별)과 조 수를 넣으면 조별 인원 차이 1명 이하로 무작위 편성하고, 조별 표와 '다시 섞기' 버튼을 보여 줘.</p></div>
-<figure class="pv-hide"><img src="img/13_02.jpg" alt="코덱스 입력 칸에 요청 문장을 넣은 화면" style="width:121.9mm"><figcaption class="memo">img: 13_02.jpg</figcaption></figure>
+<div class="request"><div class="request-bar"><span>요청 프롬프트</span><span>그대로 입력</span></div><p>코딩을 모르는 교사가 인터넷 없이 크롬으로 여는 조 편성 페이지를 HTML 파일 하나로 만들어 줘. 엑셀 명단(번호, 이름, 성별)과 조 수를 넣으면 조별 인원 차이 1명 이하로 무작위 편성하고, 조별 표와 '다시 섞기' 버튼을 보여 줘.</p></div>
+<figure class="pv-hide"><img src="img/13_02.jpg" alt="코덱스 입력 칸에 요청 프롬프트을 넣은 화면" style="width:121.9mm"><figcaption class="memo">img: 13_02.jpg</figcaption></figure>
 <p class="act">코덱스가 작업을 마치면 만든 파일 이름(예: index.html)과 작업 내용을 알려 줍니다. 설명에 '인터넷 연결 없이', '파일 하나'가 빠져 있다면 그 조건을 지켰는지 다시 물어봅니다.</p>
 <figure><img src="img/13_03.jpg" alt="코덱스 작업 결과 화면" style="width:137mm"><figcaption class="memo">img: 13_03.jpg</figcaption></figure>
 <div class="tip"><b>기다리는 동안</b><p>코덱스는 요청을 받으면 스스로 계획을 세우고 파일을 만듭니다. 몇 분이 걸릴 수 있으니 창을 닫지 말고 기다리세요. 작업 중에 무엇을 하고 있는지 화면에 표시됩니다.</p></div>
 <p class="act">파일은 코덱스에서 고른 프로젝트 폴더 안에 만들어집니다. 작업 결과 아래의 '다음에서 열기'를 눌러 크롬을 고르거나, 폴더에서 파일을 찾아 더블클릭하면 열립니다. 뒤의 STEP에서 고쳐 달라고 하면 같은 파일이 바뀌므로, 열어 둔 크롬 창에서 새로 고침(F5)만 하면 됩니다.</p>
 <p class="act">만든 파일을 크롬으로 엽니다.</p>
-<figure><img src="img/13_04.jpg" alt="크롬으로 연 조 편성 도구" style="width:74.9mm"><figcaption class="memo">img: 13_04.jpg</figcaption></figure>
+<figure><img data-pair="s1" data-mode="h" src="img/13_04.jpg" alt="크롬으로 연 조 편성 도구" style="width:74.9mm"><figcaption class="memo">img: 13_04.jpg</figcaption></figure>
 <p class="act">가명 명단 28명을 붙여 넣고 조 수에 5를 적은 뒤 버튼을 누릅니다. 28명을 5개 조로 나누면 6명 조 3개, 5명 조 2개가 나와야 합니다.</p>
-<figure class="pv-hide"><img src="img/13_05.jpg" alt="명단과 조 수를 넣은 화면" style="width:130.7mm"><figcaption class="memo">img: 13_05.jpg</figcaption></figure>
-<figure><img src="img/13_06.jpg" alt="조별 명단 결과" style="width:57.7mm"><figcaption class="memo">img: 13_06.jpg</figcaption></figure>
+<figure><img class="crop-top" data-pair="s1" data-mode="h" src="img/13_06.jpg" alt="조별 명단 결과" style="width:57.7mm"><figcaption class="memo">img: 13_06.jpg</figcaption></figure>
+<div class="tip"><b>계산으로 먼저 확인</b><p>학생 수를 조 수로 나눈 값을 미리 계산해 두면, 결과가 맞는지 바로 알 수 있습니다. 28 ÷ 5 = 5 나머지 3이므로, 조마다 5명씩 넣고 남은 3명을 세 조에 1명씩 더하면 6명 조 3개, 5명 조 2개가 됩니다.</p></div>
 <ul class="checklist"><li>입력 칸이 두 개(학생 명단, 조 수)이고 버튼 이름이 한국어인가?</li><li>글씨가 충분히 큰가?</li><li>6명 조 3개, 5명 조 2개가 나왔는가?</li><li>28명이 빠짐없이 한 번씩만 들어갔는가?</li><li>다시 섞기를 누르면 조 구성이 바뀌는가?</li></ul>
-<p>빠지거나 두 번 들어간 학생은 화면만으로는 잘 보이지 않으니, 조별 인원을 더해 28명인지 확인하세요. 하나라도 맞지 않으면 다음 STEP으로 가기 전에 고쳐 달라고 요청합니다.</p>
-<div class="tip"><b>계산으로 먼저 확인</b><p>학생 수를 조 수로 나눈 값을 미리 계산해 두면, 결과가 맞는지 바로 알 수 있습니다. 28 ÷ 5 = 5 나머지 3이므로 6명 조가 3개입니다.</p></div>
-<p>기본 조 편성이 제대로 되면, 이제 조건을 하나씩 더해 갑니다.</p>
-<h3 class="step"><span class="step-meta"><span class="step-no"><small>STEP</small> <b>2</b></span><span class="step-kind">고쳐 달라고 요청하기</span></span><span class="step-title">남녀 인원 고르게 섞기</span></h3>
+<h3 class="step newpage"><span class="step-meta"><span class="step-no"><small>STEP</small> <b>2</b></span></span><span class="step-title">남녀 인원 고르게 섞기</span></h3>
 <p>결과를 보면 어떤 조는 남학생이 5명, 어떤 조는 여학생이 5명일 수 있습니다. 이번에는 네 가지 가운데 '어떤 규칙으로'를 고칩니다.</p>
 <p class="act">같은 코덱스 작업 창에서 이어서 요청합니다. 새로 만들지 않고 지금 도구를 고치는 요청이라, 현재 문제를 먼저 말하고 바꿀 규칙을 숫자로 덧붙입니다.</p>
-<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>지금은 조마다 남녀가 치우칠 때가 있어. 성별 칸을 읽어서, 조끼리 비교했을 때 남학생 수 차이도 1명 이하, 여학생 수 차이도 1명 이하가 되게 나눠 줘. 조마다 전체 인원 차이 1명 이하는 그대로 지켜 줘. 조별 표 아래에 조마다 남·여 인원도 적어 줘.</p></div>
+<div class="request"><div class="request-bar"><span>요청 프롬프트</span><span>그대로 입력</span></div><p>지금은 조마다 남녀가 치우칠 때가 있어. 성별 칸을 읽어서, 조끼리 비교했을 때 남학생 수 차이도 1명 이하, 여학생 수 차이도 1명 이하가 되게 나눠 줘. 조마다 전체 인원 차이 1명 이하는 그대로 지켜 줘. 조별 표 아래에 조마다 남·여 인원도 적어 줘.</p></div>
 <p class="act">고친 파일을 다시 열어 같은 가명 명단(남 15명, 여 13명)으로 시험합니다. 15 ÷ 5 = 3이므로 남학생은 조마다 3명씩, 13 ÷ 5 = 2 나머지 3이므로 여학생은 3명 조가 3개, 2명 조가 2개여야 합니다.</p>
-<figure><img src="img/13_07.png" alt="남녀 인원이 표시된 조별 표" style="width:112mm"><figcaption class="memo">img: 13_07.png</figcaption></figure>
+<figure><img src="img/13_07.png" alt="남녀 인원이 표시된 조별 표" style="width:95mm"><figcaption class="memo">img: 13_07.png</figcaption></figure>
 <ul class="checklist"><li>남학생이 조마다 3명인가?</li><li>여학생이 3·3·3·2·2명으로 나뉘었는가?</li><li>조별 전체 인원이 여전히 6·6·6·5·5명인가?</li><li>다시 섞기를 여러 번 눌러도 위 숫자가 유지되는가?</li></ul>
-<h3 class="step"><span class="step-meta"><span class="step-no"><small>STEP</small> <b>3</b></span><span class="step-kind">고쳐 달라고 요청하기</span></span><span class="step-title">인솔 교사 배정 더하기</span></h3>
+<h3 class="step"><span class="step-meta"><span class="step-no"><small>STEP</small> <b>3</b></span></span><span class="step-title">인솔 교사 배정 더하기</span></h3>
 <p>조마다 인솔 선생님을 붙여야 조 편성표가 완성됩니다. 이번에는 '무엇을 넣나'에 인솔 교사가 더해지고, 그에 따른 규칙이 하나 붙습니다.</p>
 <p class="act">새 입력 칸이 필요한 기능이라 '칸을 추가해 줘'로 시작하고, 교사가 조보다 적을 때 어떻게 할지도 적습니다.</p>
-<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>인솔 교사 이름을 한 줄에 한 명씩 적는 칸을 추가해 줘. 조 편성 버튼을 누르면 조마다 인솔 교사를 1명씩 배정하고, 교사가 조보다 적으면 한 교사가 여러 조를 맡게 해 줘. 조별 표 맨 위에 인솔 교사 이름을 보여 줘.</p></div>
+<div class="request"><div class="request-bar"><span>요청 프롬프트</span><span>그대로 입력</span></div><p>인솔 교사 이름을 한 줄에 한 명씩 적는 칸을 추가해 줘. 조 편성 버튼을 누르면 조마다 인솔 교사를 1명씩 배정하고, 교사가 조보다 적으면 한 교사가 여러 조를 맡게 해 줘. 조별 표 맨 위에 인솔 교사 이름을 보여 줘.</p></div>
 <p class="act">인솔 교사를 3명 적고 5개 조로 편성합니다.</p>
-<figure><img src="img/13_09.jpg" alt="인솔 교사 입력 칸" style="width:137mm"><figcaption class="memo">img: 13_09.jpg</figcaption></figure>
-<figure><img src="img/13_10.jpg" alt="인솔 교사가 배정된 조별 표" style="width:132.5mm"><figcaption class="memo">img: 13_10.jpg</figcaption></figure>
+<figure><img data-pair="s3" data-mode="w" src="img/13_09.jpg" alt="인솔 교사 입력 칸" style="width:137mm"><figcaption class="memo">img: 13_09.jpg</figcaption></figure>
+<figure><img data-pair="s3" data-mode="w" src="img/13_10.jpg" alt="인솔 교사가 배정된 조별 표" style="width:132.5mm"><figcaption class="memo">img: 13_10.jpg</figcaption></figure>
 <ul class="checklist"><li>조별 표 맨 위에 인솔 교사 이름이 보이는가?</li><li>교사 두 명이 2개 조씩, 한 명이 1개 조를 맡았는가?</li><li>교사를 1명만 적으면 모든 조에 같은 이름이 나오는가?</li><li>STEP 2의 남·여 인원이 그대로 유지되는가?</li></ul>
-<p>여기까지 되면 기능은 모두 갖춰졌습니다.</p>
-<h3 class="step"><span class="step-meta"><span class="step-no"><small>STEP</small> <b>4</b></span><span class="step-kind">저장하고 쓰기</span></span><span class="step-title">인쇄하고 실명 명단으로 쓰기</span></h3>
+<h3 class="step"><span class="step-meta"><span class="step-no"><small>STEP</small> <b>4</b></span></span><span class="step-title">인쇄하고 파일명 정하기</span></h3>
 <p>조 편성표는 종이로 뽑아 학년 부장님과 인솔 선생님께 드려야 합니다. 이번에는 '무엇이 나오나'에 인쇄를 더합니다.</p>
 <p class="act">인쇄물에는 입력 칸과 버튼이 필요 없으니, 인쇄할 때만 숨겨 달라고 요청합니다.</p>
-<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>'인쇄' 버튼을 추가해 줘. 인쇄할 때는 입력 칸과 버튼은 숨기고 조별 명단 표만 나오게 해 줘.</p></div>
-<figure><img src="img/13_11.jpg" alt="인쇄 버튼이 추가된 화면" style="width:137mm"><figcaption class="memo">img: 13_11.jpg</figcaption></figure>
+<div class="request"><div class="request-bar"><span>요청 프롬프트</span><span>그대로 입력</span></div><p>'인쇄' 버튼을 추가해 줘. 인쇄할 때는 입력 칸과 버튼은 숨기고 조별 명단 표만 나오게 해 줘.</p></div>
 <p class="act">고친 파일을 다시 열어 가명 명단으로 한 번 더 시험합니다.</p>
-<figure><img src="img/13_12.jpg" alt="인쇄 미리보기" style="width:137mm"><figcaption class="memo">img: 13_12.jpg</figcaption></figure>
-<ul class="checklist"><li>인쇄 미리보기에 입력 칸과 버튼 없이 조별 표만 나오는가?</li><li>인터넷을 끊고 파일을 열어도 조 편성이 되는가?</li></ul>
-<p>두 가지가 확인되면 파일을 바탕화면이나 학년 공유 폴더에 저장합니다. 이제 학교 컴퓨터에서 실제 학급 명단을 붙여 넣고, 조 편성 → 인쇄 순서로 사용합니다. 결석생이 생기면 명단에서 그 줄을 지우고 버튼을 다시 누르면 됩니다. 다음 견학 때는 파일을 열고 명단만 바꿔 넣으면 됩니다.</p>
+<figure><img data-pair="s4" data-mode="w" src="img/13_11.jpg" alt="인쇄 버튼이 추가된 화면" style="width:137mm"><figcaption class="memo">img: 13_11.jpg</figcaption></figure>
+<figure><img data-pair="s4" data-mode="w" src="img/13_12.jpg" alt="인쇄 미리보기" style="width:137mm"><figcaption class="memo">img: 13_12.jpg</figcaption></figure>
+<p class="act">두 가지가 확인되면 파일을 바탕화면이나 학년 공유 폴더에 저장합니다. 이제 학교 컴퓨터에서 실제 학급 명단을 붙여 넣고, 조 편성 → 인쇄 순서로 사용합니다. 결석생이 생기면 명단에서 그 줄을 지우고 버튼을 다시 누르면 됩니다. 다음 견학 때는 파일을 열고 명단만 바꿔 넣으면 됩니다.</p>
 <div class="warn"><b>실명 명단은 코덱스에 붙여 넣지 마세요</b><p>실제 학생 이름과 성별은 완성한 HTML 파일에만 넣습니다. 이 파일은 인터넷 없이 내 컴퓨터에서만 돌아가므로 명단이 밖으로 나가지 않습니다. 하지만 <strong>코덱스 입력 칸에 붙여 넣은 내용은 외부 서버로 전송됩니다.</strong> 오류를 보여 주려고 명단을 넣어야 할 때도 이름을 가명으로 바꿔서 넣으세요.</p></div>
+<ul class="checklist"><li>인쇄 미리보기에 입력 칸과 버튼 없이 조별 표만 나오는가?</li><li>인터넷을 끊고 파일을 열어도 조 편성이 되는가?</li></ul>
 
-<h2>막힐 때 해결하기</h2>
-<p>항목마다 증상, 원인, 해결 순서로 적었습니다.</p>
-<h3 class="trouble">내 화면이 책과 달라요</h3>
-<p>코덱스는 같은 요청 문장을 받아도 색, 칸 위치, 버튼 이름을 매번 조금씩 다르게 만듭니다. 각 STEP의 확인 체크리스트가 모두 맞으면 그대로 쓰면 됩니다. 모양을 책과 맞추고 싶을 때만 아래처럼 요청합니다.</p>
-<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>버튼 이름을 '조 편성'으로 바꾸고, 학생 명단 칸을 화면 맨 위에 놓아 줘.</p></div>
-<h3 class="trouble">더블클릭했더니 글자만 가득한 화면이 열려요</h3>
-<p>HTML 파일이 크롬이 아니라 메모장 같은 프로그램으로 열린 것입니다. 파일은 정상입니다. 파일을 마우스 오른쪽 버튼으로 누르고 '연결 프로그램'에서 크롬을 고릅니다. 코덱스에 다시 요청할 필요는 없습니다.</p>
-<h3 class="trouble">명단을 붙여 넣었더니 한 줄로 합쳐져요</h3>
-<p>엑셀에서 복사한 명단은 칸 사이가 눈에 보이지 않는 탭으로 구분됩니다. 도구가 쉼표만 구분자로 읽으면 번호·이름·성별이 한 덩어리가 됩니다.</p>
-<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>엑셀에서 복사해 붙여 넣으면 번호, 이름, 성별이 한 칸으로 합쳐져. 탭, 쉼표, 공백을 모두 칸 구분으로 읽어 줘. 첫 줄이 '번호, 이름, 성별' 같은 제목이면 건너뛰어 줘.</p></div>
-<h3 class="trouble">인원이 나누어떨어지지 않으면 한 조만 적어요</h3>
-<p>28명을 5개 조로 나누면 6명 조와 5명 조가 섞이는 것은 정상입니다. 그런데 6명, 6명, 6명, 6명, 4명처럼 한 조만 2명 이상 적다면 규칙이 지켜지지 않은 것입니다. 남는 인원을 마지막 조에서 한꺼번에 빼면서 생기는 오류입니다.</p>
-<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>28명을 5개 조로 나눴더니 6, 6, 6, 6, 4명이 나왔어. 남는 인원을 앞 조부터 1명씩 나눠서 조마다 인원 차이가 1명 이하가 되게 고쳐 줘.</p></div>
-<div class="tip"><b>오류는 숫자로 알려 주기</b><p>"이상해"보다 "28명, 5개 조, 결과 6·6·6·6·4"처럼 넣은 값과 나온 값을 함께 적으면 코덱스가 원인을 더 빨리 찾습니다. 이때도 학생 이름은 적지 않고 숫자만 적습니다.</p></div>
-<h3 class="trouble">인쇄하면 표가 잘려요</h3>
-<p>조가 많으면 표가 한 장에 다 들어가지 않습니다. 쪽을 어디서 나눌지 정해 주지 않았기 때문에, 한 조의 표 중간에서 종이가 넘어갑니다.</p>
-<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>인쇄할 때 한 조의 표가 두 장에 걸쳐 잘리지 않게 해 줘. 한 장에 조 두 개씩 들어가게 하고, 페이지 위에 행사 이름과 날짜를 적는 칸도 넣어 줘.</p></div>
-
-<h2>정리하고 넓히기</h2>
-<h3>이 장에서 익힌 요령</h3>
-<table class="tbl"><thead><tr><th>요령</th><th>이 장에서 쓴 곳</th><th>다른 도구를 만들 때</th></tr></thead><tbody>
+<h2>정리 및 확장하기</h2>
+<p>반 편성 도구는 완성됐지만, 이 장에서 정말 가져가야 할 것은 도구를 만든 방법입니다. "인원 차이 1명 이하"처럼 규칙을 숫자로 적었기 때문에 결과가 맞는지 바로 셀 수 있었습니다. 또 조건을 한꺼번에 넣지 않고 STEP마다 하나씩 더했기 때문에, 어디서 틀렸는지도 금방 찾을 수 있었습니다.</p>
+<table class="tbl"><thead><tr><th>요령</th><th>조 편성 도구에서</th><th>다른 도구를 만들 때는</th></tr></thead><tbody>
 <tr><td class="strong">규칙은 숫자로 적기</td><td>STEP 1 '인원 차이 1명 이하', STEP 2 '남학생 수 차이 1명 이하'</td><td>요청하기 전에 "맞게 나왔는지 무엇을 세어 보면 알 수 있나?"를 먼저 정함</td></tr>
 <tr><td class="strong">뼈대부터 만들고 하나씩 고치기</td><td>STEP 1에서 기본 편성만, STEP 2~4에서 조건을 하나씩</td><td>STEP 하나에 요청 한 번, 확인이 끝나야 다음으로</td></tr>
 </tbody></table>
-<h3>줄어든 시간</h3>
-<p>한 반 28명, 5개 조, 인솔 교사 3명을 기준으로 30분이 걸리던 일이 1분으로 줄었습니다. 버튼을 누르고 조 편성이 끝나기까지는 10초면 됩니다.</p>
-<table class="tbl"><thead><tr><th>할 일</th><th>Before</th><th>After</th></tr></thead><tbody>
-<tr><td class="strong">명단 준비</td><td>출력하고 확인 5분</td><td class="after">엑셀에서 복사해 붙여 넣기 50초</td></tr>
-<tr><td class="strong">조 나누기</td><td>번호 옆에 조 적기 10분</td><td class="after">조 편성 버튼 10초</td></tr>
-<tr><td class="strong">인원·남녀 맞추기</td><td>옮기고 다시 세기 5분</td><td class="after">자동</td></tr>
-<tr><td class="strong">인솔 교사 배정·표 만들기</td><td>한글 문서로 표 만들기 10분</td><td class="after">자동, 인쇄 버튼</td></tr>
-<tr class="total"><td>합계</td><td>30분</td><td class="after">1분</td></tr>
-</tbody></table>
-<p>줄어든 시간보다 더 큰 변화는 조건이 바뀌어도 부담이 없다는 점입니다. 결석생이 생기거나 인솔 선생님이 바뀌어도 명단만 고쳐 버튼을 다시 누르면 됩니다.</p>
 <div class="voice"><b>선생님 한마디</b><p>인솔 선생님이 바뀌었다는 연락을 받고도 이름만 고쳐 다시 누르니 1분 만에 새 표가 나왔어요.</p></div>
-<h3>우리 반에 맞게 조건 더하기</h3>
-<p>같은 도구에 조건을 더 얹을 수도 있습니다. STEP 2~4와 같은 방법으로, 한 번에 하나씩 요청하고 확인합니다. 같은 조가 되면 곤란한 학생들이 있을 때는 떼어 놓을 짝을 적는 칸을 만듭니다.</p>
-<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>같은 조가 되면 안 되는 학생 번호를 한 줄에 한 쌍씩 적는 칸을 추가해 줘. 예를 들어 '3, 17'이라고 적으면 3번과 17번은 서로 다른 조에 넣어 줘. 인원과 남녀 규칙은 그대로 지켜 줘.</p></div>
-<p>마음에 드는 결과가 나왔는데 실수로 다시 섞기를 누를까 걱정될 때는 결과를 잠급니다.</p>
-<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>'확정' 버튼을 추가해 줘. 확정을 누르면 다시 섞기 버튼이 잠기고, '확정 풀기'를 눌러야 다시 섞을 수 있게 해 줘.</p></div>
-<p>이 도구는 '명단을 규칙대로 나누는' 모든 업무에 쓸 수 있습니다. 아래 세 가지는 요청 문장의 입력과 규칙만 바꾼 것입니다.</p>
+<p class="newpage">이 도구는 '명단을 규칙대로 나누는' 모든 업무에 쓸 수 있습니다. 아래 세 가지는 요청 프롬프트의 입력과 규칙만 바꾼 것입니다.</p>
 <h3 class="apply">수학여행 방 배정</h3>
 <p>수학여행 방 배정도 조 편성과 같은 일입니다. 명단을 정해진 인원으로 나누는 것이죠. 다른 점은 두 가지입니다. 방마다 정원이 다르고, 같은 성별끼리만 방을 써야 합니다.</p>
-<p>그래서 요청 문장에서는 '조 수' 대신 '방 번호와 정원'을 넣고, 성별 규칙을 '고르게 섞기'에서 '같은 성별끼리'로 바꿉니다.</p>
-<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>이 도구를 수학여행 방 배정용으로 바꿔 줘. 방 번호와 방마다 정원을 적는 칸을 만들고, 같은 성별끼리만 방을 배정해 줘.</p></div>
-<p>정원을 모두 더한 값이 학생 수보다 적으면 방을 배정받지 못하는 학생이 생깁니다. 이럴 때 경고를 띄워 달라고 한 줄 더 요청해 두면 좋습니다.</p>
+<div class="request"><div class="request-bar"><span>요청 프롬프트</span><span>그대로 입력</span></div><p>이 도구를 수학여행 방 배정용으로 바꿔 줘. 방 번호와 방마다 정원을 적는 칸을 만들고, 같은 성별끼리만 방을 배정해 줘.</p></div>
 <h3 class="apply">체육대회 반 대항 팀 나누기</h3>
 <p>체육대회 반 대항전은 조 편성보다 단순합니다. 여러 조가 아니라 두 팀으로 나누되, 팀 사이에 전체 인원과 남녀 인원을 맞추면 됩니다.</p>
-<p>요청 문장에서는 '조 수'를 없애고 '두 팀'으로 고정한 뒤, 팀 이름을 선생님이 바꿀 수 있게 해 둡니다.</p>
-<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>조 대신 청팀·백팀 두 팀으로 나누고, 팀마다 남녀 인원을 맞춰 줘. 팀 이름은 내가 입력할 수 있게 해 줘.</p></div>
-<p>종목마다 선수 명단이 다르다면, 종목별로 팀을 여러 번 나눌 수 있게 '종목 이름' 칸을 추가해 달라고 요청해도 좋습니다.</p>
+<div class="request"><div class="request-bar"><span>요청 프롬프트</span><span>그대로 입력</span></div><p>조 대신 청팀·백팀 두 팀으로 나누고, 팀마다 남녀 인원을 맞춰 줘. 팀 이름은 내가 입력할 수 있게 해 줘.</p></div>
 <h3 class="apply">학년 합동 견학 조 편성</h3>
 <p>학년 전체가 함께 가는 견학에서는 여러 반 학생을 섞어 조를 짜기도 합니다. 이때는 명단에 '반' 칸이 하나 더 필요하고, 한 조에 한 반 학생만 몰리지 않게 하는 규칙이 더해집니다.</p>
-<div class="request"><div class="request-bar"><span>요청 문장</span><span>그대로 입력</span></div><p>명단에 반 칸을 추가해 줘. 여러 반 학생을 섞어서 조를 짜되, 조마다 각 반 학생이 고르게 들어가게 해 줘.</p></div>
-<p>반 칸이 생기면 조별 표에 반도 함께 보여 달라고 요청해 두세요. 인솔 선생님이 조를 확인할 때 어느 반 학생인지 바로 알 수 있습니다.</p>
+<div class="request"><div class="request-bar"><span>요청 프롬프트</span><span>그대로 입력</span></div><p>명단에 반 칸을 추가해 줘. 여러 반 학생을 섞어서 조를 짜되, 조마다 각 반 학생이 고르게 들어가게 해 줘.</p></div>
+
+<h2>막힐 때 해결하기</h2>
+<h3 class="trouble">내 화면이 책과 달라요</h3>
+<p>코덱스는 같은 요청 프롬프트을 받아도 색, 칸 위치, 버튼 이름을 매번 조금씩 다르게 만듭니다. 각 STEP의 확인 체크리스트가 모두 맞으면 그대로 쓰면 됩니다.</p>
+<div class="request"><div class="request-bar"><span>요청 프롬프트</span><span>그대로 입력</span></div><p>버튼 이름을 '조 편성'으로 바꾸고, 학생 명단 칸을 화면 맨 위에 놓아 줘.</p></div>
+<h3 class="trouble">명단을 붙여 넣었더니 한 줄로 합쳐져요</h3>
+<p>엑셀에서 복사한 명단은 칸 사이가 눈에 보이지 않는 탭으로 구분됩니다. 도구가 쉼표만 구분자로 읽으면 번호·이름·성별이 한 덩어리가 됩니다.</p>
+<div class="request"><div class="request-bar"><span>요청 프롬프트</span><span>그대로 입력</span></div><p>엑셀에서 복사해 붙여 넣으면 번호, 이름, 성별이 한 칸으로 합쳐져. 탭, 쉼표, 공백을 모두 칸 구분으로 읽어 줘. 첫 줄이 '번호, 이름, 성별' 같은 제목이면 건너뛰어 줘.</p></div>
+<h3 class="trouble">인쇄하면 표가 잘려요</h3>
+<p>조가 많으면 표가 한 장에 다 들어가지 않습니다. 쪽을 어디서 나눌지 정해 주지 않았기 때문에, 한 조의 표 중간에서 종이가 넘어갑니다.</p>
+<div class="request"><div class="request-bar"><span>요청 프롬프트</span><span>그대로 입력</span></div><p>인쇄할 때 한 조의 표가 두 장에 걸쳐 잘리지 않게 해 줘. 한 장에 조 두 개씩 들어가게 하고, 페이지 위에 행사 이름과 날짜를 적는 칸도 넣어 줘.</p></div>
 </template>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M8 10.5h8"/></symbol>
@@ -779,26 +838,26 @@
          h3: { f: "Noto Serif KR", w: 600, size: 11.5, b: 7, a: 2.2 },
          h4: { f: "Noto Sans KR", w: 700, size: 8.8, b: 4, a: 1.5 },
          p: 1.6, blk: 3, hh: 3, artRx: 4,
-         marks: "장: 남색 전면 띠 + 명조 숫자 · 절: 번호 사각형 + 남색 밑줄 · 중: 겨자색 세로 막대 · 소: 아이콘 + 굵은 고딕" },
+         marks: "파트: 남색 전면 + 겨자색 명조 숫자 · 장: 남색 전면 띠, 장 번호와 제목 한 줄 · 절: 남색 사각 번호(13.1) + 남색 밑줄 · 중: 겨자색 세로 막대, STEP은 남색 사각 번호 · 주의: 연분홍 바탕 + 왼쪽 빨간 선" },
     b: { name: "B · 연습장형", concept: "바깥쪽 초록 세로 기둥에 장 번호와 장 정보를 세로로 쌓는 장 도입. 형광펜 밑줄과 둥근 서체로 처음 코딩하는 선생님께 부담을 덜어 주는 손맛.",
          body: { f: "Nanum Gothic", size: 9.4, lh: 1.8 }, label: "Nanum Gothic",
-         h1: { f: "Jua", w: 400, size: 24 },
+         h1: { f: "Jua", w: 400, size: 26 },
          h2: { f: "Jua", w: 400, size: 19, b: 13, a: 5 },
          h3: { f: "Nanum Gothic", w: 800, size: 11.5, b: 7.5, a: 2.4 },
          h4: { f: "Nanum Gothic", w: 800, size: 8.6, b: 4.5, a: 2 },
          p: 1.8, blk: 3.4, hh: 3, artRx: 13,
-         marks: "장: 바깥쪽 세로 초록 기둥(장 번호·정보) · 절: 원 번호 + 형광펜 · 중: 점선 밑줄, STEP은 색인 탭 · 소: 테두리 알약" },
+         marks: "파트: 초록 모눈 + 기울어진 코랄 원 숫자 · 장: 바깥쪽 세로 초록 기둥(장 번호·정보) · 절: 초록 알약 번호(13.1) + 형광펜 · 중: 점선 밑줄, STEP은 코랄 원 번호 · 라벨: 요청 프롬프트는 상자 위 탭, 바꿔 쓰기는 테두리 배지, 증상은 코랄 알약 · 주의: 빨간 점선 상자" },
     c: { name: "C · 산뜻형", concept: "하늘색과 레몬 노랑의 밝은 조합. 굵은 고딕 제목과 넓은 여백, 색 면을 몇 군데에만 써서 가볍고 산뜻하게 읽힌다.",
          body: { f: "Gothic A1", size: 9.1, lh: 1.8 }, label: "Gothic A1",
-         h1: { f: "Gothic A1", w: 800, size: 24 },
+         h1: { f: "Gothic A1", w: 800, size: 19 },
          h2: { f: "Gothic A1", w: 800, size: 18, b: 13, a: 5 },
          h3: { f: "Gothic A1", w: 700, size: 11.5, b: 7.5, a: 2.2 },
          h4: { f: "Gothic A1", w: 800, size: 8.4, b: 4.5, a: 1.6 },
          p: 1.7, blk: 3.2, hh: 3, artRx: 3,
-         marks: "장: 하늘색 사각 장 번호 + 연한 하늘색 정보 패널 · 절: 큰 하늘색 번호 01 + 남색 윗선 · 중: 하늘색 세로 막대, STEP은 하늘색 원 테두리 번호 · 소: 사용 안 함" }
+         marks: "파트: 위쪽 하늘색 면 + 흰 큰 숫자 + 레몬 띠 · 장: 하늘색 사각 장 번호 + 연한 하늘색 정보 패널 · 절: 큰 하늘색 번호(13.1) + 남색 윗선 · 중: 하늘색 세로 막대, STEP은 하늘색 원 테두리 번호 · 주의: 흰 바탕 + 빨간 테두리" }
   };
   const FIRST_FOLIO = 1, CH = "13";  // 좌수 배치: 1쪽이 왼쪽
-  const RUNNING = ['<span class="rn">PART 01</span>', '<span>현장학습 조 편성, 10초 만에 끝내기</span><span class="rn">CHAPTER 13</span>'];
+  const RUNNING = ['<span class="rn">PART 02</span>', '<span>현장학습 조 편성, 10초 만에 끝내기</span><span class="rn">CHAPTER 13</span>'];
   const book = document.getElementById("book");
   const SRC = document.getElementById("src");
   let bodies = [], cur = 0, vkey = "a";
@@ -892,7 +951,7 @@
     root.querySelectorAll(".ch-art").forEach(el => el.remove());
     root.querySelectorAll("figure.pv-hide").forEach(el => el.remove());  // 시안에서만 숨기는 그림은 쪽 계산에서도 뺌
     let n = 0;
-    root.querySelectorAll("h2").forEach(h => { n++; h.innerHTML = `<span class="h2-n">${n}</span><span class="h2-t">${h.textContent}</span>`; });
+    root.querySelectorAll("h2").forEach(h => { n++; h.innerHTML = `<span class="h2-n">${CH}.${n}</span><span class="h2-t">${h.textContent}</span>`; });
     root.querySelectorAll("h3:not(.step)").forEach(h => {
       const tag = h.classList.contains("trouble") ? `<span class="tag">${icon("wrench")}증상</span>` : h.classList.contains("apply") ? `<span class="tag">${icon("shuffle")}바꿔 쓰기</span>` : "";
       h.innerHTML = `${tag}<span class="h3-t">${h.textContent}</span>`;
@@ -915,13 +974,25 @@
     let actN = 0, inAct = false;
     [...root.children].forEach(el => {
       if (el.tagName === "H4" || el.tagName === "H3" || el.tagName === "H2") { actN = 0; inAct = false; return; }
-      if (el.classList.contains("act")) { actN++; inAct = true; el.insertAdjacentHTML("afterbegin", `<span class="act-n">${actN})</span>`); return; }
+      if (el.classList.contains("act")) { actN++; inAct = true; el.insertAdjacentHTML("afterbegin", `<span class="act-n">${String(actN).padStart(2, "0")}</span>`); return; }
       if (inAct && (el.tagName === "FIGURE" || el.classList.contains("request"))) { el.classList.add("in-act"); return; }
       inAct = false;
     });
     root.querySelectorAll(".v-b-hl, h1").forEach(h => { h.innerHTML = `<span>${h.innerHTML}</span>`; });
   }
 
+  /* 파트 도비라: 시안마다 같은 내용, 모양만 다르게 */
+  const PART = {
+    no: "02", title: "학급 경영", sub: "학급을 세우고 매일 운영하기",
+    desc: "담임 업무는 학기 초에 한 번 하고 끝나지 않습니다. 자리를 바꾸고, 조를 나누고, 행사를 챙기는 일이 매주 다시 돌아옵니다. 이 파트에서는 학급을 꾸리고 운영하며 되풀이되는 일을 버튼 하나로 끝내는 도구를 만듭니다.",
+    chapters: [["13", "현장학습 조 편성, 10초 만에 끝내기"], ["14", "1인 1역 역할 배정표"], ["15", "전자칠판용 우리 반 일과 안내판"], ["16", "특별활동 자동 출석부"]]  // 14~16장은 가안
+  };
+  function partCover() {
+    const li = PART.chapters.map(([n, t]) => `<li><span class="pc-cn">${n}</span><span class="pc-ct">${t}</span></li>`).join("");
+    return `<div class="part-cover"><div class="pc-head"><div class="pc-label">PART</div><div class="pc-no">${PART.no}</div></div>`
+      + `<div class="pc-main"><h2 class="pc-title">${PART.title}</h2><p class="pc-sub">${PART.sub}</p><span class="pc-rule"></span><p class="pc-desc">${PART.desc}</p></div>`
+      + `<div class="pc-list"><div class="pc-list-h">이 파트에서 만드는 도구</div><ul>${li}</ul></div></div>`;
+  }
   function addPage(extra = "") {
     const n = bodies.length, left = n % 2 === 0;
     if (left) book.insertAdjacentHTML("beforeend", '<div class="spread"></div>');
@@ -942,6 +1013,18 @@
     bs.slice(0, -1).forEach(b => { sum += Math.max(0, b.getBoundingClientRect().bottom - b.lastElementChild.getBoundingClientRect().bottom); });
     return sum + bs.length * 200;  // 쪽수가 늘어나는 것도 손해로 계산
   }
+  /* 짝 캡처(같은 단계의 두 장): 같은 쪽에 있으면 폭 또는 높이를 맞춰 함께 줄이고 키운다 */
+  const partner = (img, body) => img.dataset.pair ? [...body.querySelectorAll(`img[data-pair="${img.dataset.pair}"]`)].find(x => x !== img) || null : null;
+  const ratioOf = im => (im.naturalHeight && im.naturalWidth) ? im.naturalWidth / im.naturalHeight : im.offsetWidth / im.offsetHeight;
+  function equalize(body) {
+    const done = new Set();
+    body.querySelectorAll("img[data-pair]").forEach(im => {
+      const k = im.dataset.pair; if (done.has(k)) return;
+      const g = [...body.querySelectorAll(`img[data-pair="${k}"]`)]; if (g.length < 2) return; done.add(k);
+      if (im.dataset.mode === "h") { const mh = Math.min(...g.map(x => x.offsetHeight)); g.forEach(x => x.style.width = (mh * ratioOf(x)) + "px"); }
+      else { const mw = Math.min(...g.map(x => x.offsetWidth)); g.forEach(x => x.style.width = mw + "px"); }
+    });
+  }
   function tryShrink(el, body) {
     const ib = el.tagName === "FIGURE" && el.querySelector(".illo-box");
     if (ib) {  // 장 도입 삽화: 남은 높이에 맞춰 줄임(최소 30mm)
@@ -958,10 +1041,32 @@
       shot.style.height = prev; return false;
     }
     const img = el.tagName === "FIGURE" && el.querySelector("img");
-    if (!img) return false;
+    if (!img) {  // 그림이 아닌 블록이 넘치면, 그 쪽의 캡처를 함께 줄여 자리를 만든다
+      const pics = [...body.querySelectorAll("figure img")].filter(im => !im.closest("figure.illo"));
+      if (!pics.length) return false;
+      pics.forEach(im => { if (!im.dataset.w0) im.dataset.w0 = im.offsetWidth; });
+      const ov = body.scrollHeight - body.clientHeight, tot = pics.reduce((t, im) => t + im.offsetHeight, 0);
+      const rr = (tot - ov - 2) / tot;
+      if (rr < TH.group || pics.some(im => im.offsetWidth * rr < im.dataset.w0 * 0.62)) return false;  // 원래 크기의 62% 밑으로는 줄이지 않음
+      const pv = pics.map(im => im.style.width);
+      pics.forEach(im => im.style.width = (im.offsetWidth * rr) + "px");
+      if (fits(body)) return true;
+      pics.forEach((im, i) => im.style.width = pv[i]); return false;
+    }
     const over = body.scrollHeight - body.clientHeight, h = img.offsetHeight, w = img.offsetWidth;
+    const mate = partner(img, body);
+    if (mate) {  // 짝이 같은 쪽에 있으면 둘을 같은 비율로 함께 줄임(원래의 45%까지)
+      const hm = mate.offsetHeight, rp = (h + hm - over - 2) / (h + hm);
+      if (rp >= 0.45 && w * rp >= img.dataset.w0 * 0.45 && mate.offsetWidth * rp >= (mate.dataset.w0 || mate.offsetWidth) * 0.45) {
+        const pv = [img.style.width, mate.style.width];
+        img.style.width = (w * rp) + "px"; mate.style.width = (mate.offsetWidth * rp) + "px";
+        if (fits(body)) return true;
+        img.style.width = pv[0]; mate.style.width = pv[1];
+      }
+    }
     const ratio = (h - over - 2) / h;
-    if (ratio >= TH.single) {
+    const here = el.classList.contains("fit-here");  // 이 그림은 많이 줄여서라도 앞 쪽에 넣음
+    if ((ratio >= TH.single || (here && ratio >= 0.3)) && (here || w * ratio >= (img.dataset.w0 || w) * 0.62)) {
       const prev = img.style.width;
       img.style.width = (w * ratio) + "px";
       if (fits(body)) return true;
@@ -971,21 +1076,47 @@
     const all = [...body.querySelectorAll("figure img")];
     const total = all.reduce((t, im) => t + im.offsetHeight, 0);
     const r = (total - over - 2) / total;
-    if (all.length < 2 || r < TH.group) return false;
+    if (all.length < 2 || r < (here ? 0.42 : TH.group)) return false;  // fit-here 그림이 있는 쪽은 함께 더 줄임
     const prevs = all.map(im => im.style.width);
     all.forEach(im => im.style.width = (im.offsetWidth * r) + "px");
     if (fits(body)) return true;
     all.forEach((im, i) => im.style.width = prevs[i]); return false;
+  }
+  /* 조금(10mm 이하)만 넘치면 그 쪽의 블록·절 제목 위아래 간격을 줄여서 넣는다 */
+  function squeeze(body) {
+    if (body.scrollHeight - body.clientHeight > 38) return false;
+    const cfg = VARIANTS[vkey];
+    for (const k of [0.75, 0.55]) {
+      body.style.setProperty("--blk", (cfg.blk * k) + "mm");
+      body.style.setProperty("--h2-b", (cfg.h2.b * k) + "mm");
+      body.style.setProperty("--h3-b", (cfg.h3.b * k) + "mm");
+      if (fits(body)) return true;
+    }
+    ["--blk", "--h2-b", "--h3-b"].forEach(v => body.style.removeProperty(v));
+    return false;
   }
   function fillGap(body) {
     for (const sh of body.querySelectorAll(".shot-hero")) {  // 완성 화면 자리는 남는 높이만큼 키움
       const last = body.lastElementChild;
       const free = body.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom - parseFloat(getComputedStyle(last).marginBottom || 0) - 4;
       if (free < 12) break;
-      const prev = sh.style.height; sh.style.height = Math.min(sh.offsetHeight + free, 321) + "px";  // 최대 85mm
+      const prev = sh.style.height; sh.style.height = Math.min(sh.offsetHeight + free, 400) + "px";  // 최대 약 105mm
       if (!fits(body)) sh.style.height = prev;
     }
-    const imgs = [...body.querySelectorAll("figure img")];
+    const imgs = [...body.querySelectorAll("figure img")].filter(im => !partner(im, body));
+    const pairs = [...new Set([...body.querySelectorAll("img[data-pair]")].filter(im => partner(im, body)).map(im => im.dataset.pair))];
+    for (const k of pairs) {  // 짝 캡처는 같은 비율로 함께 키움
+      const g = [...body.querySelectorAll(`img[data-pair="${k}"]`)];
+      const last = body.lastElementChild;
+      const free = body.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom - parseFloat(getComputedStyle(last).marginBottom || 0) - 4;
+      if (free < 12) break;
+      const H = g.reduce((t, x) => t + x.offsetHeight, 0);
+      const f = Math.min(1 + free / H, ...g.map(x => Math.min(x.parentElement.clientWidth, (x.dataset.w0 || x.offsetWidth) * 1.4) / x.offsetWidth));
+      if (f < 1.03) continue;
+      const pv = g.map(x => x.style.width);
+      g.forEach(x => x.style.width = (x.offsetWidth * f) + "px");
+      if (!fits(body)) g.forEach((x, i) => x.style.width = pv[i]);
+    }
     for (const img of imgs) {
       const last = body.lastElementChild;
       const free = body.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom - parseFloat(getComputedStyle(last).marginBottom || 0) - 4;
@@ -1005,10 +1136,19 @@
     const frag = SRC.content.cloneNode(true);
     const holder = document.createElement("div"); holder.append(frag);
     decorate(holder, VARIANTS[vkey]);
+    // 1·2쪽은 파트 도비라 자리로 비워 두고, 본문은 3쪽부터
+    addPage("blank");
+    book.lastElementChild.lastElementChild.querySelectorAll(".running, .tab, .folio").forEach(e => e.remove());
+    book.lastElementChild.lastElementChild.insertAdjacentHTML("beforeend", `<div class="blank-note"><b>빈 면</b><span>아무것도 넣지 않는 면</span></div>`);
+    addPage("blank part");
+    const pp = book.lastElementChild.lastElementChild;
+    pp.querySelectorAll(".running, .tab, .folio").forEach(e => e.remove());
+    pp.insertAdjacentHTML("beforeend", partCover());
     let body = addPage("opener");
     for (const el of [...holder.children]) {
       // 1절은 2쪽에서 시작 — 1쪽 아래는 장 도입 삽화가 채움
-      if (el.classList.contains("newpage") && body.lastElementChild) {
+      const used = body.lastElementChild ? body.lastElementChild.getBoundingClientRect().bottom - body.getBoundingClientRect().top : 0;
+      if (el.classList.contains("newpage") && body.lastElementChild && (el.tagName === "H2" || used > body.clientHeight * 0.5)) {  // STEP 제목은 앞 쪽이 절반 넘게 찼을 때만 새 쪽
         for (const ib of body.querySelectorAll(".illo-box")) {
           const last = body.lastElementChild;
           const free = body.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom - 6;
@@ -1019,7 +1159,7 @@
           const free = body.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom - 4;
           if (free > 8) fg.style.marginTop = (parseFloat(getComputedStyle(fg).marginTop) + free * 0.45) + "px";
         }
-        body = addPage(); body.append(el); continue;
+        fillGap(body); body = addPage(); body.append(el); continue;  // 앞 쪽 캡처는 키워 여백을 메움
       }
       // 절 제목은 쪽에 남은 공간이 60mm 미만이면 다음 쪽에서 시작
       if (el.tagName === "H2" && body.lastElementChild) {
@@ -1027,13 +1167,16 @@
         if (left < 227) { fillGap(body); body = addPage(); }
       }
       body.append(el);
+      el.querySelectorAll && el.querySelectorAll("img").forEach(im => { if (!im.dataset.w0) im.dataset.w0 = im.offsetWidth; });  // 원래 폭 기억
+      if (el.querySelector && el.querySelector("img[data-pair]")) equalize(body);
       if (fits(body) || body.children.length === 1) continue;
       if (tryShrink(el, body)) continue;
+      if (squeeze(body)) continue;
       const carry = [el]; el.remove();
       while (body.children.length > 1) {
         const last = body.lastElementChild;
-        const lead = last.tagName === "P" && /아래|다음/.test(last.textContent) && last.textContent.length < 60;
-        const actLead = last.classList.contains("act") && (el.tagName === "FIGURE" || el.classList.contains("request") || carry[0].classList.contains("in-act"));
+        const lead = last.tagName === "P" && (last.classList.contains("keep") || (/아래|다음/.test(last.textContent) && last.textContent.length < 60));  // keep: 다음 표와 같은 쪽에 둠
+        const actLead = last.classList.contains("act") && (carry[0].tagName === "FIGURE" || carry[0].classList.contains("request") || carry[0].classList.contains("in-act"));  // 바로 뒤 그림·요청과 붙은 단계 문단만 함께 넘김
         if (/^H[234]$/.test(last.tagName) || lead || actLead) { carry.unshift(last); last.remove(); } else break;
       }
       fillGap(body);
@@ -1065,22 +1208,26 @@
     const row = (lv, h, extra = "") => `<tr><th>${lv}</th><td>${h.f} ${h.w} · ${h.size}pt${h.b != null ? `<small>위 ${h.b}mm · 아래 ${h.a}mm${extra}</small>` : extra ? `<small>${extra}</small>` : ""}</td></tr>`;
     document.getElementById("spec").innerHTML =
       `<button type="button" class="spec-close" aria-label="스펙 닫기">×</button><h5>${cfg.name}</h5><p class="concept">${cfg.concept}</p><table>
-       ${row("장", cfg.h1, "장 도입 쪽 전용, 오른쪽 쪽에서 시작")}
-       ${row("절", cfg.h2)}${row("중", cfg.h3, " · 절 바로 뒤에선 위 " + cfg.hh + "mm")}${row("소(예비)", cfg.h4, cfg.h4.a === 0 ? " · 날개에 걸려 본문 첫 줄과 나란히" : "")}
+       <tr><th>판형</th><td>174×232mm<small>크라운 변형판</small></td></tr>
+       <tr><th>색상</th><td>4도<small>표지·본문</small></td></tr>
+       ${row("장", cfg.h1, "장 도입 쪽 전용 · 파트 도비라 뒤 왼쪽 쪽(3쪽)에서 시작")}
+       ${row("절", cfg.h2, " · 번호 13.1(장.절) · 쪽에 60mm 미만 남으면 다음 쪽에서 시작")}${row("중", cfg.h3, " · 절 바로 뒤에선 위 " + cfg.hh + "mm · STEP 제목은 " + (cfg.h3.size + .5) + "pt")}
        <tr><th>본문</th><td>${cfg.body.f} · ${cfg.body.size}pt / 행간 ${Math.round(cfg.body.lh * 100)}%<small>문단 사이 ${cfg.p}mm · 상자·표·그림 위아래 ${cfg.blk}mm</small></td></tr>
        <tr><th>라벨</th><td>${cfg.label}<small>면주·쪽 번호·표 머리·상자 이름</small></td></tr></table>
        <p class="note">${cfg.marks}</p>
        <h6>원고 스타일 → 템플릿 스타일</h6>
        <table class="map"><tbody>
-         <tr><td>[장]</td><td>장 제목 · 마스터 '장 도입'</td></tr>
-         <tr><td>[절]</td><td>절 제목 · 번호 자동</td></tr>
+         <tr><td>[파트]</td><td>파트 도비라 · 마스터 '파트 도비라' (2쪽, 앞의 1쪽은 빈 면)</td></tr>
+         <tr><td>[장]</td><td>장 제목 · 마스터 '장 도입' (장 정보 5칸 · 도입 문단 · 선생님 한마디 · 장 도입 삽화)</td></tr>
+         <tr><td>[절]</td><td>절 제목 · 번호 자동(13.1, 13.2 …)</td></tr>
          <tr><td>[중]</td><td>중 제목 / STEP 제목 / 증상 제목 / 바꿔 쓰기 제목</td></tr>
          <tr><td>[소]</td><td>— (사용 안 함, STEP 아래는 진행 단계로 바로 시작)</td></tr>
-         <tr><td>[본문]</td><td>본문 / 진행 단계(1) 2) 3), STEP마다 새로) / 목록 / 체크리스트</td></tr>
-         <tr><td>상자</td><td>요청 문장 · TIP · 확인(CHECK) · 주의 · 선생님 한마디 (개체 스타일 5종)</td></tr>
-         <tr><td>표</td><td>일반 표 · 시간 비교표 (표 스타일 2종)</td></tr>
+         <tr><td>[본문]</td><td>본문 / 진행 단계(01 02 03, 포인트 색 굵게, STEP마다 새로) / 목록 / 체크리스트</td></tr>
+         <tr><td>상자</td><td>요청 프롬프트 · TIP · 확인(CHECK) · 주의 · 선생님 한마디 (개체 스타일 5종)</td></tr>
+         <tr><td>표</td><td>일반 표 · 요청 미리보기 표(가운데 열 강조) (표 스타일 2종)</td></tr>
+         <tr><td>그림</td><td>캡처(테두리·둥근 모서리, 크기 자동 조정) · 장 도입 삽화(장마다 1컷, 테두리 없음) · 선생님 캐릭터(시리즈 공통, 선생님 한마디)</td></tr>
        </tbody></table>
-       <p class="note"><b>장마다 바뀌는 것</b> 장 번호 · 장 제목 · 측면 탭 숫자, 그리고 캡처 배치. 나머지는 모두 템플릿 고정.</p>`;
+       <p class="note"><b>장마다 바뀌는 것</b> 장 번호 · 장 제목 · 측면 탭 숫자 · 장 정보 5칸 · 장 도입 삽화, 그리고 캡처 배치. <b>파트마다 바뀌는 것</b> 파트 번호 · 파트 제목 · 소개글 · 장 목록. 나머지는 모두 템플릿 고정.</p>`;
   }
 
   const spreads = () => [...book.children];
@@ -1113,8 +1260,10 @@
     list.push(`700 16px "${cfg.label}"`);
     list.push(`400 16px "Nanum Pen Script"`);
     if (!document.fonts) return Promise.resolve();
-    const all = Promise.all(list.map(f => document.fonts.load(f, "가나다 Ab12").catch(() => {})));
-    return Promise.race([all, new Promise(r => setTimeout(r, 3500))]);
+    // 한글 웹폰트는 글자 묶음별로 나뉘어 있어, 본문에 쓰인 글자를 모두 넘겨야 필요한 묶음이 다 받아진다
+    const chars = [...new Set((SRC.content.textContent + "가나다 Ab12 0123456789").replace(/\s+/g, ""))].join("");
+    const all = Promise.all(list.map(f => document.fonts.load(f, chars).catch(() => {})));
+    return Promise.race([all, new Promise(r => setTimeout(r, 8000))]);
   }
 
   let busy = Promise.resolve();
@@ -1131,7 +1280,7 @@
       for (const c of TH_CANDIDATES) { TH = c; paginate(); const sc = gapScore(); if (!best || sc < best.sc) best = { c, sc }; }
       TH = best.c; paginate();
       book.classList.add("ready");
-      show(keepPage ? cur : 0);
+      show(keepPage ? cur : 0);  // 처음에는 1–2쪽(파트 도비라)부터
     });
   }
 
@@ -1142,6 +1291,14 @@
   });
 
   addEventListener("resize", fit);
+  // 쪽을 나눈 뒤 글꼴이 늦게 도착하면 글줄이 바뀌어 아래가 잘릴 수 있으므로, 다시 나눈다
+  if (document.fonts) {
+    let refl = null;
+    document.fonts.addEventListener("loadingdone", () => {
+      if (!book.classList.contains("ready")) return;
+      clearTimeout(refl); refl = setTimeout(() => setVariant(vkey, true), 300);
+    });
+  }
   document.getElementById("prev").onclick = () => show(cur - 1);
   document.getElementById("next").onclick = () => show(cur + 1);
   document.querySelectorAll("[data-v]").forEach(b => b.onclick = () => setVariant(b.dataset.v, true));
