@@ -94,7 +94,8 @@
   #book.v-a .ch-head { height: calc(62mm - var(--m-top)); }
   /* ── 장 도입 헤더 다시 키움(1절이 2쪽으로 넘어간 뒤) ── */
   #book.v-a .page.opener::before { height: 84mm; }
-  #book.v-a .ch-head { height: calc(84mm - var(--m-top)); padding-bottom: 6mm; }
+  #book.v-a .ch-head { height: auto; min-height: calc(84mm - var(--m-top)); padding-bottom: 6mm; }  /* 글꼴이 커져도 위로 잘리지 않게 아래로 늘어남 */
+  #book.v-a .page.opener::before { height: var(--band, 84mm); }
   #book.v-a .ch-label { margin-bottom: 3mm; }
   #book.v-a .ch-big { font-size: 64pt; }
   #book.v-a h1 { font-size: var(--fs-h1); }
@@ -1037,6 +1038,10 @@
       }
       fillGap(body);
       body = addPage(); body.append(...carry);
+    }
+    if (vkey === "a") {  // A: 남색 띠를 장 머리말 높이에 맞춤
+      const op = book.querySelector(".page.opener"), hd = op && op.querySelector(".ch-head");
+      if (hd) op.style.setProperty("--band", Math.max(318, Math.ceil(hd.getBoundingClientRect().bottom - op.getBoundingClientRect().top)) + "px");
     }
     if (bodies.length % 2) { const b = addPage(); b.parentElement.querySelectorAll(".running, .folio, .tab").forEach(e => e.remove()); }
   }
