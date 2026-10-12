@@ -47,9 +47,11 @@ def clean(v) -> str:
 def parse(wb) -> dict:
     out = {}
     for name in SHEETS:
-        if name not in wb.sheetnames:
+        # 탭 이름 앞의 번호('01. 수업자동화')는 무시하고 찾는다
+        tab = next((t for t in wb.sheetnames if re.sub(r"^\d+\.\s*", "", t) == name), None)
+        if tab is None:
             raise SystemExit(f"'{name}' 탭을 찾지 못했습니다. 탭 이름을 확인하세요.")
-        ws = wb[name]
+        ws = wb[tab]
         ideas, ref1, ref2, mode = [], [], [], None
         for r in ws.iter_rows(values_only=True):
             r = list(r) + [None] * (10 - len(r))
