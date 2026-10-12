@@ -384,7 +384,7 @@
 
   /* A */
   #book.v-a h2 { padding-bottom: 2.4mm; border-bottom-width: .8mm; gap: 3mm; }
-  #book.v-a .h2-n { width: 10mm; height: 10mm; font-size: 13pt; }
+  #book.v-a .h2-n { width: auto; min-width: 10mm; height: 10mm; font-size: 13pt; }
   #book.v-a h3.step { border-bottom: .25mm dotted var(--c1); }
   #book.v-a h3.step .step-no { width: 9mm; height: 9mm; border-radius: 1.2mm; background: var(--c1); color: #fff; font-family: "Noto Sans KR", sans-serif; }
   #book.v-a h3.step .step-no small { color: var(--c2); }
@@ -392,7 +392,7 @@
   #book.v-a h3.step .step-title { color: var(--ink); }
 
   /* B */
-  #book.v-b .h2-n { width: 10mm; height: 10mm; font-size: 14pt; }
+  #book.v-b .h2-n { width: auto; min-width: 10mm; height: 10mm; font-size: 14pt; }
   #book.v-b h2 { padding-bottom: 2mm; border-bottom: .5mm dashed var(--c1); }
   #book.v-b h3.step { border-bottom: .45mm dotted var(--c1); }
   #book.v-b h3.step .step-no { width: 9mm; height: 9mm; border-radius: 50%; background: var(--c2); color: #fff; font-family: "Jua", sans-serif; font-weight: 400; }
@@ -744,14 +744,14 @@
 </tbody></table>
 
 <h2>요청하며 만들기</h2>
-<p>STEP은 모두 같은 순서로 진행합니다. 왜 필요한지 읽고, 요청 프롬프트을 넣고, 체크리스트로 확인합니다. STEP 하나에 요청은 한 번입니다.</p>
+<p>STEP은 모두 같은 순서로 진행합니다. 왜 필요한지 읽고, 요청 프롬프트를 넣고, 체크리스트로 확인합니다. STEP 하나에 요청은 한 번입니다.</p>
 <h3 class="step"><span class="step-meta"><span class="step-no"><small>STEP</small> <b>1</b></span></span><span class="step-title">기본 조 편성 만들기</span></h3>
 <p>먼저 기본 뼈대만 요청합니다. 기본 기능부터 확인해야, 나중에 기능을 더했을 때 생긴 문제를 찾기 쉽습니다.</p>
 <p class="act">챗GPT 왼쪽 메뉴에서 코덱스를 엽니다.</p>
 <figure class="fit-here"><img src="img/13_01.jpg" alt="챗GPT 왼쪽 메뉴의 코덱스" style="width:60mm"><figcaption class="memo">img: 13_01.jpg</figcaption></figure>
 <p class="act">입력 칸에 아래 문장을 넣고 실행합니다.</p>
 <div class="request"><div class="request-bar"><span>요청 프롬프트</span><span>그대로 입력</span></div><p>코딩을 모르는 교사가 인터넷 없이 크롬으로 여는 조 편성 페이지를 HTML 파일 하나로 만들어 줘. 엑셀 명단(번호, 이름, 성별)과 조 수를 넣으면 조별 인원 차이 1명 이하로 무작위 편성하고, 조별 표와 '다시 섞기' 버튼을 보여 줘.</p></div>
-<figure class="pv-hide"><img src="img/13_02.jpg" alt="코덱스 입력 칸에 요청 프롬프트을 넣은 화면" style="width:121.9mm"><figcaption class="memo">img: 13_02.jpg</figcaption></figure>
+<figure class="pv-hide"><img src="img/13_02.jpg" alt="코덱스 입력 칸에 요청 프롬프트를 넣은 화면" style="width:121.9mm"><figcaption class="memo">img: 13_02.jpg</figcaption></figure>
 <p class="act">코덱스가 작업을 마치면 만든 파일 이름(예: index.html)과 작업 내용을 알려 줍니다. 설명에 '인터넷 연결 없이', '파일 하나'가 빠져 있다면 그 조건을 지켰는지 다시 물어봅니다.</p>
 <figure><img src="img/13_03.jpg" alt="코덱스 작업 결과 화면" style="width:137mm"><figcaption class="memo">img: 13_03.jpg</figcaption></figure>
 <div class="tip"><b>기다리는 동안</b><p>코덱스는 요청을 받으면 스스로 계획을 세우고 파일을 만듭니다. 몇 분이 걸릴 수 있으니 창을 닫지 말고 기다리세요. 작업 중에 무엇을 하고 있는지 화면에 표시됩니다.</p></div>
@@ -808,7 +808,7 @@
 
 <h2>막힐 때 해결하기</h2>
 <h3 class="trouble">내 화면이 책과 달라요</h3>
-<p>코덱스는 같은 요청 프롬프트을 받아도 색, 칸 위치, 버튼 이름을 매번 조금씩 다르게 만듭니다. 각 STEP의 확인 체크리스트가 모두 맞으면 그대로 쓰면 됩니다.</p>
+<p>코덱스는 같은 요청 프롬프트를 받아도 색, 칸 위치, 버튼 이름을 매번 조금씩 다르게 만듭니다. 각 STEP의 확인 체크리스트가 모두 맞으면 그대로 쓰면 됩니다.</p>
 <div class="request"><div class="request-bar"><span>요청 프롬프트</span><span>그대로 입력</span></div><p>버튼 이름을 '조 편성'으로 바꾸고, 학생 명단 칸을 화면 맨 위에 놓아 줘.</p></div>
 <h3 class="trouble">명단을 붙여 넣었더니 한 줄로 합쳐져요</h3>
 <p>엑셀에서 복사한 명단은 칸 사이가 눈에 보이지 않는 탭으로 구분됩니다. 도구가 쉼표만 구분자로 읽으면 번호·이름·성별이 한 덩어리가 됩니다.</p>
