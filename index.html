@@ -730,7 +730,7 @@ document.querySelectorAll("#nav .tab, #subnav a").forEach(t => t.onclick = ev =>
 /* ---------- 작품 및 프롬프트: 웹에서 입력 → 앱스 스크립트 → 작품 제출 DB 시트의 권별 탭 ---------- */
 // 선생님은 이 페이지에서만 입력한다. 앱스 스크립트 웹 앱이 '1권 수업자동화' / '2권 업무자동화' 탭의
 // 해당 꼭지 줄에 채우고, 같은 웹 앱에서 상태·분량·편집자 의견까지 읽어 온다.
-const WORKS_API = "";  // 앱스 스크립트 웹 앱 URL (…/exec). 비어 있으면 제출 전 화면만 보임
+const WORKS_API = "https://script.google.com/macros/s/AKfycbwaCI4lz4CAOWUfuQeWmz-1F9jNyELArU-o5mdNYVtAW8zQJPQxCoy6hljeSrx5R2Fb4A/exec";  // 앱스 스크립트 웹 앱 URL (…/exec). 비어 있으면 제출 전 화면만 보임
 const MIN_TURNS = 2, MAX_TURNS = 5;
 const WK_STATUS = ["미제출", "제출 완료", "수정 요청", "확인 완료"];
 const WK = { mode: "teacher", who: "", book: "1권", status: "", db: {}, state: WORKS_API ? "loading" : "preview", err: "", at: "", open: "" };
