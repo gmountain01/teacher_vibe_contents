@@ -31,7 +31,7 @@ jobs:
       - name: 드라이브 엑셀 → data.json
         run: |
           mkdir -p _site
-          cp index.html _site/
+          cp index.html guide.mp4 _site/
           cp -r "본문 템플릿 시안 3종" _site/
           python scripts/build_data.py _site/data.json
       - uses: actions/configure-pages@v5
