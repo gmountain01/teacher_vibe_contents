@@ -183,7 +183,7 @@ const PF={html:'HTML',gas:'앱스크립트',drive:'앱스크립트+구글 드라
 function authors(){const old=$('author').value,c={};works.filter(w=>book==='all'||w.v===+book).forEach(w=>c[w.author]=(c[w.author]||0)+1);const names=Object.keys(c).sort((a,b)=>a.localeCompare(b,'ko'));$('author').innerHTML='<option value="all">모든 선생님</option>'+names.map(a=>`<option value="${esc(a)}">${esc(a||'담당 미기재')} (${c[a]})</option>`).join('');$('author').value=names.includes(old)?old:'all'}
 function parts(){authors();const old=$('part').value,ps=[...new Set(works.filter(w=>book==='all'||w.v===+book).map(w=>w.part))].sort();$('part').innerHTML='<option value="all">모든 파트</option>'+ps.map(n=>`<option value="${n}">PART ${n}</option>`).join('');$('part').value=ps.includes(+old)?old:'all'}
 /* 의견 수집: 구글 시트 + 앱스크립트 웹 앱 (프롬프트피드백_앱스크립트.gs). 배포 후 나온 …/exec 주소를 넣는다 */
-const FEEDBACK_API="https://script.google.com/macros/s/AKfycbxtspUylV2XYoksC6fnqsbqHgElm1zH-0iZjCmxmiP3OXcC7epk4aLAosaE-jFzJnmL/exec";
+const FEEDBACK_API="https://script.google.com/macros/s/AKfycbygayvnd7qwQsIcBr3p_TT0WE4cGk4EHLWoE_K7FiIvT2yuoXkhgWiQROW4q_-1sXjn/exec";
 let FB=[],fbState=FEEDBACK_API?'loading':'off';
 function turnRow(label,url,turns,preview){return `<div class="turn-row"><span class="turn-label ${label==='수정안'?'rev':''}">${label}</span>${turns.map(n=>`<a href="${url}턴${n}.html" target="_blank" rel="noopener">턴 ${n}</a>`).join('')}${preview?`<a href="${url}미리보기/index.html" target="_blank" rel="noopener" title="앱스크립트·구글 드라이브 작품을 구글에 연결하지 않고 예시 데이터로 보여 주는 화면입니다. 실제 저장·발송·권한 기능은 작동하지 않습니다.">연결 없는 미리보기</a>`:''}</div>`}
 function checked(w){return FB.some(r=>r['작품키']===`${w.v}-${w.part}-${w.n}`)}
