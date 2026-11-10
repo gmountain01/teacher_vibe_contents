@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    :root{font-family:system-ui,'Malgun Gothic',sans-serif;color:#183d36;background:#f2f6f3}*{box-sizing:border-box}body{margin:0;padding:40px 18px}main{max-width:540px;margin:auto}.tag{font-size:12px;letter-spacing:.12em;font-weight:800;color:#42786b}h1{font-size:30px;letter-spacing:-1px;margin:14px 0}p{line-height:1.7;color:#587169}form{background:white;padding:28px;border-radius:24px;box-shadow:0 12px 50px #173b3410;margin-top:26px}label{display:block;font-weight:700;font-size:14px;margin-bottom:18px}input,select{display:block;width:100%;margin-top:8px;padding:13px;border:1px solid #c8d7d1;border-radius:10px;background:#fff;font:inherit;color:#183d36}input:focus,select:focus{outline:3px solid #b8dfd3}input[type=file]{border:2px dashed #a9c4b9;padding:22px 12px;background:#f8fbf9}.row{display:grid;grid-template-columns:1fr 1fr;gap:16px}small{display:block;font-weight:400;color:#62786f;margin-top:8px;line-height:1.6}button{width:100%;border:0;border-radius:12px;background:#16685c;color:white;padding:16px;font:inherit;font-weight:800;cursor:pointer}button:disabled{opacity:.55;cursor:wait}#preview{max-width:100%;max-height:240px;display:none;border-radius:12px;margin-bottom:20px}#status{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:18px;line-height:1.7}footer{font-size:12px;color:#72877e;margin:22px 0;text-align:center}[hidden]{display:none!important}@media(max-width:400px){form{padding:20px}.row{grid-template-columns:1fr;gap:0}}
+  </style>
+</head>
+<body><main>
+  <div class="tag">CLASSROOM PHOTO BOX</div>
+  <h1>우리 반 활동 사진 제출</h1>
+  <p>학년·반과 번호를 확인하고 사진을 올려주세요.<br>선생님의 제출함에 안전하게 저장됩니다.</p>
+  <form id="form">
+    <label>학년·반<select id="className" required disabled><option value="">불러오는 중…</option></select></label>
+    <div class="row"><label>내 번호<input id="number" type="number" min="1" step="1" placeholder="예: 7" required></label><label>이름<input id="name" maxlength="30" autocomplete="name" placeholder="예: 김하늘" required></label></div>
+    <label>제출 비밀번호<input id="password" type="password" autocomplete="off" required placeholder="선생님이 알려주신 비밀번호"></label>
+    <label>활동 사진<input id="photo" type="file" accept="image/jpeg,image/png,image/webp" required><small>한 번에 사진 1장 · JPG, PNG, WEBP · 최대 8MB<br>아이폰 HEIC 사진은 JPG로 변환해 주세요.</small></label>
+    <img id="preview" alt="선택한 사진 미리보기">
+    <small style="margin-bottom:20px">사진과 입력 정보는 선생님의 Google Drive 및 시트에 제출 내역 관리용으로 저장됩니다. 제출 전 사진을 확인해 주세요.</small>
+    <button id="submit" disabled>사진 제출하기</button>
+    <div id="status" role="status" aria-live="polite"></div>
+  </form>
+  <footer>제출한 사진과 목록은 학생에게 공개되지 않습니다.</footer>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let config, previewUrl, requestId = crypto.randomUUID(), busy = false;
+function status(message, error = false) { $('status').textContent = message; $('status').style.color = error ? '#b02d31' : '#16685c'; }
+function unlock() { busy = false; $('submit').disabled = !config; $('submit').textContent = '사진 제출하기'; }
+google.script.run.withSuccessHandler(result => {
+  config = result; document.title = result.title;
+  $('className').replaceChildren(new Option('학년·반 선택', ''), ...result.classes.map(v => new Option(v,v)));
+  $('className').disabled = false; $('number').max = result.maxNumber; unlock();
+}).withFailureHandler(() => status('설정을 불러오지 못했습니다. 페이지를 새로 열어주세요.', true)).getPublicConfig();
+$('form').addEventListener('input', () => { if (!busy) requestId = crypto.randomUUID(); });
+$('photo').addEventListener('change', () => {
+  if (previewUrl) URL.revokeObjectURL(previewUrl);
+  $('preview').style.display = 'none';
+  const file = $('photo').files[0];
+  if (!file) return;
+  if (!config || file.size > config.maxBytes || !['image/jpeg','image/png','image/webp'].includes(file.type)) {
+    $('photo').value = ''; status('8MB 이하의 JPG, PNG, WEBP 사진을 선택하세요.', true); return;
+  }
+  previewUrl = URL.createObjectURL(file); $('preview').src = previewUrl; $('preview').style.display = 'block'; status('사진을 확인한 뒤 제출해 주세요.');
+});
+$('form').addEventListener('submit', async event => {
+  event.preventDefault(); if (busy || !config) return;
+  const file = $('photo').files[0]; if (!file) return;
+  busy = true; $('submit').disabled = true; $('submit').textContent = '제출 중…';
+  const controls = [...$('form').querySelectorAll('input,select')];
+  controls.forEach(el => el.disabled = true);
+  const restore = () => { controls.forEach(el => el.disabled = false); unlock(); };
+  status('사진을 저장하고 있습니다. 완료될 때까지 이 화면을 유지해 주세요.');
+  try {
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader(); reader.onerror = () => reject(new Error('사진을 읽지 못했습니다.'));
+      reader.onload = () => resolve(String(reader.result).split(',')[1]); reader.readAsDataURL(file);
+    });
+    google.script.run.withSuccessHandler(result => {
+      restore(); status(result.message + '\n접수 번호: ' + result.receipt);
+      $('photo').value = ''; $('preview').style.display = 'none'; if (previewUrl) URL.revokeObjectURL(previewUrl);
+      requestId = crypto.randomUUID();
+    }).withFailureHandler(error => {
+      restore(); status((error.message || '제출에 실패했습니다.') + '\n다시 제출하면 접수 번호로 중복 여부를 확인합니다.', true);
+    }).submitPhoto({className: $('className').value, number: $('number').value, name: $('name').value, password: $('password').value, mime: file.type, base64, requestId});
+  } catch(error) { restore(); status(error.message, true); }
+});
+</script></body></html>

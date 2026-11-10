@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>청소 구역 점검판</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fb;color:#24324a;font-family:"맑은 고딕",sans-serif}main{max-width:1000px;margin:0 auto;padding:44px 24px}header{text-align:center}h1{margin:0 0 12px;font-size:32px}header p{color:#65738a;margin:0 0 30px}.controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:28px}button{font:inherit;cursor:pointer;border:1px solid #d6deea;background:white;color:#46546d;padding:13px 20px;border-radius:12px;font-weight:700}button[aria-pressed="true"]{background:#315cce;color:white;border-color:#315cce;box-shadow:0 4px 12px #315cce25}button:focus-visible{outline:3px solid #ebae37;outline-offset:3px}.card{background:white;border:1px solid #e1e7f0;border-radius:24px;padding:28px;box-shadow:0 10px 35px #24324a08}.room-top{display:flex;justify-content:center;margin-bottom:20px}.board{background:#344e49;color:#fff;border:5px solid #c2ad88;border-radius:5px;padding:10px;width:50%;text-align:center;letter-spacing:8px}.layout{display:grid;grid-template-columns:30px 1fr 30px;gap:12px;align-items:stretch}.side{display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;color:#748299;letter-spacing:8px;font-size:14px}.windows{border-left:5px solid #b9d8f5}.corridor{border-right:5px solid #d9dfe8}.room{display:grid;gap:10px;min-height:450px;border:2px solid #d3dce9;border-radius:14px;padding:12px;background:#fafbfd}.zone{border:1px solid #00000012;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;min-height:120px;text-align:center;padding:12px;color:#26364e}.zone strong{font-size:21px}.zone span{font-size:13px;opacity:.75}.room-bottom{text-align:center;font-size:13px;color:#748299;margin-top:16px}.legend{text-align:center;color:#65738a;font-size:14px;margin:24px 0 0}.status{display:inline-block;background:#edf2fc;border-radius:20px;padding:7px 15px;color:#315cce;margin-bottom:18px;font-size:13px;font-weight:700}@media(max-width:600px){main{padding:28px 14px}h1{font-size:26px}.card{padding:18px 10px}.layout{grid-template-columns:18px 1fr 18px;gap:5px}.room{min-height:390px;gap:6px;padding:7px}.zone{padding:6px}.zone strong{font-size:16px}.zone span{font-size:11px}button{padding:12px 13px;font-size:13px}.board{width:65%}}
+</style>
+</head>
+<body>
+<main>
+<header><div class="status">우리 반을 깨끗하게</div><h1>청소 구역 점검판</h1><p>분할 방식을 선택해 우리 교실의 청소 구역을 나누어 보세요.</p></header>
+<nav class="controls" aria-label="청소 구역 분할 방식">
+<button type="button" data-mode="rows" aria-pressed="true">앞, 중간, 뒤 3분할</button>
+<button type="button" data-mode="cols" aria-pressed="false">창가, 가운데, 복도 3분할</button>
+<button type="button" data-mode="six" aria-pressed="false">6분할</button>
+</nav>
+<section class="card" aria-label="교실 평면도">
+<div class="room-top"><div class="board">칠판 · 앞</div></div>
+<div class="layout"><div class="side windows">창가</div><div id="room" class="room" aria-live="polite"></div><div class="side corridor">복도</div></div>
+<div class="room-bottom">교실 뒤</div>
+</section>
+<p class="legend" id="description"></p>
+</main>
+<script>
+const colors=['#dcecfb','#e0f2e5','#fff0cf','#fce0e3','#e9e2fa','#d8f1f1'];
+const room=document.getElementById('room');
+function render(mode){
+ const names=mode==='rows'?['앞 구역','중간 구역','뒤 구역']:mode==='cols'?['창가 구역','가운데 구역','복도 구역']:['앞 · 창가 쪽','앞 · 복도 쪽','중간 · 창가 쪽','중간 · 복도 쪽','뒤 · 창가 쪽','뒤 · 복도 쪽'];
+ room.style.gridTemplateColumns=mode==='rows'?'1fr':mode==='cols'?'repeat(3, 1fr)':'repeat(2, 1fr)';
+ room.style.gridTemplateRows=mode==='cols'?'1fr':'repeat(3, 1fr)';
+ room.replaceChildren(...names.map((name,i)=>{const zone=document.createElement('div');zone.className='zone';zone.style.background=colors[i];const title=document.createElement('strong');title.textContent=name;const number=document.createElement('span');number.textContent=`청소 구역 ${i+1}`;zone.append(title,number);return zone}));
+ document.querySelectorAll('[data-mode]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.mode===mode)));
+ document.getElementById('description').textContent=mode==='six'?'앞·중간·뒤를 창가 쪽과 복도 쪽으로 나눈 6개 구역입니다.':mode==='rows'?'칠판을 기준으로 앞, 중간, 뒤의 3개 구역입니다.':'창가에서 복도 방향으로 나눈 3개 구역입니다.';
+}
+document.querySelectorAll('[data-mode]').forEach(button=>button.addEventListener('click',()=>render(button.dataset.mode)));
+render('rows');
+</script>
+</body>
+</html>

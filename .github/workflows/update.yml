@@ -33,6 +33,7 @@ jobs:
           mkdir -p _site
           cp index.html guide.mp4 _site/
           cp -r "본문 템플릿 시안 3종" _site/
+          cp -r "프롬프트 피드백" _site/
           python scripts/build_data.py _site/data.json
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

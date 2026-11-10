@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>방학 안부 우체통</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#263c38;background:#f4f7f2;font-synthesis:none}*{box-sizing:border-box}body{margin:0}main{max-width:560px;margin:auto;padding:32px 20px 36px}.top{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#65796f}.brand{font-weight:800;color:#346b57}.badge{background:#e5ede2;padding:6px 10px;border-radius:20px;font-size:11px;font-weight:700}header{padding:30px 2px 24px}.eyebrow{font-size:12px;letter-spacing:2px;color:#6b8875;font-weight:700}h1{font-size:32px;line-height:1.35;letter-spacing:-1.4px;margin:12px 0}header p{font-size:14px;line-height:1.8;color:#718078;margin:0}.card{background:white;border:1px solid #e2e9df;border-radius:22px;padding:24px;margin-bottom:14px;box-shadow:0 4px 18px #354c3210}.heading{display:flex;align-items:center;gap:10px;margin-bottom:18px}.step{display:grid;place-items:center;width:27px;height:27px;background:#edf3e9;border-radius:9px;color:#668355;font-size:12px;font-weight:800}h2{font-size:16px;letter-spacing:-.5px;margin:0}.required{color:#91a889;font-size:12px;margin-left:auto}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}label.field{display:block;font-size:13px;font-weight:650}input[type=number],select,textarea{width:100%;margin-top:9px;border:1px solid #dce4d8;border-radius:11px;background:#fbfcfa;padding:13px;font:inherit;font-size:14px;color:#314b3c}textarea{resize:vertical;min-height:116px;line-height:1.65}input:focus,select:focus,textarea:focus{outline:2px solid #7eaa8c;outline-offset:2px}.moods{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.choice{position:relative;cursor:pointer}.choice input{position:absolute;opacity:0;width:1px;height:1px}.mood{display:flex;flex-direction:column;align-items:center;gap:10px;border:1px solid #e4e9df;border-radius:13px;padding:15px 2px 12px;color:#768070;font-size:11px;transition:.15s}.emoji{font-size:27px}.choice input:checked+.mood{border-color:#6c9775;background:#eef5e9;color:#3d6a42;font-weight:750}.choice input:focus-visible+span{outline:2px solid #558366;outline-offset:3px}.hint{color:#899285;font-size:12px;line-height:1.6;margin:10px 0 0}.checks{display:grid;grid-template-columns:1fr 1fr;gap:10px}.check{display:flex;align-items:center;gap:8px;font-size:13px;background:#f8faf6;padding:13px 10px;border-radius:10px;cursor:pointer}input{accent-color:#62886c}input[type=checkbox]{width:17px;height:17px;margin:0}.counter{text-align:right;color:#929b8d;font-size:11px;margin-top:6px}.talks{display:grid;gap:9px}.talk{display:block;border:1px solid #e0e7db;border-radius:11px;padding:13px;font-size:13px}.talk span{font-size:17px;margin-right:8px}.choice input:checked+.talk{background:#edf5e9;border-color:#7b9b74;color:#3b663e}.note{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.7;color:#788471;padding:5px 8px 18px}.submit{width:100%;border:0;border-radius:14px;background:#3d7058;color:white;font:inherit;font-weight:700;padding:17px;cursor:pointer;box-shadow:0 6px 14px #3d705822}.submit:hover{background:#305b46}footer{text-align:center;font-size:11px;color:#91998b;margin-top:19px}.success{text-align:center;padding:35px 12px}.success .icon{font-size:56px}.success h2{font-size:24px;margin:18px 0 12px}.success p{font-size:14px;color:#718078;line-height:1.8}.secondary{border:1px solid #b9cbb4;background:white;border-radius:12px;padding:13px 22px;font:inherit;color:#426849;cursor:pointer;margin-top:16px}[hidden]{display:none!important}@media(max-width:380px){main{padding:24px 14px}.card{padding:20px 16px}.moods{gap:4px}.mood{font-size:10px}.checks{grid-template-columns:1fr}h1{font-size:29px}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="top"><span class="brand">✉ 방학 안부 우체통</span><span class="badge">예시 화면</span></div>
+  <header><div class="eyebrow">SUMMER CHECK-IN</div><h1>잘 지내고 있나요?<br>오늘의 안부를 들려주세요 🌿</h1><p>아주 짧은 이야기라도 좋아요.<br>여러분의 하루가 선생님은 궁금해요.</p></header>
+  <form id="checkin">
+    <section class="card"><div class="heading"><span class="step">01</span><h2>누가 안부를 전하나요?</h2><span class="required">필수</span></div><div class="row"><label class="field">학급<select name="classroom" required><option value="">학급 선택</option><option>1반</option><option>2반</option><option>3반</option><option>4반</option><option>5반</option><option>6반</option><option>7반</option><option>8반</option><option>9반</option><option>10반</option></select></label><label class="field">번호<input name="number" type="number" min="1" max="50" placeholder="예: 12" required inputmode="numeric"></label></div></section>
+    <section class="card"><div class="heading"><span class="step">02</span><h2>오늘 기분은 어때요?</h2><span class="required">필수</span></div><div class="moods" role="group" aria-label="오늘의 기분"><label class="choice"><input type="radio" name="mood" value="아주 좋아요" required><span class="mood"><span class="emoji">😆</span>아주 좋아요</span></label><label class="choice"><input type="radio" name="mood" value="좋아요"><span class="mood"><span class="emoji">🙂</span>좋아요</span></label><label class="choice"><input type="radio" name="mood" value="그저 그래요"><span class="mood"><span class="emoji">😐</span>그저 그래요</span></label><label class="choice"><input type="radio" name="mood" value="조금 지쳐요"><span class="mood"><span class="emoji">😔</span>조금 지쳐요</span></label><label class="choice"><input type="radio" name="mood" value="힘들어요"><span class="mood"><span class="emoji">😢</span>힘들어요</span></label></div><p class="hint">지금 내 마음과 가장 가까운 표정을 골라 주세요.</p></section>
+    <section class="card"><div class="heading"><span class="step">03</span><h2>요즘 어떻게 지내나요?</h2></div><div class="checks"><label class="check"><input type="checkbox" name="life" value="식사 잘하기">🍚 식사 잘하고 있어요</label><label class="check"><input type="checkbox" name="life" value="충분한 수면">🌙 잠을 잘 자고 있어요</label><label class="check"><input type="checkbox" name="life" value="신체 활동">🚶 몸을 움직이고 있어요</label><label class="check"><input type="checkbox" name="life" value="즐겁게 쉬기">🎨 즐겁게 쉬고 있어요</label><label class="check"><input type="checkbox" name="life" value="친구와 연락">💬 친구와 연락해요</label><label class="check"><input type="checkbox" name="life" value="생활에 어려움">☁️ 생활에 어려움이 있어요</label></div><p class="hint">나에게 해당하는 것을 모두 골라 주세요. 건너뛰어도 괜찮아요.</p></section>
+    <section class="card"><div class="heading"><span class="step">04</span><h2>선생님께 전하고 싶은 말</h2></div><textarea name="message" id="message" aria-label="선생님께 전하고 싶은 말" maxlength="500" placeholder="방학 동안 있었던 일, 자랑하고 싶은 일, 고민… 자유롭게 남겨 주세요. (선택)"></textarea><div class="counter"><span id="count">0</span> / 500</div></section>
+    <section class="card"><div class="heading"><span class="step">05</span><h2>선생님과 이야기하고 싶나요?</h2><span class="required">필수</span></div><div class="talks"><label class="choice"><input type="radio" name="talk" value="yes" required><span class="talk"><span>🙋</span>네, 선생님과 이야기하고 싶어요</span></label><label class="choice"><input type="radio" name="talk" value="no"><span class="talk"><span>🌱</span>괜찮아요, 안부만 전할게요</span></label></div></section>
+    <div class="note"><span>ⓘ</span><span>이 화면은 체험용 예시예요. 입력한 내용은 저장되거나 선생님께 전달되지 않아요.</span></div><button class="submit" type="submit">안부 전하기 &nbsp; ↗</button>
+  </form>
+  <section class="card success" id="success" hidden aria-live="polite"><div class="icon">💌</div><h2>오늘의 안부를 작성했어요!</h2><p>내 마음을 들려줘서 고마워요.<br>남은 방학도 나의 속도로, 건강하게 보내요.</p><p><strong>예시 제출이 완료되었어요.</strong><br>실제로 저장되거나 전송된 내용은 없어요.</p><button type="button" class="secondary" id="again">다시 작성하기</button></section>
+  <footer>작은 안부로 이어지는 우리 반 💚</footer>
+</main>
+<script>
+  const form=document.getElementById('checkin');
+  const message=document.getElementById('message');
+  message.addEventListener('input',()=>document.getElementById('count').textContent=message.value.length);
+  document.querySelector('.badge').textContent='방학 체크인';
+  document.querySelector('.note span:last-child').textContent='제출 내용은 선생님이 확인하는 구글 시트에 응답 시간과 함께 저장돼요.';
+  document.querySelector('#success p:nth-of-type(2)').textContent='안부가 구글 시트에 저장되었어요.';
+  const status=document.createElement('p');status.setAttribute('role','status');form.appendChild(status);
+  let requestId=makeId();
+  function makeId(){return globalThis.crypto?.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2);}
+  function connected(){return !!(globalThis.google && google.script && google.script.run);}
+  form.addEventListener('submit',event=>{
+    event.preventDefault();
+    if(!connected()){status.textContent='Apps Script에 배포된 웹앱 주소에서 제출해 주세요. 아직 저장되지 않았어요.';return;}
+    const data=new FormData(form),button=form.querySelector('[type=submit]');
+    button.disabled=true;button.textContent='저장 중…';status.textContent='';
+    google.script.run.withSuccessHandler(result=>{
+      button.disabled=false;button.textContent='안부 전하기 ↗';form.hidden=true;
+      document.getElementById('success').hidden=false;
+      document.querySelector('#success p:nth-of-type(2)').textContent='저장 완료 · '+result.time+' (한국 시간)';
+      window.scrollTo({top:0,behavior:'smooth'});
+    }).withFailureHandler(()=>{button.disabled=false;button.textContent='다시 제출하기 ↗';status.textContent='저장 완료를 확인하지 못했어요. 입력 내용은 유지했어요. 같은 내용으로 다시 제출하면 중복 저장을 방지해요.';})
+    .submitCheckin({id:requestId,classroom:data.get('classroom'),number:data.get('number'),mood:data.get('mood'),life:data.getAll('life'),message:data.get('message'),talk:data.get('talk')});
+  });
+  document.getElementById('again').addEventListener('click',()=>{requestId=makeId();status.textContent='';});
+  const teacher=document.createElement('section');teacher.className='card';teacher.style.marginTop='20px';
+  teacher.innerHTML='<details><summary style="cursor:pointer">교사용 응답 현황</summary><form id="teacherForm"><p class="hint">한국 시간 기준으로 날짜별 응답을 조회합니다.</p><label class="field">교사용 비밀번호<input id="password" type="password" required autocomplete="current-password" style="width:100%;padding:12px;margin:8px 0 14px"></label><label class="field">응답 날짜<input id="date" type="date" required style="width:100%;padding:12px;margin:8px 0 14px"></label><label class="check"><input id="onlyTalk" type="checkbox">이야기하고 싶은 학생만 보기</label><button class="secondary" type="submit">현황 조회 / 새로고침</button></form><p id="teacherStatus" role="status"></p><p id="summary"></p><div id="responses"></div><button type="button" class="secondary" id="logout">조회 내용 지우기</button></details>';
+  document.querySelector('footer').before(teacher);
+  document.getElementById('date').value=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
+  document.getElementById('logout').onclick=()=>{document.getElementById('password').value='';document.getElementById('summary').textContent='';document.getElementById('responses').textContent='';document.getElementById('teacherStatus').textContent='';};
+  document.getElementById('teacherForm').addEventListener('submit',event=>{
+    event.preventDefault();const info=document.getElementById('teacherStatus');
+    document.getElementById('summary').textContent='';document.getElementById('responses').textContent='';
+    if(!connected()){info.textContent='배포된 Apps Script 웹앱에서 조회해 주세요.';return;}
+    const button=event.target.querySelector('button');button.disabled=true;info.textContent='조회 중…';
+    google.script.run.withSuccessHandler(result=>{
+      button.disabled=false;info.textContent='조회 완료 · '+result.date;
+      document.getElementById('summary').textContent='총 응답 '+result.total+'건 · 응답 학생 '+result.students+'명 · 대화 희망 '+result.talkStudents+'명';
+      const rows=document.getElementById('onlyTalk').checked?result.rows.filter(r=>r.talk==='yes'):result.rows;
+      const target=document.getElementById('responses');
+      if(!rows.length){target.textContent='해당하는 응답이 없어요.';return;}
+      rows.forEach(r=>{const card=document.createElement('article');card.className='card';
+        [r.classroom+' '+r.number+'번'+(r.talk==='yes'?' · 🙋 대화 희망':''),'응답 시간: '+r.time,'기분: '+r.mood,'생활: '+(r.life||'선택 없음'),'전하고 싶은 말: '+(r.message||'없음')].forEach(text=>{const line=document.createElement('p');line.textContent=text;line.style.whiteSpace='pre-wrap';card.appendChild(line);});target.appendChild(card);});
+    }).withFailureHandler(()=>{button.disabled=false;info.textContent='조회하지 못했어요. 교사용 비밀번호와 서버 설정을 확인해 주세요.';}).getResponses(document.getElementById('password').value,document.getElementById('date').value);
+  });
+  document.getElementById('again').addEventListener('click',()=>{form.reset();document.getElementById('count').textContent='0';form.hidden=false;document.getElementById('success').hidden=true;window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+</body>
+</html>

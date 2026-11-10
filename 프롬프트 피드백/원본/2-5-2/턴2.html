@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수행평가 루브릭 채점기</title>
+<style>
+:root{font-family:Arial,'Malgun Gothic',sans-serif;color:#243249;background:#f3f6fb}*{box-sizing:border-box}body{margin:0}main{max-width:1200px;margin:auto;padding:38px 24px}header{margin-bottom:28px}h1{margin:8px 0 12px;font-size:30px}p{color:#67758b;line-height:1.6}.badge{font-size:12px;font-weight:bold;letter-spacing:1px;color:#4264db}section{background:white;border:1px solid #e1e7f0;border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 4px 18px #22345605}h2{margin:0 0 8px;font-size:20px}.hint{margin:0 0 20px;font-size:14px}.rubrics{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.rubric{border:1px solid #e0e6ef;border-radius:12px;padding:18px;background:#fcfdff}.element-label{display:block;font-size:13px;font-weight:bold;color:#56657b;margin-bottom:8px}input,textarea,select,button{font:inherit}input,textarea,select{border:1px solid #cfd8e5;border-radius:7px;padding:10px;background:white;color:#243249}input:focus,textarea:focus,select:focus{outline:2px solid #9caefa;outline-offset:1px}.name-input{width:100%;font-weight:bold;margin-bottom:18px}.level{border-top:1px solid #e5eaf2;padding-top:12px;margin-top:12px}.level-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.level-head label{font-weight:bold;font-size:14px}.score{width:86px;padding:7px;text-align:right}textarea{width:100%;resize:vertical;min-height:76px;font-size:14px;line-height:1.5}.add-form{display:flex;gap:10px;margin:20px 0}.add-form input{flex:1;min-width:0}button{cursor:pointer;border:0;border-radius:8px;padding:11px 18px;font-weight:bold;background:#4666df;color:white}button:hover{background:#3453c5}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th{background:#f4f6fb;text-align:left;font-size:13px;color:#607088}th,td{padding:15px 12px;border-bottom:1px solid #e7ebf2}td select{width:100%;min-width:135px;font-size:14px}.total{font-weight:bold;color:#3659d3;font-size:19px}.delete{background:#fff0f0;color:#b54848;padding:8px 12px;font-size:13px}.delete:hover{background:#ffe0e0}.empty{text-align:center;color:#8490a1;padding:35px}.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px}.pill{background:#eef2ff;color:#4666df;font-size:13px;border-radius:20px;padding:7px 12px}footer{text-align:center;color:#8791a2;font-size:12px}@media(max-width:850px){.rubrics{grid-template-columns:1fr}main{padding:24px 14px}section{padding:18px}h1{font-size:25px}}
+.progress-panel,.focus-card{background:#f5f7ff;border:1px solid #dbe2f5;border-radius:12px;padding:18px;margin:18px 0}.navigator{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.navigator h3{margin:0}.navigator button:disabled{opacity:.4;cursor:default}progress{width:100%;height:16px;accent-color:#4666df}.focus-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}.choice{display:block;padding:12px;border:1px solid #d5def0;background:white;border-radius:8px;margin-top:8px;cursor:pointer;line-height:1.5}.choice:has(input:checked){background:#e6ecff;border-color:#4666df}.choice small{display:block;color:#67758b}.filter{display:block;margin:18px 0}.position{font-size:13px}.student-link{background:transparent;color:#3659d3;padding:0}.student-link:hover{background:#eef2ff}@media(max-width:850px){.focus-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header><span class="badge">TEACHER'S WORKSPACE</span><h1>수행평가 루브릭 채점기</h1><p>평가 기준을 만들고 학생의 성취 수준을 선택하세요. 총점은 자동으로 계산됩니다.</p></header>
+<section><h2>1. 평가 기준 설정</h2><p class="hint">평가 요소 3개와 상·중·하의 기준 설명, 점수를 자유롭게 수정하세요.</p><div id="rubrics" class="rubrics"></div></section>
+<section><div class="section-title"><h2>2. 학생별 채점</h2><span id="count" class="pill">학생 0명</span></div><p class="hint">각 수준의 기준 설명은 선택 메뉴에 함께 표시됩니다. 모든 요소를 선택하면 총점이 완성됩니다.</p><form id="add-form" class="add-form"><input id="student-name" aria-label="학생 이름" placeholder="학생 이름 입력" maxlength="50" required><button type="submit">학생 등록</button></form><div class="progress-panel" aria-live="polite"><p id="progress-text"></p><progress id="progress" max="100" value="0" aria-label="전체 채점 진행률"></progress></div><label class="filter"><input type="checkbox" id="incomplete-only"> 미완료 학생만 보기 (일부 채점 포함)</label><div id="focus-student" class="focus-card"></div><div class="table-wrap"><table><thead><tr id="head"></tr></thead><tbody id="students"></tbody></table></div></section>
+<footer>입력 내용은 현재 브라우저에 자동 저장됩니다.</footer>
+</main>
+<script>
+const levels=['상','중','하'];
+const defaults={rubrics:[{name:'내용의 충실성',criteria:['핵심 내용을 정확하고 풍부하게 제시함','핵심 내용을 대체로 포함하나 일부 보완이 필요함','핵심 내용이 부족하거나 부정확함'],scores:[30,20,10]},{name:'구성 및 표현',criteria:['내용이 논리적이며 명확하게 표현함','구성과 표현이 대체로 적절함','구성이 미흡하고 표현이 명확하지 않음'],scores:[30,20,10]},{name:'참여 및 완성도',criteria:['적극적으로 참여하고 결과물을 완성함','성실히 참여하나 완성도가 다소 부족함','참여가 부족하고 결과물이 미완성임'],scores:[40,30,20]}],students:[]};
+const key='rubric-grader-v1';let state=structuredClone(defaults);
+try{const saved=JSON.parse(localStorage.getItem(key));if(saved&&Array.isArray(saved.rubrics)&&saved.rubrics.length===3&&Array.isArray(saved.students))state=saved;}catch(e){}
+function save(){try{localStorage.setItem(key,JSON.stringify(state));document.querySelector('footer').textContent='입력 내용은 현재 브라우저에 자동 저장됩니다.';}catch(e){document.querySelector('footer').textContent='브라우저 저장을 사용할 수 없습니다. 창을 닫으면 입력 내용이 사라질 수 있습니다.';}}
+function el(tag,attrs={},text){const node=document.createElement(tag);for(const [k,v]of Object.entries(attrs))node.setAttribute(k,v);if(text!==undefined)node.textContent=text;return node;}
+function renderRubrics(){const box=document.getElementById('rubrics');box.replaceChildren();state.rubrics.forEach((r,i)=>{const card=el('div',{class:'rubric'});card.append(el('label',{class:'element-label',for:'element-'+i},'평가 요소 '+(i+1)));const name=el('input',{id:'element-'+i,class:'name-input',maxlength:60,value:r.name});name.addEventListener('input',()=>{r.name=name.value;save();renderStudents();});card.append(name);levels.forEach((level,j)=>{const row=el('div',{class:'level'}),top=el('div',{class:'level-head'});top.append(el('label',{for:`criterion-${i}-${j}`},level+' 수준'));const score=el('input',{type:'number',class:'score',min:0,step:'any',value:r.scores[j],'aria-label':`평가 요소 ${i+1} ${level} 수준 점수`});score.addEventListener('input',()=>{r.scores[j]=score.value===''?0:Math.max(0,Number(score.value)||0);save();renderStudents();});top.append(score);const desc=el('textarea',{id:`criterion-${i}-${j}`,placeholder:'수준별 기준 설명'});desc.value=r.criteria[j];desc.addEventListener('input',()=>{r.criteria[j]=desc.value;save();renderStudents();});row.append(top,desc);card.append(row);});box.append(card);});}
+let currentStudent=null;
+const validLevel=v=>['0','1','2'].includes(String(v));
+const isComplete=s=>[0,1,2].every(i=>validLevel(s.levels[i]));
+const studentTotal=s=>Math.round(state.rubrics.reduce((sum,r,i)=>sum+(validLevel(s.levels[i])?Number(r.scores[Number(s.levels[i])])||0:0),0)*100)/100;
+function updateLevel(s,i,value){s.levels[i]=value;save();renderStudents();}
+function renderFocus(list){
+ const box=document.getElementById('focus-student');box.replaceChildren();
+ if(!list.includes(currentStudent))currentStudent=list[0]||null;
+ if(!currentStudent){box.append(el('p',{},state.students.length?'미완료 학생이 없습니다. 모든 학생의 채점을 완료했습니다.':'학생을 등록한 후 한 명씩 채점하세요.'));return;}
+ const s=currentStudent,index=list.indexOf(s),nav=el('div',{class:'navigator'}),prev=el('button',{type:'button'},'← 이전 학생'),next=el('button',{type:'button'},'다음 학생 →');
+ prev.disabled=index===0;next.disabled=index===list.length-1;
+ prev.addEventListener('click',()=>{currentStudent=list[index-1];renderStudents();});next.addEventListener('click',()=>{currentStudent=list[index+1];renderStudents();});
+ nav.append(prev,el('h3',{},s.name),next);box.append(nav,el('p',{class:'position'},`현재 목록 ${index+1} / ${list.length}명 · ${isComplete(s)?'채점 완료':'채점 중'} · ${studentTotal(s)}점`));
+ const grid=el('div',{class:'focus-grid'});
+ state.rubrics.forEach((r,i)=>{const group=el('fieldset',{style:'border:0;padding:0;margin:0;min-width:0'});group.append(el('legend',{},r.name||'평가 요소 '+(i+1)));
+ levels.forEach((level,j)=>{const label=el('label',{class:'choice'}),radio=el('input',{type:'radio',name:'focus-level-'+i,value:j});radio.checked=String(s.levels[i])===String(j);radio.addEventListener('change',()=>updateLevel(s,i,String(j)));const text=el('span',{},` ${level} · ${r.scores[j]}점`);text.append(el('small',{},r.criteria[j]||'기준 설명 없음'));label.append(radio,text);group.append(label);});grid.append(group);});box.append(grid);
+}
+function renderStudents(){
+ const completed=state.students.filter(isComplete).length,total=state.students.length,percent=total?Math.round(completed/total*100):0;
+ document.getElementById('progress-text').textContent=`채점 완료 ${completed} / 전체 ${total}명 · 진행률 ${percent}%`;
+ document.getElementById('progress').value=percent;
+ const list=state.students.filter(s=>!document.getElementById('incomplete-only').checked||!isComplete(s));renderFocus(list);
+ const head=document.getElementById('head');head.replaceChildren(...['학생 이름',...state.rubrics.map((r,i)=>r.name||'평가 요소 '+(i+1)),'총점 / 상태','관리'].map(t=>el('th',{scope:'col'},t)));
+ document.getElementById('count').textContent=`학생 ${total}명`;
+ const body=document.getElementById('students');body.replaceChildren();
+ if(!list.length){const tr=el('tr');tr.append(el('td',{colspan:6,class:'empty'},total?'미완료 학생이 없습니다.':'학생을 등록하면 이곳에서 채점할 수 있습니다.'));body.append(tr);return;}
+ list.forEach(s=>{const tr=el('tr'),nameCell=el('td'),nameButton=el('button',{type:'button',class:'student-link'},s.name);nameButton.addEventListener('click',()=>{currentStudent=s;renderStudents();document.getElementById('focus-student').scrollIntoView({behavior:'smooth',block:'nearest'});});nameCell.append(nameButton);tr.append(nameCell);
+ state.rubrics.forEach((r,i)=>{const td=el('td'),select=el('select',{'aria-label':`${s.name} ${r.name||'평가 요소 '+(i+1)} 수준`});select.append(el('option',{value:''},'수준 선택'));levels.forEach((level,j)=>select.append(el('option',{value:j},`${level} · ${r.scores[j]}점${r.criteria[j]?' — '+r.criteria[j]:''}`)));select.value=s.levels[i];select.addEventListener('change',()=>updateLevel(s,i,select.value));td.append(select);tr.append(td);});
+ const selected=s.levels.filter(validLevel).length,score=el('td',{class:'total'},selected?`${studentTotal(s)}점`:'—');score.append(el('div',{style:'font-size:11px;color:#8791a2;font-weight:normal;margin-top:4px'},isComplete(s)?'채점 완료':`${selected}/3개 선택 · 미완료`));tr.append(score);
+ const td=el('td'),del=el('button',{type:'button',class:'delete','aria-label':s.name+' 삭제'},'삭제');del.addEventListener('click',()=>{state.students.splice(state.students.indexOf(s),1);save();renderStudents();});td.append(del);tr.append(td);body.append(tr);});
+}
+document.getElementById('incomplete-only').addEventListener('change',()=>renderStudents());
+document.getElementById('add-form').addEventListener('submit',event=>{event.preventDefault();const input=document.getElementById('student-name'),name=input.value.trim();if(!name){input.focus();return;}state.students.push({name,levels:['','','']});input.value='';save();renderStudents();input.focus();});
+renderRubrics();renderStudents();
+</script>
+</body>
+</html>

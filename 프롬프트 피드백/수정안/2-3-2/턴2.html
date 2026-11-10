@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>학부모 상담 예약 · 미리보기</title>
+  <style>
+    :root{font-family: 'Malgun Gothic',system-ui,sans-serif;color:#24344a;background:#f3f6fb;font-synthesis:none}*{box-sizing:border-box}body{margin:0}header{background:#fff;border-bottom:1px solid #e3e9f2}.top{max-width:1000px;margin:auto;padding:23px 28px;display:flex;align-items:center;gap:12px}.logo{background:#e9efff;color:#345bd7;border-radius:12px;padding:10px;font-size:23px}.brand{font-weight:800;font-size:18px}.brand small{display:block;color:#7b8798;font-weight:400;font-size:12px;margin-top:4px}.badge{margin-left:auto;background:#fff3d5;color:#92630d;border:1px solid #f0dda6;padding:7px 12px;border-radius:20px;font-size:12px;font-weight:bold}main{max-width:850px;margin:38px auto 60px;padding:0 22px}h1{font-size:29px;letter-spacing:-1px;margin:0 0 12px}.intro{color:#69778a;font-size:14px;line-height:1.8}.notice{background:#eaf1ff;color:#395b96;border-radius:12px;padding:16px 20px;margin:23px 0;font-size:13px;line-height:1.8}form{display:grid;gap:20px}.card{background:white;border:1px solid #e0e6ef;border-radius:17px;padding:27px;box-shadow:0 4px 18px #28466704}h2{font-size:18px;margin:0 0 23px;display:flex;align-items:center;gap:10px}.number{display:inline-grid;place-items:center;background:#edf1fc;color:#4665cc;width:27px;height:27px;border-radius:9px;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:21px 18px}.student{display:grid;grid-template-columns:1fr 1fr 2fr;gap:15px}.full{grid-column:1/-1}label,.label{display:block;font-size:13px;font-weight:700;margin-bottom:9px}em{font-style:normal;color:#5173db}input,select,textarea{width:100%;font:inherit;font-size:14px;color:#26364b;padding:12px 13px;background:#fff;border:1px solid #d9e0eb;border-radius:8px;outline:none}input:focus,select:focus,textarea:focus{border-color:#5276e4;box-shadow:0 0 0 3px #5276e415}textarea{resize:vertical;min-height:110px}input::placeholder,textarea::placeholder{color:#9aa5b4}.help{color:#8290a1;font-size:12px;line-height:1.7;margin:8px 0 0}.times{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.choice{position:relative;margin:0}.choice input{position:absolute;opacity:0;width:1px;height:1px}.choice span{display:block;text-align:center;border:1px solid #dce3ed;border-radius:8px;padding:12px 8px;font-size:13px;font-weight:500;cursor:pointer}.choice input:checked+span{border-color:#5276df;background:#edf2ff;color:#345ad0;font-weight:700}.choice input:focus-visible+span{outline:2px solid #5276df;outline-offset:3px}.choice input:disabled+span{background:#f3f5f8;color:#a4adba;cursor:not-allowed;text-decoration:line-through}.methods{display:grid;grid-template-columns:1fr 1fr;gap:12px}.methods span{padding:17px}.foot{text-align:center;color:#8994a5;font-size:12px;line-height:1.8}.submit{border:0;border-radius:10px;background:#4669d8;color:#fff;padding:17px 30px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;width:100%;box-shadow:0 5px 12px #4569d820}.required{font-size:12px;color:#8b97a8;margin-bottom:18px;text-align:right}.result{display:none;background:#eff8f3;border:1px solid #cbe6d5;border-radius:12px;padding:20px;line-height:1.9;color:#326747;font-size:14px}.result:focus{outline:2px solid #7aa88b}footer{text-align:center;font-size:12px;color:#98a3b2;padding:0 15px 30px}@media(max-width:580px){main{margin-top:26px;padding:0 15px}.top{padding:18px}.card{padding:21px 18px}.grid{grid-template-columns:1fr}.student{grid-template-columns:1fr 1fr}.student>div:last-child{grid-column:1/-1}.times{grid-template-columns:repeat(3,1fr)}h1{font-size:25px}.brand{font-size:16px}}
+  </style>
+</head>
+<body>
+  <header><div class="top"><div class="logo" aria-hidden="true">▦</div><div class="brand">학부모 상담 예약<small>아이의 내일을 함께 이야기하는 시간</small></div><span class="badge">미리보기</span></div></header>
+  <main>
+    <h1>선생님과의 상담을 신청하세요</h1>
+    <p class="intro">학생 정보와 희망 일정을 입력해 주세요.<br>학교와 가정이 함께 아이의 성장을 응원합니다.</p>
+    <div class="notice"><strong>미리보기 · 예시 시간표</strong><br>교사, 날짜와 시간은 화면 확인을 위한 예시입니다. 입력한 정보는 저장·전송되지 않으며 실제 상담 예약은 접수되지 않습니다.</div>
+    <form id="booking">
+      <section class="card" aria-labelledby="student-title">
+        <h2 id="student-title"><span class="number">1</span>학생 및 신청자 정보</h2>
+        <div class="required"><em>*</em> 필수 입력 항목</div>
+        <div class="grid">
+          <div class="student full">
+            <div><label for="grade">학년 <em>*</em></label><select id="grade" required><option value="">선택</option>1학년</option><option>2학년</option><option>3학년</option><option>4학년</option><option>5학년</option><option>6학년</option></select></div>
+            <div><label for="classroom">반 <em>*</em></label><input id="classroom" type="number" min="1" max="99" placeholder="예: 2" required></div>
+            <div><label for="student">학생 이름 <em>*</em></label><input id="student" autocomplete="off" maxlength="30" placeholder="학생 이름 입력" required></div>
+          </div>
+          <div><label for="applicant">신청자 이름 <em>*</em></label><input id="applicant" autocomplete="name" maxlength="30" placeholder="신청자 이름 입력" required></div>
+          <div><label for="phone">전화번호 <em>*</em></label><input id="phone" type="tel" autocomplete="tel" pattern="[0-9+()\s-]{9,20}" placeholder="010-1234-5678" required><p class="help">상담 연락을 받을 수 있는 번호를 입력해 주세요.</p></div>
+        </div>
+      </section>
+      <section class="card" aria-labelledby="schedule-title">
+        <h2 id="schedule-title"><span class="number">2</span>상담 일정 및 내용</h2>
+        <div class="grid">
+          <div><label for="teacher">상담 교사 <em>*</em></label><select id="teacher" required><option value="">교사를 선택해 주세요</option><option>김민지 선생님 (담임)</option><option>이서준 선생님 (상담)</option><option>박지영 선생님 (교과)</option></select></div>
+          <div><label for="date">희망 날짜 <em>*</em></label><select id="date" required><option value="">날짜를 선택해 주세요</option><option>2026-11-16 (월)</option><option>2026-11-17 (화)</option><option>2026-11-18 (수)</option></select></div>
+          <div class="full"><div class="label" id="time-label">희망 시간 <em>*</em> <span style="font-weight:400;color:#8a96a8">· 예시 시간표</span></div><div class="times" role="group" aria-labelledby="time-label">
+            <label class="choice"><input type="radio" name="time" value="14:00 ~ 14:20" required><span>14:00 ~ 14:20</span></label>
+            <label class="choice"><input type="radio" name="time" value="14:20 ~ 14:40"><span>14:20 ~ 14:40</span></label>
+            <label class="choice"><input type="radio" name="time" value="14:40 ~ 15:00" disabled><span>14:40 · 예약 마감</span></label>
+            <label class="choice"><input type="radio" name="time" value="15:00 ~ 15:20"><span>15:00 ~ 15:20</span></label>
+            <label class="choice"><input type="radio" name="time" value="15:20 ~ 15:40"><span>15:20 ~ 15:40</span></label>
+            <label class="choice"><input type="radio" name="time" value="15:40 ~ 16:00"><span>15:40 ~ 16:00</span></label>
+          </div><p class="help">상담은 20분 단위입니다. 회색으로 표시된 시간은 선택할 수 없습니다.</p></div>
+          <div class="full"><div class="label" id="method-label">상담 방식 <em>*</em></div><div class="methods" role="group" aria-labelledby="method-label"><label class="choice"><input type="radio" name="method" value="전화상담" required><span>☎ 전화상담</span></label><label class="choice"><input type="radio" name="method" value="방문상담"><span>⌂ 방문상담</span></label></div></div>
+          <div class="full"><label for="content">희망 상담 내용 <em>*</em></label><textarea id="content" maxlength="2000" placeholder="학습, 친구 관계, 학교생활 등 상담하고 싶은 내용을 적어 주세요." required></textarea><p class="help">상담 준비에 도움이 될 내용을 적어 주세요. (최대 2,000자)</p></div>
+        </div>
+      </section>
+      <section class="card" aria-labelledby="password-title"><h2 id="password-title"><span class="number">3</span>신청 조회용 암호</h2><label for="password">상담 신청 암호 <em>*</em></label><input id="password" type="password" minlength="4" maxlength="30" autocomplete="new-password" placeholder="4자 이상 입력해 주세요" aria-describedby="password-help" required><p class="help" id="password-help">신청 내역 조회 시 사용할 암호입니다. 미리보기에서는 암호가 저장되지 않습니다.</p></section>
+      <p class="foot">이 화면은 미리보기입니다. 실제 개인정보 대신 예시 정보를 입력해 주세요.</p>
+      <button class="submit" type="submit">상담 신청 미리보기</button>
+      <div id="result" class="result" role="status" tabindex="-1"></div>
+    </form>
+  </main>
+  <footer>학부모 상담 예약 · 미리보기 화면</footer>
+  <script>
+    document.getElementById('booking').addEventListener('submit',function(event){
+      event.preventDefault();
+      const result=document.getElementById('result');
+      const teacher=document.getElementById('teacher').value;
+      const date=document.getElementById('date').value;
+      const time=this.querySelector('[name="time"]:checked').value;
+      const method=this.querySelector('[name="method"]:checked').value;
+      result.replaceChildren();
+      const heading=document.createElement('strong');heading.textContent='신청 내용 미리보기';
+      const details=document.createElement('p');details.textContent=`${teacher} / ${date} / ${time} / ${method}`;details.style.margin='8px 0';
+      const note=document.createElement('div');note.textContent='실제 예약은 접수되지 않았습니다. 입력 정보와 암호는 저장되지 않습니다.';
+      result.append(heading,details,note);result.style.display='block';result.focus();
+    });
+  </script>
+</body>
+</html>

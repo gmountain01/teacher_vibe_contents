@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>우리 반 칭찬 포인트 보드</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f4f7fc;color:#20304b;font-family:"Malgun Gothic",sans-serif}header{padding:32px 4vw 22px;background:#fff;border-bottom:1px solid #dce4ef}h1{font-size:clamp(30px,4vw,52px);margin:0 0 12px}header p{font-size:21px;margin:0;color:#5b6980}.toolbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:22px}button{font:inherit;cursor:pointer}.manage{background:#263f70;color:white;border:0;border-radius:12px;padding:14px 22px;font-weight:700;font-size:20px}#status{font-size:17px;color:#56677e}main{padding:28px 4vw 50px}.board{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}.card{position:relative;min-height:240px;border:3px solid #dbe5f4;border-radius:24px;background:white;padding:24px 14px;color:#233c63;box-shadow:0 5px 0 #e0e7f1;touch-action:manipulation;transition:transform .12s,background .12s}.card:hover{background:#edf5ff;border-color:#96b9f2}.card:active{transform:scale(.96)}.card:focus-visible,button:focus-visible,textarea:focus-visible{outline:5px solid #f3ad24;outline-offset:4px}.name{display:block;font-size:clamp(28px,3vw,42px);font-weight:800;overflow-wrap:anywhere}.score{display:block;font-size:72px;line-height:1.3;font-weight:900;color:#2565c6;font-variant-numeric:tabular-nums}.unit{font-size:22px;color:#6d7c91}.hint{display:block;margin-top:10px;font-size:18px;color:#667a98}.pop{animation:pop .25s ease}@keyframes pop{50%{background:#e0f7eb;transform:translateY(-5px)}}.empty{text-align:center;padding:65px 15px;font-size:26px;color:#65748b}.editor{max-width:760px;margin:0 auto 28px;background:#fff;padding:26px;border:1px solid #dae3ef;border-radius:20px}.editor h2{margin:0 0 12px;font-size:28px}.editor p{font-size:18px;line-height:1.6}textarea{width:100%;min-height:210px;resize:vertical;padding:16px;border:2px solid #b8c7dc;border-radius:12px;font:22px/1.65 "Malgun Gothic",sans-serif}.actions{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}.secondary{border:1px solid #c2ccda;background:white;color:#40536e;border-radius:12px;padding:12px 22px;font-size:20px}#error{color:#b33232;font-size:18px} [hidden]{display:none!important}@media(max-width:520px){.board{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{min-height:200px;padding:20px 8px}.name{font-size:26px}.score{font-size:60px}header p{font-size:18px}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌟 우리 반 칭찬 포인트 보드</h1>
+    <p>칭찬하고 싶은 학생의 카드를 누르면 1점이 올라가요!</p>
+    <div class="toolbar"><button class="manage" id="manage" type="button">학생 명단 입력 · 수정</button><span id="status" role="status"></span></div>
+  </header>
+  <main>
+    <section class="editor" id="editor" hidden>
+      <h2>우리 반 학생 명단</h2>
+      <p id="instructions">학생 이름을 한 줄에 한 명씩 입력하세요. 쉼표로 구분해도 됩니다.<br>기존 이름을 그대로 두면 점수가 유지됩니다. 동명이인은 ‘김민수(1)’, ‘김민수(2)’처럼 구분해 주세요.</p>
+      <textarea id="names" aria-label="학생 명단" aria-describedby="instructions" placeholder="김민수&#10;이서연&#10;박지우"></textarea>
+      <p id="error" role="alert" hidden></p>
+      <div class="actions"><button class="manage" id="save" type="button">명단 적용하기</button><button class="secondary" id="cancel" type="button">닫기</button></div>
+    </section>
+    <div class="empty" id="empty">학생 명단을 입력하면<br>이곳에 칭찬 카드가 나타나요. ✨</div>
+    <section class="board" id="board" aria-label="학생별 칭찬 포인트"></section>
+  </main>
+  <script>
+    'use strict';
+    const KEY='class-praise-point-board-v1';
+    const board=document.getElementById('board'), editor=document.getElementById('editor'), names=document.getElementById('names'), status=document.getElementById('status'), error=document.getElementById('error');
+    let students=[], storageAvailable=true;
+    try{
+      const raw=localStorage.getItem(KEY);
+      if(raw!==null){
+        const data=JSON.parse(raw);
+        if(!Array.isArray(data)||!data.every(s=>s&&typeof s.name==='string'&&s.name.trim()&&Number.isSafeInteger(s.points)&&s.points>=0)||new Set(data.map(s=>s.name)).size!==data.length)throw new Error('invalid');
+        students=data;
+      }
+      localStorage.setItem(KEY,JSON.stringify(students));
+    }catch(e){storageAvailable=false;}
+    function showStatus(){status.textContent=storageAvailable?'✓ 이 브라우저에 자동 저장됩니다':'⚠ 저장을 사용할 수 없습니다. 이 창을 닫으면 변경한 점수가 사라질 수 있습니다.';}
+    function persist(){try{localStorage.setItem(KEY,JSON.stringify(students));storageAvailable=true;}catch(e){storageAvailable=false;}showStatus();}
+    function render(){
+      board.replaceChildren();document.getElementById('empty').hidden=students.length>0;
+      students.forEach(student=>{
+        const card=document.createElement('button');card.type='button';card.className='card';
+        const name=document.createElement('span');name.className='name';name.textContent=student.name;
+        const score=document.createElement('span');score.className='score';score.textContent=student.points;
+        const unit=document.createElement('span');unit.className='unit';unit.textContent='칭찬 포인트';
+        const hint=document.createElement('span');hint.className='hint';hint.textContent='누르면 +1 ✨';
+        const label=()=>card.setAttribute('aria-label',student.name+' '+student.points+'점, 누르면 1점 추가');label();
+        card.append(name,score,unit,hint);
+        card.addEventListener('click',()=>{
+          if(student.points>=Number.MAX_SAFE_INTEGER)return;
+          student.points+=1;score.textContent=student.points;label();persist();
+          card.classList.remove('pop');void card.offsetWidth;card.classList.add('pop');
+        });board.append(card);
+      });
+    }
+    function openEditor(){names.value=students.map(s=>s.name).join('\n');error.hidden=true;editor.hidden=false;names.focus();}
+    document.getElementById('manage').addEventListener('click',openEditor);
+    document.getElementById('cancel').addEventListener('click',()=>{editor.hidden=true;document.getElementById('manage').focus();});
+    document.getElementById('save').addEventListener('click',()=>{
+      const list=names.value.split(/[\r\n,，]+/).map(n=>n.trim()).filter(Boolean);
+      if(!list.length){error.textContent='학생 이름을 한 명 이상 입력해 주세요.';error.hidden=false;return;}
+      if(new Set(list).size!==list.length){error.textContent='같은 이름이 있습니다. 동명이인은 번호 등을 붙여 구분해 주세요.';error.hidden=false;return;}
+      const removed=students.filter(s=>!list.includes(s.name));
+      if(removed.length&&!confirm('명단에서 빠진 학생 '+removed.length+'명의 카드와 저장된 점수가 삭제됩니다. 명단을 적용할까요?'))return;
+      const previous=new Map(students.map(s=>[s.name,s.points]));
+      students=list.map(name=>({name,points:previous.get(name)??0}));persist();render();editor.hidden=true;
+    });
+    showStatus();render();if(!students.length)openEditor();
+  </script>
+</body>
+</html>

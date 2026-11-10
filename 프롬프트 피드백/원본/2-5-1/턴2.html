@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>단원 관찰 기록 · 평어 초안 만들기</title>
+<style>
+:root{font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;color:#243831;background:#f4f6f2;line-height:1.6}*{box-sizing:border-box}body{margin:0}header{background:#193e34;color:white;padding:35px max(24px,calc((100vw - 1180px)/2)) 40px}header small{color:#b8d4bf;letter-spacing:2px;font-weight:700}h1{font-size:29px;margin:9px 0}header p{margin:0;color:#d2dfd6;font-size:14px}main{max-width:1180px;margin:28px auto;padding:0 24px 35px}.intro{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:14px}.intro p{margin:0;font-size:14px;color:#5f7067}.badge{white-space:nowrap;background:#e4ede4;border:1px solid #d0ded0;padding:6px 12px;border-radius:30px;color:#365e43;font-size:12px}.layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}.panel{background:white;border:1px solid #dce3db;border-radius:15px;padding:26px;box-shadow:0 5px 18px #203b2905}h2{font-size:19px;margin:0 0 5px}.sub{font-size:12px;color:#758178;margin:0 0 22px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:17px}.wide{grid-column:1/-1}label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}input,select,textarea{font:inherit;width:100%;border:1px solid #cdd8cf;border-radius:7px;padding:10px 12px;background:#fff;color:#263b30;font-size:14px}textarea{resize:vertical;min-height:80px}input:focus,select:focus,textarea:focus{outline:3px solid #dcebdd;border-color:#527a5b}.hint{font-size:11px;color:#78847c;margin:4px 0 0}.actions{display:flex;gap:9px;margin-top:23px}button{font:inherit;font-size:13px;font-weight:700;cursor:pointer;border:1px solid #ced9d0;border-radius:7px;padding:10px 15px;color:#375343;background:white}button:hover{background:#edf3ec}button.primary{flex:1;background:#285b44;border-color:#285b44;color:white}button.primary:hover{background:#204b38}.result-head{display:flex;justify-content:space-between;align-items:start;gap:12px}.number{font-size:11px;color:#4e785b;background:#edf3e9;padding:3px 9px;border-radius:5px;white-space:nowrap}.empty{padding:70px 15px;text-align:center;color:#7b8a80;border:1px dashed #d3ddd3;border-radius:10px;margin-top:20px}.empty strong{display:block;color:#526b59;margin:12px 0 7px;font-size:15px}.empty p{font-size:13px;margin:0}.icon{font-size:32px}.draft{border:1px solid #dae3d8;border-radius:10px;padding:17px;margin-top:16px;background:#fafcf8}.draft-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.draft-top h3{font-size:14px;margin:0}.draft-top button{font-size:11px;padding:5px 10px}.draft textarea{min-height:170px;background:white;font-size:14px;line-height:1.85}.count{text-align:right;font-size:11px;color:#7b887c;margin-top:4px}.notice{border-left:3px solid #bbcca8;padding:10px 13px;background:#f0f4e9;color:#647159;font-size:12px;margin-top:20px}.student{font-size:13px;color:#536d59;margin:12px 0 0}footer{font-size:11px;text-align:center;color:#7b877e;margin-top:24px}#status{min-height:22px;font-size:12px;color:#346147;margin-top:12px} [hidden]{display:none!important}@media(max-width:800px){.layout{grid-template-columns:1fr}header{padding:26px 24px}h1{font-size:24px}.intro{align-items:start}.panel{padding:20px}}@media(max-width:420px){.fields{grid-template-columns:1fr}.wide{grid-column:auto}.intro{display:block}.badge{display:inline-block;margin-top:10px}}
+</style>
+</head>
+<body>
+<header><small>TEACHER’S NOTE</small><h1>관찰에서 평어로</h1><p>단원별 관찰 기록을 정리하고, 학생의 배움이 드러나는 평어 초안을 만드세요.</p></header>
+<main>
+<div class="intro"><p>관찰한 사실을 입력하면 두 가지 문장 구성으로 정리합니다.</p><span class="badge">외부 AI API 없이 · 템플릿 기반</span></div>
+<div class="layout">
+<section class="panel"><h2>01. 관찰 기록 입력</h2><p class="sub">모든 항목을 입력해 주세요. 실제로 관찰한 내용을 적어 주세요.</p>
+<form id="recordForm">
+<div class="fields">
+<div><label for="studentId">학번</label><input id="studentId" required maxlength="30" placeholder="예: 20101"></div>
+<div><label for="studentName">학생 이름</label><input id="studentName" required maxlength="40" placeholder="예: 김하늘"></div>
+<div><label for="subject">교과명</label><input id="subject" required maxlength="60" placeholder="예: 과학"></div>
+<div><label for="unit">단원명</label><input id="unit" required maxlength="100" placeholder="예: 물질의 상태 변화"></div>
+<div class="wide"><label for="activity">관찰한 활동</label><textarea id="activity" required maxlength="1000" placeholder="예: 얼음이 녹는 동안 온도 변화를 측정하고 결과를 그래프로 표현함"></textarea></div>
+<div class="wide"><label for="standard">성취 기준</label><textarea id="standard" required maxlength="1000" placeholder="예: 물질의 상태 변화에서 나타나는 현상을 관찰하고 설명할 수 있다"></textarea></div>
+<div class="wide"><label for="level">성취 수준</label><select id="level" required><option value="">성취 수준을 선택하세요</option value="상">상 · 높은 수준의 성취</option><option value="중">중 · 기본 수준의 성취</option><option value="하">하 · 지속적인 지원 필요</option></select></div>
+<div class="wide"><label for="keywords">관찰 키워드</label><input id="keywords" required maxlength="300" placeholder="예: 자료 해석, 협력, 꼼꼼한 기록"><p class="hint">쉼표(,)로 구분해 입력하세요. 입력한 키워드만 문장에 반영합니다.</p></div>
+</div>
+<div class="actions"><button type="reset">초기화</button><button type="submit" class="primary">평어 초안 2개 만들기 →</button></div>
+</form></section>
+<section class="panel" aria-labelledby="resultTitle"><div class="result-head"><div><h2 id="resultTitle">02. 평어 초안</h2><p class="sub">생성한 문장은 직접 수정하고 복사할 수 있습니다.</p></div><span class="number">2가지 구성</span></div>
+<div id="empty" class="empty"><span class="icon" aria-hidden="true">✎</span><strong>관찰 기록이 문장이 되는 곳</strong><p>왼쪽 항목을 입력하고<br>‘평어 초안 2개 만들기’를 눌러 주세요.</p></div>
+<div id="results" hidden><p id="studentInfo" class="student"></p>
+<article class="draft"><div class="draft-top"><h3><label for="draft1">초안 1 · 활동 중심</label></h3><button type="button" data-copy="draft1">복사</button></div><textarea id="draft1" aria-label="활동 중심 평어 초안"></textarea><div id="count1" class="count"></div></article>
+<article class="draft"><div class="draft-top"><h3><label for="draft2">초안 2 · 성취 기준 중심</label></h3><button type="button" data-copy="draft2">복사</button></div><textarea id="draft2" aria-label="성취 기준 중심 평어 초안"></textarea><div id="count2" class="count"></div></article></div>
+<div id="status" role="status" aria-live="polite"></div>
+<div class="notice">초안은 입력 내용과 정해진 문장 템플릿을 조합한 결과입니다. 학생의 실제 수행과 성취 기준에 맞게 교사가 확인·수정한 뒤 활용해 주세요.</div>
+</section></div>
+<section class="panel" style="margin-top:24px" aria-labelledby="listTitle"><h2 id="listTitle">03. 학생별 기록 목록</h2><p class="sub">수정한 평어와 관찰 기록을 함께 저장합니다. 기록을 누르면 다시 편집할 수 있습니다.</p><label for="recordSearch">학생·교과·단원 검색</label><input id="recordSearch" type="search" placeholder="학번, 이름, 교과명 또는 단원명"><p id="storageNotice" class="hint"></p><div id="recordList"></div></section>
+<footer>외부 전송 없이 이 브라우저에 저장합니다. 공용 기기에서는 사용 후 저장한 기록을 삭제해 주세요.</footer>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const fields=['studentId','studentName','subject','unit','activity','standard','level','keywords'];
+const endings={
+ '상':['성취 기준에서 요구하는 학습 내용을 높은 수준으로 성취함.','단원의 성취 기준에 비추어 우수한 학습 수행을 보임.','해당 성취 기준에 대한 높은 이해 수준이 관찰됨.','성취 기준에 따른 수행에서 높은 성취 수준을 나타냄.'],
+ '중':['성취 기준에서 요구하는 기본 내용을 이해한 수준임.','단원의 핵심 학습 내용에 대해 기본적인 성취를 보임.','해당 성취 기준에 대한 기본 이해 수준이 관찰됨.','성취 기준에 따른 기본 수행을 보이며 학습 내용을 익혀 가고 있음.'],
+ '하':['성취 기준에 도달할 수 있도록 단계별 연습과 지원이 필요함.','핵심 개념을 익히기 위한 구체적인 안내와 반복 학습이 필요함.','성취 기준의 기본 요소를 중심으로 학습을 이어 갈 필요가 있음.','작은 과제부터 수행하며 단원의 기초 내용을 익히도록 지원이 필요함.']
+};
+const activityTypes=[
+ [/실험|측정|관찰|탐구/,'탐구 활동',['탐구 과정에서 관찰한 내용은 다음과 같음: ','탐구 수행에 관한 기록을 살펴보면 다음과 같음: ']],
+ [/토론|토의|협의|의견/,'의견 나누기 활동',['의견을 나누는 과정에서 다음 활동이 관찰됨: ','의견 교환에 관한 활동 기록은 다음과 같음: ']],
+ [/발표|설명|말하기/,'발표·설명 활동',['학습 내용을 전달하는 활동에서 다음 수행이 관찰됨: ','발표·설명 과정에 관한 기록은 다음과 같음: ']],
+ [/제작|만들|그리|그림|설계|작품/,'표현·제작 활동',['학습 내용을 표현하는 과정에서 다음 활동을 수행함: ','표현·제작 과정에 관한 관찰 내용은 다음과 같음: ']],
+ [/문제|풀이|계산|해결/,'문제 해결 활동',['문제 해결 과정에서 다음 수행이 관찰됨: ','과제 해결에 관한 활동 기록은 다음과 같음: ']],
+ [/읽|독서|쓰기|글|감상/,'읽기·쓰기 활동',['읽기·쓰기 과정에서 다음 활동이 관찰됨: ','학습 내용을 읽고 표현하는 활동 기록은 다음과 같음: ']]
+];
+let variation=0,activeId=null,snapshot=null,dirty=false;
+const storageKey='unit-observation-records-v1';
+let records=[];
+try{const saved=JSON.parse(localStorage.getItem(storageKey)||'[]');if(Array.isArray(saved))records=saved.filter(r=>r&&typeof r.id==='string'&&r.data&&fields.every(k=>typeof r.data[k]==='string')&&typeof r.draft1==='string'&&typeof r.draft2==='string');$('storageNotice').textContent='저장 버튼을 누른 기록만 이 브라우저에 보관됩니다.';}catch(error){$('storageNotice').textContent='브라우저 저장소를 사용할 수 없습니다. 현재 창에서만 기록을 보관합니다.';}
+const saveButton=document.createElement('button');saveButton.type='button';saveButton.className='primary';saveButton.textContent='학생 기록 저장';$('results').append(saveButton);
+function persist(){try{localStorage.setItem(storageKey,JSON.stringify(records));return '브라우저에 저장했습니다.';}catch(error){return '현재 창에만 보관했습니다. 브라우저 저장소를 사용할 수 없습니다.';}}
+function markDirty(){dirty=true;}
+function canLeave(){return !dirty||confirm('저장하지 않은 변경 내용이 있습니다. 변경 내용을 버리고 계속할까요?');}
+function showData(data){$('studentInfo').textContent=`${data.studentId} · ${data.studentName} | ${data.subject} · ${data.unit} | 성취 수준 ${data.level}`;$('empty').hidden=true;$('results').hidden=false;updateCount(1);updateCount(2);saveButton.textContent=activeId?'학생 기록 수정 저장':'학생 기록 저장';}
+function renderRecords(){
+ const list=$('recordList');list.replaceChildren();const query=clean($('recordSearch').value).toLowerCase();
+ const matches=records.filter(r=>[r.data.studentId,r.data.studentName,r.data.subject,r.data.unit].join(' ').toLowerCase().includes(query));
+ if(!matches.length){const p=document.createElement('p');p.className='sub';p.style.marginTop='18px';p.textContent=records.length?'검색 결과가 없습니다.':'저장된 학생 기록이 없습니다.';list.append(p);return;}
+ const groups=new Map();for(const record of matches){const key=JSON.stringify([record.data.studentId,record.data.studentName]);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(record);}
+ for(const group of groups.values()){
+ const title=document.createElement('h3');title.style.fontSize='15px';title.textContent=`${group[0].data.studentId} · ${group[0].data.studentName}`;list.append(title);
+ for(const record of group){const row=document.createElement('div');row.className='draft';const open=document.createElement('button');open.type='button';open.textContent=`${record.data.subject} · ${record.data.unit} | ${record.data.level} | ${new Date(record.updated).toLocaleString('ko-KR')}`;open.style.textAlign='left';open.addEventListener('click',()=>{if(!canLeave())return;fields.forEach(k=>{$(k).value=record.data[k];$(k).setCustomValidity('');});activeId=record.id;snapshot={...record.data};$('draft1').value=record.draft1;$('draft2').value=record.draft2;dirty=false;showData(snapshot);$('status').textContent='저장한 기록을 불러왔습니다. 수정 후 저장해 주세요.';$('recordForm').scrollIntoView({behavior:'smooth',block:'start'});});
+ const remove=document.createElement('button');remove.type='button';remove.textContent='삭제';remove.style.marginLeft='8px';remove.addEventListener('click',()=>{if(!confirm(`${record.data.studentName} 학생의 ${record.data.unit} 기록을 삭제할까요?`))return;records=records.filter(r=>r.id!==record.id);if(activeId===record.id){activeId=null;saveButton.textContent='학생 기록 저장';dirty=true;}$('status').textContent='기록을 삭제했습니다. '+persist();renderRecords();});row.append(open,remove);list.append(row);}
+ }
+}
+$('recordSearch').addEventListener('input',renderRecords);
+saveButton.addEventListener('click',()=>{
+ if(!snapshot)return;
+ if(fields.some(k=>clean($(k).value)!==snapshot[k])){$('status').textContent='관찰 입력이 변경되었습니다. 초안을 다시 만든 뒤 저장해 주세요.';return;}
+ if(!$('draft1').value.trim()||!$('draft2').value.trim()){$('status').textContent='두 평어 초안을 모두 작성해 주세요.';return;}
+ const id=activeId||String(Date.now())+'-'+Math.random().toString(36).slice(2);
+ const record={id,data:{...snapshot},draft1:$('draft1').value,draft2:$('draft2').value,updated:new Date().toISOString()};
+ const index=records.findIndex(r=>r.id===id);if(index>=0)records[index]=record;else records.unshift(record);activeId=id;dirty=false;saveButton.textContent='학생 기록 수정 저장';$('status').textContent=persist();renderRecords();
+});
+window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
+renderRecords();
+function clean(value){return value.trim().replace(/\s+/g,' ')}
+function sentence(value){return /[.!?。！？]$/.test(value)?value:value+'.'}
+function updateCount(n){$('count'+n).textContent=Array.from($('draft'+n).value).length+'자 (공백 포함)'}
+$('recordForm').addEventListener('submit',event=>{
+ event.preventDefault();
+ if(!$('results').hidden&&dirty&&!confirm('초안을 새로 만들면 현재 편집한 문장이 바뀝니다. 계속할까요?'))return;
+ const data={};
+ for(const key of fields){data[key]=clean($(key).value);if(!data[key]){$(key).setCustomValidity('공백이 아닌 내용을 입력해 주세요.');$(key).reportValidity();return;}}
+ const keywords=[...new Set(data.keywords.split(/[,，\n]+/).map(clean).filter(Boolean))];
+ if(!keywords.length){$('keywords').setCustomValidity('관찰 키워드를 하나 이상 입력해 주세요.');$('keywords').reportValidity();return;}
+ const keyText=keywords.join(', ');
+ const type=activityTypes.find(t=>t[0].test(data.activity))||[null,'학습 활동',['단원 학습 중 다음 활동을 수행함: ','학습 수행에 관한 관찰 내용은 다음과 같음: ']];
+ const offset=variation++%4;
+ const keyPhrases=[`관찰 키워드는 ${keyText}임.`,`이 과정에서 ${keyText} 관련 특징이 기록됨.`,`활동의 주요 관찰 요소는 ${keyText}임.`,`관찰 기록에는 ${keyText} 관련 내용이 나타남.`];
+ $('draft1').value=`${data.subject} ‘${data.unit}’ 단원의 ${type[1]}에 참여함. ${type[2][offset%2]}${sentence(data.activity)} ${keyPhrases[offset]} 성취 기준 ‘${data.standard}’에 비추어 볼 때, ${endings[data.level][offset]}`;
+ $('draft2').value=`‘${data.standard}’을 성취 기준으로 하는 ${data.subject} ‘${data.unit}’ 단원에서 ${endings[data.level][(offset+1)%4]} ${type[2][(offset+1)%2]}${sentence(data.activity)} ${keyPhrases[(offset+2)%4]}`;
+ if(snapshot&&['studentId','studentName','subject','unit'].some(k=>snapshot[k]!==data[k]))activeId=null;
+ snapshot={...data};dirty=true;showData(data);
+ $('studentInfo').textContent=`${data.studentId} · ${data.studentName} | ${data.subject} · ${data.unit} | 성취 수준 ${data.level}`;
+ $('empty').hidden=true;$('results').hidden=false;updateCount(1);updateCount(2);
+ $('status').textContent='평어 초안 2개를 만들었습니다. 내용을 확인하고 수정해 주세요.';
+});
+fields.forEach(id=>$(id).addEventListener('input',()=>{markDirty();$(id).setCustomValidity('');if(!$('results').hidden)$('status').textContent='입력 내용이 변경되었습니다. 만들기 버튼을 누르면 초안이 갱신됩니다.';}));
+[1,2].forEach(n=>$('draft'+n).addEventListener('input',()=>{updateCount(n);markDirty();$('status').textContent='평어를 수정했습니다. 학생 기록 저장 버튼으로 변경 내용을 저장해 주세요.';}));
+$('recordForm').addEventListener('reset',event=>{if(!canLeave()){event.preventDefault();return;}activeId=null;snapshot=null;dirty=false;fields.forEach(id=>$(id).setCustomValidity(''));$('empty').hidden=false;$('results').hidden=true;$('studentInfo').textContent='';$('draft1').value='';$('draft2').value='';$('status').textContent='새 학생을 입력할 수 있습니다. 저장한 기록은 목록에 유지됩니다.';});
+document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{
+ const target=$(button.dataset.copy);
+ try{if(!navigator.clipboard)throw new Error('clipboard unavailable');await navigator.clipboard.writeText(target.value);$('status').textContent='초안을 복사했습니다.';}
+ catch(error){target.focus();target.select();$('status').textContent='초안을 선택했습니다. Ctrl+C 또는 기기의 복사 메뉴로 복사해 주세요.';}
+}));
+</script>
+</body>
+</html>

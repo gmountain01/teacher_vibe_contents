@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>과제 점검판</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fb;color:#17243b;font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif}main{max-width:1280px;margin:auto;padding:36px 24px 60px}h1{font-size:32px;margin:0 0 10px}.intro{color:#627089;margin:0 0 28px}.setup{background:white;border:1px solid #dce3ef;border-radius:20px;padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px;box-shadow:0 6px 24px #23395308}label{display:block;font-size:17px;font-weight:700;margin-bottom:10px}input,textarea{width:100%;font:inherit;padding:13px 15px;border:1px solid #b9c5d7;border-radius:10px;color:inherit;background:#fff}textarea{resize:vertical;min-height:138px}input:focus,textarea:focus{outline:3px solid #b7d2ff;border-color:#326bce}.hint{font-size:14px;color:#627089;line-height:1.7;margin:10px 0}.primary{background:#285fbd;color:white;border:0;border-radius:10px;padding:14px 22px;font:inherit;font-weight:750;cursor:pointer}.primary:hover{background:#204f9e}.error{color:#b42318;min-height:22px;margin:12px 0 0}.board{margin-top:32px}.board-head{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:18px}h2{font-size:30px;margin:0;overflow-wrap:anywhere}.count{font-size:26px;font-weight:800;color:#175c43;background:#e0f3eb;border-radius:14px;padding:13px 20px;white-space:nowrap}.progress{height:10px;background:#dfe6f0;border-radius:10px;overflow:hidden;margin-bottom:24px}.progress div{height:100%;background:#26966c;transition:width .2s}.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}.card{min-height:156px;padding:24px 14px;border:2px solid #d4ddeb;background:white;border-radius:18px;cursor:pointer;font:inherit;color:#27364e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;box-shadow:0 4px 10px #23395306;transition:background .15s,border-color .15s}.card:hover{border-color:#7d9ac9}.card:focus-visible{outline:4px solid #91baff;outline-offset:3px}.name{font-size:30px;font-weight:800;overflow-wrap:anywhere;max-width:100%}.status{font-size:18px;font-weight:700;color:#6b7890}.card.done{background:#dcf5e8;border-color:#239363;color:#14553c}.done .status{color:#146341}.empty{text-align:center;padding:55px 20px;background:#fff;border:2px dashed #d4ddeb;border-radius:18px;color:#64728a;line-height:1.8}.guide{color:#627089;font-size:15px;margin:0 0 18px}@media(max-width:640px){main{padding:24px 16px}.setup{grid-template-columns:1fr;padding:20px}h2{font-size:25px}.count{font-size:22px}.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.name{font-size:26px}.card{min-height:140px}}
+.toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}.teacher{font:inherit;font-weight:750;border:2px solid #8b9bb5;border-radius:10px;background:white;color:#34445f;padding:11px 20px;cursor:pointer}.teacher[aria-pressed="true"]{background:#285fbd;color:white;border-color:#285fbd}.mode-note{color:#627089;font-size:14px}.student-card{min-width:0}.student-card .card{width:100%}.card.retry{background:#fff0dc;border-color:#ed912c;color:#924308}.retry .status{color:#a34a08}.attempts{font-size:13px;color:#627089;font-weight:500}.rating{display:flex;gap:6px;margin-top:8px}.rating button{flex:1;font:inherit;font-weight:700;cursor:pointer;padding:10px 4px;border:1px solid #b9c5d7;border-radius:9px;background:white;color:#34445f}.rating button:hover{background:#e7efff}.rating button[aria-pressed="true"]{background:#285fbd;color:white;border-color:#285fbd}.rating button:focus-visible,.teacher:focus-visible{outline:3px solid #91baff;outline-offset:2px}
+.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:22px;padding:3px}.tab{flex-shrink:0;max-width:320px;overflow-wrap:anywhere;border:1px solid #c5d0e2;background:white;color:#34445f;border-radius:12px;padding:12px 18px;font:inherit;cursor:pointer}.tab[aria-selected="true"]{background:#285fbd;color:white;border-color:#285fbd}.tab:focus-visible{outline:3px solid #91baff}.table-wrap{overflow-x:auto;border:1px solid #dce3ef;border-radius:14px;background:white}table{width:100%;border-collapse:collapse;text-align:center;min-width:480px}caption{text-align:left;padding:16px;color:#627089;font-size:14px}th,td{padding:16px;border-bottom:1px solid #e1e7f0;border-right:1px solid #e1e7f0;min-width:150px;overflow-wrap:anywhere}thead th{background:#eaf0fa}tbody th{background:#f7f9fc}td small{display:block;color:#627089;margin-top:7px}.low-grade{color:#a34a08}.ranking{margin-top:22px;background:#fff2e2;border:1px solid #edc792;border-radius:14px;padding:20px}.ranking h3{margin:0 0 10px;font-size:19px}.ranking li{margin:8px 0}.ranking p{font-size:14px;color:#735a39}[hidden]{display:none!important}
+.record-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 24px}.record-tools button{font:inherit;padding:10px 16px;border:1px solid #b9c5d7;border-radius:10px;background:white;color:#34445f;cursor:pointer}.record-message{font-size:14px;color:#627089}.print-sheet{position:absolute;left:-100000px;top:0;width:277mm;height:189mm;visibility:hidden;overflow:hidden}.print-content{transform-origin:top left}.print-content table{table-layout:fixed;min-width:0;font-size:12px}.print-content caption{font-size:12px;padding:8px}.print-content th,.print-content td{min-width:0;padding:6px;border:1px solid #b8c0cd}.print-content td small{font-size:10px;margin-top:3px}
+@page{size:A4 landscape;margin:10mm}
+@media print{html,body{margin:0!important;padding:0!important;background:white}body>main{display:none!important}.print-sheet{position:static;visibility:visible;width:277mm;height:189mm;overflow:hidden;break-inside:avoid;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<main>
+<h1>과제 점검판</h1>
+<p class="intro">학생 카드를 눌러 제출 여부를 한눈에 확인하세요.</p>
+<div class="record-tools"><button type="button" id="print">인쇄</button><button type="button" id="export">기록 내보내기</button><button type="button" id="import">기록 불러오기</button><input type="file" id="importFile" accept=".json,application/json" hidden><span class="record-message" id="recordMessage" role="status">기록은 이 브라우저에 자동 저장됩니다.</span></div>
+<form class="setup" id="setup">
+<div><label for="assignment">과제 이름</label><input id="assignment" placeholder="예: 수학 익힘책 24쪽" maxlength="150"><p class="hint">과제를 등록하면 새 탭이 추가됩니다. 기존 과제의 기록은 유지됩니다.</p><button class="primary" type="submit">과제 등록</button><p class="error" id="error" role="alert"></p></div>
+<div><label for="students">학생 명단</label><textarea id="students" placeholder="김민준&#10;이서연&#10;박지우"></textarea><p class="hint">한 줄에 한 명씩 입력하세요. 쉼표로 구분해도 됩니다.<br>첫 과제 등록 시 명단이 확정되며, 모든 과제에서 같은 명단을 사용합니다.</p></div>
+</form>
+<section class="board" aria-label="학생별 과제 제출 현황">
+<div class="tabs" id="tabs" role="tablist" aria-label="과제 선택"></div>
+<div class="board-head"><h2 id="boardTitle">과제 제출 현황</h2><div class="count" id="count" aria-live="polite">제출 0/0명</div></div>
+<div class="toolbar"><button type="button" class="teacher" id="teacher" aria-pressed="false">선생님</button><span class="mode-note" id="modeNote">학생 모드 · 카드를 눌러 제출하거나 취소하세요.</span></div>
+<div class="progress" aria-hidden="true"><div id="bar" style="width:0%"></div></div>
+<p class="guide" id="guide" hidden>주황색 ‘다시 도전’ 카드를 누르면 재제출됩니다. 선생님 모드에서는 제출한 카드만 평가할 수 있습니다.</p>
+<div class="cards" id="cards"></div><div class="empty" id="empty">아직 점검판이 없습니다.<br>위에서 과제 이름과 학생 명단을 입력해 주세요.</div>
+<div id="cumulative" class="table-wrap" hidden></div>
+<aside id="ranking" class="ranking" hidden></aside>
+</section>
+</main>
+<div class="print-sheet" id="printSheet" aria-hidden="true"><div class="print-content" id="printContent"></div></div>
+<script>
+const form=document.getElementById('setup'),cards=document.getElementById('cards');
+let students=[],teacherMode=false,assignments=[],roster=[],activeTab=null;
+const storageKey='assignment-checkboard-v1';
+function recordData(){return {version:1,roster,assignments,activeTab}}
+function message(text){document.getElementById('recordMessage').textContent=text}
+function saveRecords(){try{localStorage.setItem(storageKey,JSON.stringify(recordData()));message('브라우저에 자동 저장되었습니다.')}catch{message('브라우저에 저장할 수 없습니다. 기록 내보내기로 보관해 주세요.')}}
+function validateRecords(data){
+ const grade=value=>value===null||['상','중','하'].includes(value);
+ const name=value=>typeof value==='string'&&value.trim().length>0;
+ if(!data||data.version!==1||!Array.isArray(data.roster)||!data.roster.every(name)||!Array.isArray(data.assignments))throw Error('형식');
+ const titles=new Set();
+ for(const a of data.assignments){
+  if(!a||!name(a.title)||titles.has(a.title)||!Array.isArray(a.students)||!data.roster.length||a.students.length!==data.roster.length)throw Error('과제');titles.add(a.title);
+  a.students.forEach((s,i)=>{if(!s||s.name!==data.roster[i]||typeof s.done!=='boolean'||!Number.isSafeInteger(s.attempts)||s.attempts<0||!grade(s.grade)||!grade(s.finalGrade)||!grade(s.previousGrade)||!grade(s.previousFinalGrade)||(s.done&&s.attempts===0)||(s.grade==='하'&&s.done))throw Error('학생 기록')});
+ }
+ return data;
+}
+function applyRecords(data){
+ roster=data.roster;assignments=data.assignments;
+ activeTab=data.activeTab==='summary'?'summary':Number.isInteger(data.activeTab)&&data.activeTab>=0&&data.activeTab<assignments.length?data.activeTab:assignments.length?0:null;
+ students=typeof activeTab==='number'?assignments[activeTab].students:[];
+ teacherMode=false;teacherButton.setAttribute('aria-pressed','false');document.getElementById('modeNote').textContent='학생 모드 · 카드를 눌러 제출하거나 취소하세요.';
+ document.getElementById('students').value=roster.join('\n');document.getElementById('students').disabled=assignments.length>0;
+ document.getElementById('error').textContent='';renderCards();
+}
+document.getElementById('export').addEventListener('click',()=>{
+ const url=URL.createObjectURL(new Blob([JSON.stringify(recordData(),null,2)],{type:'application/json'}));
+ const link=document.createElement('a');link.href=url;link.download=`과제점검판_${new Date().toISOString().slice(0,10)}.json`;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);message('기록 파일을 내보냈습니다.');
+});
+document.getElementById('import').addEventListener('click',()=>document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change',async event=>{
+ const file=event.target.files[0];if(!file)return;
+ try{
+  const data=validateRecords(JSON.parse(await file.text()));
+  if(assignments.length&&!window.confirm('현재 기록을 불러온 파일의 기록으로 바꿀까요? 기존 기록은 먼저 내보내기로 보관할 수 있습니다.'))return;
+  applyRecords(data);
+ }catch{message('올바른 과제 점검판 기록 파일이 아닙니다. 기존 기록은 유지됩니다.')}finally{event.target.value=''}
+});
+function preparePrint(){
+ renderSummary();
+ const content=document.getElementById('printContent'),sheet=document.getElementById('printSheet');content.replaceChildren(document.getElementById('cumulative').firstElementChild.cloneNode(true));
+ content.style.transform='none';content.style.width=Math.max(sheet.clientWidth,(assignments.length+1)*130)+'px';
+ const scale=Math.min(1,sheet.clientWidth/content.scrollWidth,sheet.clientHeight/content.scrollHeight);content.style.transform=`scale(${scale})`;
+}
+document.getElementById('print').addEventListener('click',()=>{if(!assignments.length){message('과제를 등록한 뒤 인쇄해 주세요.');return}preparePrint();window.print()});
+window.addEventListener('beforeprint',preparePrint);
+function renderTabs(){
+ const tabs=document.getElementById('tabs');tabs.replaceChildren();
+ [...assignments.map((a,i)=>({id:i,title:a.title})),{id:'summary',title:'누적 보기'}].forEach(item=>{
+  const tab=document.createElement('button');tab.type='button';tab.className='tab';tab.setAttribute('role','tab');tab.setAttribute('aria-selected',String(activeTab===item.id));tab.textContent=item.title;
+  tab.addEventListener('click',()=>{activeTab=item.id;students=typeof activeTab==='number'?assignments[activeTab].students:[];renderCards()});
+  tab.addEventListener('keydown',event=>{const list=[...tabs.children];let index=list.indexOf(tab);if(event.key==='ArrowRight')index=(index+1)%list.length;else if(event.key==='ArrowLeft')index=(index-1+list.length)%list.length;else return;event.preventDefault();list[index].focus();list[index].click()});tabs.append(tab);
+ });
+}
+function renderSummary(){
+ const host=document.getElementById('cumulative');host.replaceChildren();
+ const table=document.createElement('table'),caption=document.createElement('caption');caption.textContent='각 과제의 마지막 평가와 도전 횟수입니다. 재제출 후 평가 대기 중에는 이전 최종 평가도 표시합니다.';table.append(caption);
+ const head=document.createElement('thead'),row=document.createElement('tr');
+ ['학생',...assignments.map(a=>a.title)].forEach(title=>{const th=document.createElement('th');th.scope='col';th.textContent=title;row.append(th)});head.append(row);table.append(head);
+ const body=document.createElement('tbody');roster.forEach((name,index)=>{
+  const tr=document.createElement('tr'),th=document.createElement('th');th.scope='row';th.textContent=name;tr.append(th);
+  assignments.forEach(assignment=>{const s=assignment.students[index],td=document.createElement('td'),grade=document.createElement('div'),attempt=document.createElement('small');
+   grade.textContent=s.finalGrade==='하'?'다시 도전':s.finalGrade||'평가 없음';if(s.finalGrade==='하')grade.className='low-grade';
+   attempt.textContent=`도전 ${s.attempts}회 · ${s.done?(s.grade?'평가 완료':'평가 대기'):s.grade==='하'?'재제출 대기':'미제출'}`;td.append(grade,attempt);tr.append(td);
+  });body.append(tr);
+ });table.append(body);host.append(table);
+}
+function renderRanking(){
+ const host=document.getElementById('ranking');host.replaceChildren();host.hidden=!teacherMode||!assignments.length;if(host.hidden)return;
+ const heading=document.createElement('h3');heading.textContent='‘상’ 비율이 낮은 학생 3명';
+ const note=document.createElement('p');note.textContent='학생별 최종 평가가 있는 과제 중 ‘상’인 과제의 비율입니다. 평가가 없는 학생은 제외하며, 동률은 명단 순입니다.';host.append(heading,note);
+ const ranked=roster.map((name,index)=>{const evaluated=assignments.map(a=>a.students[index].finalGrade).filter(Boolean);const high=evaluated.filter(g=>g==='상').length;return {name,index,total:evaluated.length,high,ratio:evaluated.length?high/evaluated.length:0}}).filter(s=>s.total).sort((a,b)=>a.ratio-b.ratio||a.index-b.index).slice(0,3);
+ if(!ranked.length){const p=document.createElement('p');p.textContent='아직 평가 기록이 없습니다.';host.append(p);return}
+ const list=document.createElement('ol');ranked.forEach(s=>{const li=document.createElement('li');li.textContent=`${s.name} · ${(s.ratio*100).toFixed(1)}% (${s.high}/${s.total}과제)`;list.append(li)});host.append(list);
+}
+const teacherButton=document.getElementById('teacher');
+teacherButton.addEventListener('click',()=>{
+ teacherMode=!teacherMode;teacherButton.setAttribute('aria-pressed',String(teacherMode));
+ document.getElementById('modeNote').textContent=teacherMode?'선생님 모드 · 제출한 카드 아래에서 상·중·하를 선택하세요.':'학생 모드 · 카드를 눌러 제출하거나 취소하세요.';
+ renderCards();
+});
+function updateCount(){const n=students.filter(s=>s.done).length;document.getElementById('count').textContent=`제출 ${n}/${students.length}명`;document.getElementById('bar').style.width=students.length?`${n/students.length*100}%`:'0%'}
+function renderCards(){
+ saveRecords();
+ renderTabs();renderRanking();
+ const summary=activeTab==='summary',hasAssignment=typeof activeTab==='number';
+ document.getElementById('boardTitle').textContent=summary?'누적 보기':hasAssignment?assignments[activeTab].title:'과제 제출 현황';
+ document.getElementById('count').hidden=summary;
+ document.querySelector('.progress').hidden=summary;
+ document.getElementById('guide').hidden=summary||!hasAssignment;
+ document.getElementById('empty').hidden=summary||hasAssignment;
+ document.getElementById('cumulative').hidden=!summary;
+ cards.hidden=summary;
+ if(summary){cards.replaceChildren();renderSummary();return}
+ cards.replaceChildren();
+ students.forEach(student=>{
+  const wrapper=document.createElement('div');wrapper.className='student-card';
+  const button=document.createElement('button');button.type='button';button.className='card';
+  button.classList.toggle('done',student.done);button.classList.toggle('retry',student.grade==='하');
+  button.setAttribute('aria-pressed',String(student.done));
+  const name=document.createElement('span');name.className='name';name.textContent=student.name;
+  const status=document.createElement('span');status.className='status';
+  status.textContent=student.grade==='하'?'다시 도전':student.done?'제출':'미제출';
+  const attempts=document.createElement('span');attempts.className='attempts';attempts.textContent=`도전 ${student.attempts}회`;
+  button.append(name,status,attempts);button.setAttribute('aria-label',`${student.name}, ${status.textContent}, 도전 ${student.attempts}회`);
+  button.addEventListener('click',()=>{
+   if(teacherMode)return;
+   if(student.done){student.done=false;student.attempts=Math.max(0,student.attempts-1);student.grade=student.previousGrade;student.finalGrade=student.previousFinalGrade;}
+   else{student.previousGrade=student.grade;student.previousFinalGrade=student.finalGrade;student.done=true;student.attempts++;student.grade=null;}
+   renderCards();
+  });
+  wrapper.append(button);
+  if(teacherMode&&student.done){
+   const rating=document.createElement('div');rating.className='rating';rating.setAttribute('role','group');rating.setAttribute('aria-label',`${student.name} 평가`);
+   ['상','중','하'].forEach(grade=>{
+    const option=document.createElement('button');option.type='button';option.textContent=grade;option.setAttribute('aria-label',grade==='하'?'하 · 다시 도전':grade);option.setAttribute('aria-pressed',String(student.grade===grade));
+    option.addEventListener('click',()=>{if(!teacherMode||!student.done)return;student.grade=grade;student.finalGrade=grade;if(grade==='하')student.done=false;renderCards();});rating.append(option);
+   });wrapper.append(rating);
+  }
+  cards.append(wrapper);
+ });updateCount();
+}
+form.addEventListener('submit',event=>{
+ event.preventDefault();
+ const title=document.getElementById('assignment').value.trim();
+ const names=document.getElementById('students').value.split(/[\n,，]+/).map(s=>s.trim()).filter(Boolean);
+ const error=document.getElementById('error');
+ if(!title||!names.length){error.textContent='과제 이름과 학생 명단을 모두 입력해 주세요.';return}
+ if(assignments.some(a=>a.title===title)){error.textContent='같은 이름의 과제가 있습니다. 다른 이름을 입력해 주세요.';return}
+ if(!roster.length)roster=names;
+ error.textContent='';students=roster.map(name=>({name,done:false,grade:null,finalGrade:null,previousGrade:null,previousFinalGrade:null,attempts:0}));
+ assignments.push({title,students});activeTab=assignments.length-1;
+ document.getElementById('students').disabled=true;
+ document.getElementById('assignment').value='';
+ renderCards();
+});
+try{const saved=localStorage.getItem(storageKey);if(saved)applyRecords(validateRecords(JSON.parse(saved)));else renderTabs()}catch{renderTabs();message('저장된 기록을 불러올 수 없습니다. 기록 파일을 불러와 주세요.')}
+</script>
+</body>
+</html>

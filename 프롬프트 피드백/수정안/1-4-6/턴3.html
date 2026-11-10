@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>나의 파이썬 연습장</title>
+<style>
+:root{color-scheme:light;--ink:#203047;--muted:#69798e;--accent:#4568e8}*{box-sizing:border-box}body{margin:0;background:#f2f5fa;color:var(--ink);font-family:system-ui,-apple-system,"맑은 고딕",sans-serif}main{max-width:1180px;margin:auto;padding:48px 28px}header{display:flex;align-items:center;justify-content:space-between;gap:20px}h1{font-size:30px;letter-spacing:-1px;margin:8px 0}p{line-height:1.7}.eyebrow{color:var(--accent);font-weight:800;font-size:12px;letter-spacing:2px}.sub{color:var(--muted);margin:8px 0 25px}.notice{padding:15px 20px;background:#e8edff;border-radius:12px;font-size:14px;line-height:1.7;margin-bottom:25px}.badge{white-space:nowrap;border:1px solid #dce3ee;background:white;border-radius:30px;padding:9px 14px;font-size:13px}.workspace{display:grid;grid-template-columns:1.25fr 1fr;gap:20px}.panel{background:white;border:1px solid #dce3ee;border-radius:16px;overflow:hidden;box-shadow:0 5px 20px #24395d06}.toolbar{height:64px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e6ebf3;gap:10px}.title{font-weight:750;font-size:14px}.filename{font-size:12px;color:var(--muted);margin-left:8px}button{border:0;border-radius:8px;padding:10px 16px;cursor:pointer;font:inherit;font-size:13px;font-weight:700;background:#edf1f7;color:var(--ink)}button.primary{background:var(--accent);color:white}button:disabled{opacity:.5;cursor:wait}button:focus-visible,textarea:focus-visible{outline:3px solid #86a4ff;outline-offset:-3px}.editor{height:410px;display:flex;background:#182335;color:#e0e8f5}.numbers{flex:0 0 48px;overflow:hidden;padding:20px 10px;text-align:right;background:#152032;color:#6e809a;user-select:none;font:14px/24px Consolas,monospace;white-space:pre}.code-area{position:relative;flex:1;min-width:0;overflow:hidden}#highlight,#code{position:absolute;inset:0;margin:0;border:0;padding:20px 16px;font:14px/24px Consolas,"Courier New",monospace;tab-size:4;white-space:pre;overflow:auto;letter-spacing:0;word-spacing:0}#highlight{pointer-events:none;scrollbar-width:none}#highlight::-webkit-scrollbar{display:none}#code{resize:none;background:transparent;color:transparent;caret-color:white;-webkit-text-fill-color:transparent}#code::selection{background:#6781bc70}.kw{color:#c4a3ff}.str{color:#a6dca3}.comment{color:#8094ad}.num{color:#ffce8d}.fn{color:#80cfff}.foot{padding:12px 18px;font-size:12px;color:var(--muted);border-top:1px solid #e6ebf3;line-height:1.6}.output-wrap{height:410px;overflow:auto;background:#fff}#output{margin:0;padding:20px;font:14px/24px Consolas,"맑은 고딕",monospace;white-space:pre-wrap;overflow-wrap:anywhere}#output:empty:before{content:"실행 결과가 여기에 표시됩니다.";color:#9aa5b5}.error{color:#c33d53}.input-echo{color:#4568e8}.tips{font-size:13px;color:var(--muted);line-height:1.9;margin-top:20px}code{font-family:Consolas,monospace}.overlay{position:fixed;inset:0;background:#f2f5faf5;z-index:10;display:grid;place-items:center;padding:24px}.loading-card{max-width:430px;text-align:center;background:white;padding:40px;border-radius:22px;box-shadow:0 16px 70px #24395d18}.spinner{width:42px;height:42px;border:4px solid #e6ebff;border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 24px}.loading-card h2{font-size:21px}.loading-card p{font-size:14px;color:var(--muted)}[hidden]{display:none!important}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:800px){main{padding:28px 16px}.workspace{grid-template-columns:1fr}header{align-items:flex-start}h1{font-size:25px}.filename{display:none}.editor{height:350px}.output-wrap{height:280px}.toolbar{padding:12px}}
+.learning{display:grid;grid-template-columns:250px minmax(0,1fr);gap:20px;margin-bottom:22px}.lesson-menu{max-height:490px;overflow:auto;padding:14px}.lesson-menu h3{font-size:13px;color:var(--muted);margin:20px 8px 8px}.lesson-menu button{display:block;width:100%;text-align:left;background:transparent;margin:3px 0;line-height:1.5;font-weight:500}.lesson-menu button.active{background:#e8edff;color:#3153cd;font-weight:750}.lesson-menu button.solved:after{content:' ✓';color:#208158}.lesson-detail{padding:24px}.lesson-detail h2{margin:8px 0 12px;font-size:22px}.lesson-detail pre{padding:14px;background:#f2f5fa;border-radius:9px;white-space:pre-wrap;font:14px/1.7 Consolas,monospace}.lesson-detail summary{cursor:pointer;font-weight:700;font-size:14px}.lesson-detail details p{font-size:14px}.progress-box{padding:18px 22px;margin-bottom:20px}.progress-label{display:flex;justify-content:space-between;gap:12px;font-size:14px;margin-bottom:10px}progress{width:100%;height:12px;accent-color:var(--accent)}.lesson-actions{display:flex;gap:8px;margin-top:18px}.grade-message{margin-top:14px;white-space:pre-wrap;font-size:14px;line-height:1.7}.grade-message.correct{color:#208158}.grade-message.wrong{color:#bc354d}.topic{font-size:12px;color:var(--accent);font-weight:700}@media(max-width:700px){.learning{grid-template-columns:1fr}.lesson-menu{max-height:220px}}
+.file-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 18px;margin-bottom:18px}.file-tools label{font-size:13px;font-weight:700}.file-tools input[type=text]{padding:9px 10px;border:1px solid #ced7e5;border-radius:7px;max-width:190px;font:inherit;font-size:14px}.file-tools input[type=range]{width:100px;accent-color:var(--accent)}#highlight,#code,.numbers,#output{font-size:var(--code-size,14px);line-height:var(--code-line,24px)}button.panel-heading{background:transparent;padding:7px 0;font-weight:750;color:var(--ink)}button.panel-heading:hover{color:var(--accent)}.panel-dialog{width:calc(100vw - 40px);max-width:1500px;height:calc(100dvh - 40px);max-height:none;padding:14px;border:1px solid #dce3ee;border-radius:16px;background:#f2f5fa;color:var(--ink)}.panel-dialog::backdrop{background:#152032bb}.panel-dialog[open]{display:flex;flex-direction:column;gap:10px}.dialog-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}.panel-dialog>.panel{flex:1;min-height:0;display:flex;flex-direction:column}.panel-dialog .editor,.panel-dialog .output-wrap{flex:1;min-height:0;height:auto}.file-message{font-size:12px;color:var(--muted);width:100%;margin:0}input:focus-visible{outline:3px solid #86a4ff;outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="overlay" id="loading" role="status" aria-live="polite"><div class="loading-card"><div class="spinner" id="spinner"></div><h2 id="loading-title">파이썬 연습장을 준비하고 있어요</h2><p id="loading-detail">Pyodide를 내려받는 중입니다.<br>처음 불러올 때는 인터넷 연결이 필요하며,<br>환경에 따라 잠시 시간이 걸릴 수 있어요.</p><button id="retry" hidden>다시 불러오기</button></div></div>
+<main>
+<header><div><div class="eyebrow">MY PYTHON NOTEBOOK</div><h1>나의 파이썬 연습장</h1></div><span class="badge" id="status" role="status">● 준비 중</span></header>
+<p class="sub">설치 없이, 코드 한 줄부터 시작해 보세요.</p>
+<div class="notice">🌐 <strong>처음 불러올 때 인터넷 연결이 필요해요.</strong> Pyodide를 통해 브라우저에서 파이썬을 실행합니다. 다시 열거나 추가 패키지를 불러올 때도 인터넷이 필요할 수 있어요.</div>
+<section class="panel progress-box" aria-label="나의 진도"><div class="progress-label"><strong>나의 진도</strong><span id="progress-text">0 / 30문제 · 0%</span></div><progress id="progress" max="30" value="0" aria-label="맞힌 문제 수"></progress><div class="foot" id="save-status">코드와 맞힌 기록은 이 브라우저에 자동 저장됩니다.</div></section>
+<div class="learning"><nav class="panel lesson-menu" id="lesson-menu" aria-label="문제 선택"></nav><section class="panel lesson-detail" aria-labelledby="lesson-title"><span class="topic" id="lesson-topic"></span><h2 id="lesson-title"></h2><p id="lesson-description"></p><div id="problem-content"><strong>기대 결과</strong><pre id="expected"></pre><details id="hint-box"><summary>힌트 보기</summary><p id="hint"></p></details></div><div class="lesson-actions"><button class="primary" id="grade" disabled>채점하기</button><button id="reset-code">시작 코드로 되돌리기</button></div><p class="tips" id="grade-note">채점은 코드를 새로 실행해 출력만 비교합니다. 마지막 줄바꿈 하나를 제외하고 공백·줄바꿈도 같아야 합니다.</p><div id="grade-message" class="grade-message" role="status" aria-live="polite"></div></section></div>
+<div class="panel file-tools"><label for="file-name">파일 이름</label><input id="file-name" type="text" value="practice.py" aria-label="저장할 파이썬 파일 이름"><button id="save-file">.py 저장</button><button id="open-file">.py 불러오기</button><input id="file-picker" type="file" accept=".py,text/x-python" hidden><label for="font-size">글자 크기</label><input id="font-size" type="range" min="12" max="28" value="14"><output id="font-value" for="font-size">14px</output><button id="erase-code" title="현재 문제의 코드와 결과만 지웁니다. 진도는 유지됩니다.">모두 지우기</button><p class="file-message" id="file-message" role="status">Ctrl+Enter 실행 · Ctrl+S 파일 저장 · 제목을 누르면 크게 보기</p></div>
+<div class="workspace">
+<section class="panel" id="editor-panel" aria-label="파이썬 코드 편집기"><div class="toolbar"><div><button class="title panel-heading" id="expand-editor" aria-haspopup="dialog" title="코드 편집기 크게 보기">코드 편집기 ⛶</button></div><button class="primary" id="run" disabled>▶ 실행</button></div><div class="editor"><div id="numbers" class="numbers" aria-hidden="true">1</div><div class="code-area"><pre id="highlight" aria-hidden="true"></pre><textarea id="code" aria-label="파이썬 코드" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off"></textarea></div></div><div class="foot">Tab 들여쓰기 · Ctrl / ⌘ + Enter 실행 · Ctrl / ⌘ + S 저장</div></section>
+<section class="panel" id="result-panel" aria-label="실행 결과"><div class="toolbar"><button class="title panel-heading" id="expand-result" aria-haspopup="dialog" title="실행 결과 크게 보기">실행 결과 ⛶</button><button id="clear">지우기</button></div><div class="output-wrap" id="output-wrap"><pre id="output" aria-label="파이썬 실행 출력"></pre></div><div class="foot" id="result-status" role="status">준비가 끝나면 실행 버튼을 눌러 주세요.</div></section>
+</div>
+<p class="tips"><strong>입력이 필요할 땐?</strong> <code>input()</code>을 만나면 브라우저 입력창이 열립니다. 값을 입력하고 확인을 눌러 주세요. 취소하면 입력을 종료합니다.<br>실행할 때마다 결과와 변수를 새로 시작합니다. 무한 반복으로 응답이 없으면 페이지를 새로고침해 주세요.</p>
+</main>
+<dialog class="panel-dialog" id="panel-dialog" aria-labelledby="dialog-title"><div class="dialog-bar"><strong id="dialog-title">크게 보기</strong><button id="close-expanded">닫기 · Esc</button></div></dialog>
+<script type="module">
+const $ = id => document.getElementById(id);
+const code = $('code'), highlight = $('highlight'), numbers = $('numbers');
+const initial = '# 나만의 첫 파이썬 프로그램\nname = input("이름을 입력해 주세요: ")\nprint(f"안녕하세요, {name}님!")\n\n# 반복문도 연습해 보세요\nfor i in range(1, 6):\n    print("★" * i)\n';
+const problems = [
+['기초','출력','첫 인사','print()로 안녕하세요!를 출력하세요.','안녕하세요!','문자열은 따옴표로 감싸세요.','# 인사를 출력하세요\n'],
+['기초','출력','두 줄 소개','첫 줄에는 파이썬, 둘째 줄에는 반가워요를 출력하세요.','파이썬\n반가워요','print()를 두 번 사용해 보세요.','# 두 줄로 출력하세요\n'],
+['기초','변수','나이 계산','age가 12일 때 내년 나이를 출력하세요.','13','age에 1을 더하세요.','age = 12\n# 내년 나이 출력\n'],
+['기초','변수','문구점 계산','연필 한 자루는 700원입니다. 3자루 가격을 출력하세요.','2100','가격과 개수를 곱하세요.','price = 700\ncount = 3\n'],
+['기초','조건문','합격 확인','score가 80입니다. 60 이상이면 합격, 아니면 재도전을 출력하세요.','합격','if score >= 60:을 사용하세요.','score = 80\n# 조건에 따라 출력하세요\n'],
+['기초','조건문','짝수 확인','number가 8입니다. 짝수면 짝수, 아니면 홀수를 출력하세요.','짝수','2로 나눈 나머지가 0인지 확인하세요.','number = 8\n'],
+['기초','반복문','숫자 세기','for문으로 1부터 5까지 한 줄에 하나씩 출력하세요.','1\n2\n3\n4\n5','range(1, 6)은 1부터 5까지 만듭니다.','# for문으로 숫자 출력\n'],
+['기초','반복문','세 번 응원','반복문으로 힘내!를 세 줄 출력하세요.','힘내!\n힘내!\n힘내!','range(3)을 사용하세요.','# 응원 세 번\n'],
+['기초','리스트','첫 과일','fruits의 첫 번째 원소를 출력하세요.','사과','리스트의 첫 인덱스는 0입니다.','fruits = ["사과", "바나나", "포도"]\n'],
+['기초','함수','인사 함수','hello() 함수를 정의하고 호출해 안녕, 파이썬!을 출력하세요.','안녕, 파이썬!','def hello(): 안에서 출력하고, 함수 밖에서 호출하세요.','def hello():\n    pass\n\n# 함수 호출\n'],
+['중급','출력','이름표 만들기','name과 grade를 사용해 기대 결과처럼 한 줄로 출력하세요.','민지 / 3학년','f-string 안에서 {name}, {grade}를 사용해 보세요.','name = "민지"\ngrade = 3\n'],
+['중급','변수','몫과 나머지','사탕 17개를 5명에게 나눌 때 몫과 나머지를 각각 한 줄씩 출력하세요.','3\n2','//는 몫, %는 나머지입니다.','candies = 17\npeople = 5\n'],
+['중급','조건문','성적 등급','90 이상 A, 80 이상 B, 나머지는 C입니다. score의 등급을 출력하세요.','B','if, elif, else를 사용하고 높은 점수부터 확인하세요.','score = 85\n'],
+['중급','조건문','입장 조건','나이 12 이상이고 키 140 이상이면 입장 가능, 아니면 입장 불가를 출력하세요.','입장 가능','두 조건을 and로 연결하세요.','age = 13\nheight = 145\n'],
+['중급','반복문','1부터 10까지 합','반복문으로 1부터 10까지 더한 값을 출력하세요.','55','total을 0으로 시작하고 반복해서 더하세요.','total = 0\n# 반복문으로 합 구하기\n'],
+['중급','반복문','3단 구구단','3 x 1 = 3부터 3 x 5 = 15까지 다섯 줄을 출력하세요.','3 x 1 = 3\n3 x 2 = 6\n3 x 3 = 9\n3 x 4 = 12\n3 x 5 = 15','range(1, 6)과 f-string을 사용하세요.','# 3단의 앞 다섯 줄\n'],
+['중급','리스트','리스트 합계','numbers에 들어 있는 수의 합계를 출력하세요.','30','sum(numbers) 또는 누적 합을 사용하세요.','numbers = [4, 6, 8, 12]\n'],
+['중급','리스트','짝수만 고르기','numbers의 짝수만 원래 순서대로 한 줄에 하나씩 출력하세요.','2\n4\n6','리스트를 순회하며 나머지 연산으로 짝수를 찾으세요.','numbers = [1, 2, 3, 4, 5, 6]\n'],
+['중급','함수','제곱 함수','square(n)이 n의 제곱을 반환하도록 완성하고 square(7)을 출력하세요.','49','반환할 때 return n * n을 사용하세요.','def square(n):\n    pass\n\nprint(square(7))\n'],
+['중급','함수','두 수 중 큰 수','larger(a, b)가 더 큰 수를 반환하게 완성하세요. 두 호출 결과를 각각 출력합니다.','9\n12','if문으로 a와 b를 비교해 반환하세요.','def larger(a, b):\n    pass\n\nprint(larger(4, 9))\nprint(larger(12, 3))\n'],
+['응용','출력','정렬된 영수증','items의 이름과 가격을 사용해 상품별로 이름: 가격원 형식으로 출력하세요.','공책: 1500원\n연필: 700원\n지우개: 500원','for name, price in items:와 f-string을 사용하세요.','items = [("공책", 1500), ("연필", 700), ("지우개", 500)]\n'],
+['응용','변수','거스름돈 나누기','거스름돈 2800원을 1000원, 500원, 100원 순서로 나눕니다. 각 화폐 개수를 세 줄로 출력하세요.','2\n1\n3','각 단위로 몫을 구한 뒤 남은 금액을 나머지로 갱신하세요.','change = 2800\n# 천 원, 오백 원, 백 원의 개수 출력\n'],
+['응용','조건문','윤년 판별','400의 배수이거나, 4의 배수이면서 100의 배수가 아니면 윤년입니다. years의 각 해에 대해 윤년 또는 평년을 출력하세요.','윤년\n평년\n윤년\n평년','괄호와 and, or를 조합하세요.','years = [2000, 1900, 2024, 2023]\nfor year in years:\n    pass\n'],
+['응용','조건문','배송비 계산','상품 금액이 30000원 이상이거나 회원이면 배송비가 0원, 그 외에는 3000원입니다. 각 주문의 배송비를 출력하세요.','3000\n0\n0','반복문에서 금액과 회원 여부를 꺼내 or로 판단하세요.','orders = [(20000, False), (20000, True), (35000, False)]\nfor amount, member in orders:\n    pass\n'],
+['응용','반복문','별 계단','반복문으로 첫 줄 별 1개부터 마지막 줄 별 5개까지 출력하세요.','*\n**\n***\n****\n*****','문자열에 정수를 곱하면 반복됩니다.','# 다섯 줄 별 계단\n'],
+['응용','반복문','배수 합계','1부터 20까지 중 3의 배수이거나 5의 배수인 수의 합을 출력하세요. 같은 수는 한 번만 더합니다.','98','for문 안에서 %와 or를 사용하세요.','total = 0\n# 조건에 맞는 수만 더하기\n'],
+['응용','리스트','중복 없애기','names에서 중복을 제거하되 처음 등장한 순서를 유지한 리스트를 출력하세요.',"['민지', '준호', '수빈']",'빈 리스트에 없는 이름만 append() 하세요.','names = ["민지", "준호", "민지", "수빈", "준호"]\nunique = []\n'],
+['응용','리스트','평균 이상 점수','scores의 평균 이상인 점수를 원래 순서대로 담은 리스트를 출력하세요.','[90, 100, 80]','sum(scores) / len(scores)로 평균을 구하세요.','scores = [60, 90, 70, 100, 80]\nselected = []\n'],
+['응용','함수','모음 개수 함수','count_vowels(text)가 소문자 영어 모음 a, e, i, o, u의 개수를 반환하게 완성하세요.','3\n2','문자 하나씩 순회하며 "aeiou"에 포함되는지 확인하세요.','def count_vowels(text):\n    pass\n\nprint(count_vowels("banana"))\nprint(count_vowels("hello"))\n'],
+['응용','함수','장바구니 합계','total_price(prices, count)가 가격 리스트의 합에 구매 묶음 수를 곱해 반환하도록 완성하세요.','6600\n4500','sum(prices)와 count를 사용하세요.','def total_price(prices, count):\n    pass\n\nprint(total_price([1500, 800, 1000], 2))\nprint(total_price([500, 1000], 3))\n']
+].map((p,i)=>({id:String(i+1),level:p[0],topic:p[1],title:p[2],description:p[3],expected:p[4],hint:p[5],start:p[6]}));
+let saved = {drafts:{},solved:[]};
+try {const raw=JSON.parse(localStorage.getItem('python-notebook-learning')||'null');if(raw && typeof raw.drafts==='object' && raw.drafts && Array.isArray(raw.solved)) saved=raw;} catch {}
+let selected='free';
+const solved=new Set(saved.solved.filter(id=>problems.some(p=>p.id===id)));
+function persist(){try{localStorage.setItem('python-notebook-learning',JSON.stringify({drafts:saved.drafts,solved:[...solved],selected,names:saved.names,fontSize:saved.fontSize}));$('save-status').textContent='코드·진도·파일 이름·글자 크기를 자동 저장했습니다. 새로고침해도 이어서 연습할 수 있어요.';}catch{$('save-status').textContent='이 브라우저에서는 저장할 수 없습니다. 현재 탭에서만 기록이 유지됩니다. 코드는 .py 파일로 저장해 주세요.';}}
+function saveDraft(){saved.drafts[selected]=code.value;persist();}
+function updateProgress(){const n=solved.size;$('progress').value=n;$('progress-text').textContent=n+' / 30문제 · '+Math.round(n/30*100)+'%';document.querySelectorAll('[data-problem]').forEach(b=>{const done=solved.has(b.dataset.problem);b.classList.toggle('solved',done);b.setAttribute('aria-label',b.textContent+(done?' · 맞힌 문제':''));});}
+function choose(id){
+    if(running)return;
+    saveDraft();selected=id;
+    const p=problems.find(p=>p.id===id);
+    code.value=typeof saved.drafts[id]==='string'?saved.drafts[id]:(p?p.start:initial);$('file-name').value=saved.names?.[id]??(p?'problem-'+id+'.py':'practice.py');code.scrollTop=0;code.scrollLeft=0;render();clearOutput();persist();
+    $('lesson-topic').textContent=p?p.level+' · '+p.topic:'나만의 코드';
+    $('lesson-title').textContent=p?id+'. '+p.title:'자유 연습';
+    $('lesson-description').textContent=p?p.description:'원하는 코드를 자유롭게 작성하고 실행해 보세요. input()으로 입력받는 프로그램도 만들 수 있어요.';
+    $('problem-content').hidden=!p;$('grade').hidden=!p;$('grade-note').hidden=!p;
+    $('expected').textContent=p?.expected??'';$('hint').textContent=p?.hint??'';$('hint-box').open=false;
+    $('grade-message').textContent='';$('grade-message').className='grade-message';
+    $('result-status').textContent='코드를 작성한 뒤 실행하거나 채점해 보세요.';
+    document.querySelectorAll('[data-problem]').forEach(b=>{b.classList.toggle('active',b.dataset.problem===id);b.setAttribute('aria-current',b.dataset.problem===id?'page':'false');});
+}
+const menu=$('lesson-menu');
+function menuButton(id,label){const b=document.createElement('button');b.textContent=label;b.dataset.problem=id;b.onclick=()=>choose(id);menu.append(b);}
+menuButton('free','✎ 자유 연습');
+for(const level of ['기초','중급','응용']){const h=document.createElement('h3');h.textContent=level+' · 10문제';menu.append(h);for(const p of problems.filter(p=>p.level===level))menuButton(p.id,p.id+'. '+p.title);}
+code.value=saved.drafts.free??initial;
+$('reset-code').textContent='처음 코드로 되돌리기';
+$('reset-code').onclick=()=>{if(running || !confirm('현재 코드를 처음 코드로 되돌릴까요? 작성한 코드는 바뀌며 맞힌 기록은 유지됩니다.'))return;code.value=problems.find(p=>p.id===selected)?.start??initial;code.dispatchEvent(new Event('input'));clearOutput();};
+const escapeHTML = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function render() {
+    const pattern = /#[^\n]*|(?:[fFrRbBuU]{1,2})?(?:"""[\s\S]*?(?:"""|$)|'''[\s\S]*?(?:'''|$)|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*')|\b(?:False|None|True|and|as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield)\b|\b(?:print|input|range|len|str|int|float|list|dict|sum)\b|\b\d+(?:\.\d+)?\b/g;
+    let html = '', last = 0;
+    for (const match of code.value.matchAll(pattern)) {
+        const token = match[0];
+        const type = token.startsWith('#') ? 'comment' : /["']/.test(token) ? 'str' : /^\d/.test(token) ? 'num' : /^(print|input|range|len|str|int|float|list|dict|sum)$/.test(token) ? 'fn' : 'kw';
+        html += escapeHTML(code.value.slice(last, match.index)) + '<span class="'+type+'">'+escapeHTML(token)+'</span>';
+        last = match.index + token.length;
+    }
+    highlight.innerHTML = html + escapeHTML(code.value.slice(last)) + '\n';
+    numbers.textContent = Array.from({length:code.value.split('\n').length}, (_,i)=>i+1).join('\n');
+    syncScroll();
+}
+function syncScroll(){ highlight.scrollTop = code.scrollTop; highlight.scrollLeft = code.scrollLeft; numbers.scrollTop = code.scrollTop; }
+code.addEventListener('input',()=>{render();saveDraft();$('grade-message').textContent='';});
+code.addEventListener('scroll',syncScroll);
+code.addEventListener('keydown',event=>{
+    if(code.readOnly)return;
+    if(event.key === 'Tab') {event.preventDefault();code.setRangeText('    ',code.selectionStart,code.selectionEnd,'end');code.dispatchEvent(new Event('input'));}
+});
+render();
+let pyodide, running = false, outputCount = 0, stdoutText = '', stderrSeen=false;
+const resumeId=problems.some(p=>p.id===saved.selected)?saved.selected:'free';
+choose(resumeId);updateProgress();
+function updateFont(){const size=Math.min(28,Math.max(12,Number($('font-size').value)||14));document.documentElement.style.setProperty('--code-size',size+'px');document.documentElement.style.setProperty('--code-line',Math.round(size*1.7)+'px');$('font-value').textContent=size+'px';saved.fontSize=size;persist();syncScroll();}
+$('font-size').value=Number(saved.fontSize)||14;updateFont();$('font-size').oninput=updateFont;
+$('file-name').oninput=()=>{saved.names??={};saved.names[selected]=$('file-name').value;persist();};
+function saveFile(){
+    const entered=window.prompt('저장할 파일 이름을 입력하세요.',$('file-name').value||'practice.py');
+    if(entered===null)return;
+    let name=entered.trim().replace(/[<>:"/\\|?*\u0000-\u001f]/g,'_');
+    if(!name){alert('파일 이름을 입력해 주세요.');return;}
+    if(!/\.py$/i.test(name))name+='.py';
+    $('file-name').value=name;saved.names??={};saved.names[selected]=name;saveDraft();
+    const url=URL.createObjectURL(new Blob([code.value],{type:'text/x-python;charset=utf-8'}));
+    const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+    $('file-message').textContent=name+' 파일 다운로드를 요청했습니다.';
+}
+$('save-file').onclick=saveFile;
+$('open-file').onclick=()=>{if(!running)$('file-picker').click();};
+$('file-picker').onchange=async()=>{
+    const file=$('file-picker').files[0];$('file-picker').value='';if(!file||running)return;
+    if(!/\.py$/i.test(file.name)){alert('.py 파일을 선택해 주세요.');return;}
+    if(file.size>2*1024*1024){alert('2MB 이하의 .py 파일을 선택해 주세요.');return;}
+    const target=selected;
+    try{const text=await file.text();if(running||selected!==target){$('file-message').textContent='문제가 바뀌어 불러오기를 취소했습니다. 다시 선택해 주세요.';return;}
+        if(!confirm('현재 코드를 '+file.name+' 내용으로 바꿀까요? 맞힌 기록은 유지됩니다.'))return;
+        code.value=text.replace(/^\uFEFF/,'');$('file-name').value=file.name;saved.names??={};saved.names[selected]=file.name;code.dispatchEvent(new Event('input'));clearOutput();$('file-message').textContent=file.name+' 파일을 불러왔습니다. (UTF-8)';
+    }catch(error){$('file-message').textContent='파일을 불러오지 못했습니다: '+error.message;}
+};
+$('erase-code').onclick=()=>{if(running||!confirm('현재 선택한 연습의 코드와 실행 결과를 모두 지울까요? 다른 문제의 코드와 맞힌 기록은 유지됩니다.'))return;code.value='';code.dispatchEvent(new Event('input'));clearOutput();$('result-status').textContent='코드와 실행 결과를 지웠습니다.';};
+document.addEventListener('keydown',event=>{
+    if(event.ctrlKey||event.metaKey){if(event.key.toLowerCase()==='s'){event.preventDefault();saveFile();}else if(event.key==='Enter'){event.preventDefault();$('run').click();}}
+});
+const expandedDialog=$('panel-dialog');let expandedPanel,placeholder,expandTrigger;
+function expandPanel(panel,trigger,title){if(expandedDialog.open)return;expandedPanel=panel;expandTrigger=trigger;placeholder=document.createComment('panel position');panel.replaceWith(placeholder);expandedDialog.append(panel);$('dialog-title').textContent=title;expandedDialog.showModal();document.body.style.overflow='hidden';syncScroll();}
+$('expand-editor').onclick=()=>expandPanel($('editor-panel'),$('expand-editor'),'코드 편집기 크게 보기');
+$('expand-result').onclick=()=>expandPanel($('result-panel'),$('expand-result'),'실행 결과 크게 보기');
+$('close-expanded').onclick=()=>expandedDialog.close();
+expandedDialog.addEventListener('close',()=>{if(placeholder&&expandedPanel)placeholder.replaceWith(expandedPanel);document.body.style.overflow='';expandTrigger?.focus();syncScroll();});
+window.addEventListener('pagehide',saveDraft);
+function append(text, type='') {
+    if(outputCount >= 200000) return;
+    const room = 200000-outputCount;
+    const span = document.createElement('span');span.className=type;span.textContent=text.slice(0,room);$('output').append(span);
+    outputCount += text.length;
+    if(outputCount >= 200000) $('output').append('\n[출력이 많아 이후 내용은 생략합니다.]\n');
+    $('output-wrap').scrollTop = $('output-wrap').scrollHeight;
+}
+function clearOutput(){ $('output').textContent='';outputCount=0; }
+$('clear').onclick=()=>{if(!running&&confirm('실행 결과를 지울까요? 코드는 유지됩니다.'))clearOutput();};
+$('retry').onclick=()=>location.reload();
+try {
+    const { loadPyodide } = await import('https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.mjs');
+    pyodide = await loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v314.0.7/full/'});
+    const stdoutDecoder = new TextDecoder(), stderrDecoder = new TextDecoder();
+    pyodide.setStdout({write:buffer=>{const text=stdoutDecoder.decode(buffer,{stream:true});if(stdoutText.length<=200000)stdoutText+=text;append(text);return buffer.length;}});
+    pyodide.setStderr({write:buffer=>{stderrSeen=true;append(stderrDecoder.decode(buffer,{stream:true}),'error');return buffer.length;}});
+    pyodide.setStdin({stdin:()=>{
+        $('status').textContent='● 입력 대기';
+        const lines = $('output').textContent.split('\n');
+        const answer = window.prompt(lines[lines.length-1] || 'input()에 전달할 값을 입력해 주세요.');
+        $('status').textContent='● 실행 중';
+        if(answer !== null) append(answer+'\n','input-echo');
+        return answer;
+    }});
+    $('loading').hidden=true;$('run').disabled=false;$('grade').disabled=false;$('status').textContent='● 실행 준비 완료';
+} catch(error) {
+    $('spinner').hidden=true;$('loading-title').textContent='파이썬을 불러오지 못했어요';
+    $('loading-detail').textContent='인터넷 연결과 CDN 접속 상태를 확인한 뒤 다시 불러와 주세요. '+error.message;
+    $('retry').hidden=false;$('status').textContent='● 연결 오류';
+}
+async function execute(grading=false){
+    if(!pyodide || running) return;
+    running=true;$('run').disabled=true;$('grade').disabled=true;$('clear').disabled=true;$('reset-code').disabled=true;document.querySelectorAll('[data-problem]').forEach(b=>b.disabled=true);code.readOnly=true;clearOutput();stdoutText='';stderrSeen=false;saveDraft();$('grade-message').textContent='';
+    $('status').textContent='● 실행 중';$('result-status').textContent='코드를 실행하고 있습니다…';
+    const source=code.value;
+    let globals;
+    try {
+        await new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
+        await pyodide.loadPackagesFromImports(source);
+        globals=pyodide.runPython('{"__name__": "__main__"}');
+        const result=await pyodide.runPythonAsync(source,{globals});
+        if(result && typeof result.destroy==='function') result.destroy();
+        $('result-status').textContent='실행을 마쳤습니다.';
+        if(grading){
+            const p=problems.find(p=>p.id===selected);
+            const normalize=text=>text.replace(/\r\n/g,'\n').replace(/\n$/,'');
+            const correct=!stderrSeen && normalize(stdoutText)===normalize(p.expected);
+            $('grade-message').className='grade-message '+(correct?'correct':'wrong');
+            $('grade-message').textContent=correct?'✓ 정답입니다! 출력이 기대 결과와 같습니다.':'아직 기대 결과와 다릅니다. 위 기대 결과와 실행 결과의 글자, 공백, 줄바꿈을 비교해 보세요.';
+            if(correct){solved.add(selected);persist();updateProgress();}
+        }
+    } catch(error) { append(String(error)+'\n','error');$('result-status').textContent='오류 메시지를 확인하고 코드를 수정해 보세요.';if(grading){$('grade-message').className='grade-message wrong';$('grade-message').textContent='실행 오류가 있어 정답으로 처리하지 않았습니다. 오류를 고친 뒤 다시 채점하세요.';} }
+    finally {globals?.destroy();running=false;code.readOnly=false;$('run').disabled=false;$('grade').disabled=false;$('clear').disabled=false;$('reset-code').disabled=false;document.querySelectorAll('[data-problem]').forEach(b=>b.disabled=false);$('status').textContent='● 실행 준비 완료';}
+}
+$('run').onclick=()=>execute();
+$('grade').onclick=()=>execute(true);
+</script>
+</body>
+</html>

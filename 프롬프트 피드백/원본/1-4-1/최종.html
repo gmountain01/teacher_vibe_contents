@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>품사 문제 출제기</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f6fb; color: #243047; font-family: "맑은 고딕", sans-serif; line-height: 1.65; }
+    main { width: min(720px, calc(100% - 32px)); margin: 48px auto; }
+    h1 { margin-bottom: 8px; font-size: 30px; }
+    .intro { margin-top: 0; color: #59667c; }
+    form, .card { padding: 28px; border: 1px solid #dde3ee; border-radius: 18px; background: white; }
+    label { display: block; margin: 20px 0 7px; font-weight: bold; }
+    label:first-child { margin-top: 0; }
+    input, textarea, select { width: 100%; padding: 12px; border: 1px solid #bdc7d8; border-radius: 8px; font: inherit; color: inherit; background: white; }
+    textarea { resize: vertical; min-height: 92px; }
+    input:focus, textarea:focus, select:focus { outline: 3px solid #dbe7ff; border-color: #4269b5; }
+    .hint { margin: 8px 0 0; font-size: 14px; color: #5c687c; }
+    button { width: 100%; margin-top: 24px; padding: 13px; border: 0; border-radius: 9px; background: #345fba; color: white; font: inherit; font-weight: bold; cursor: pointer; }
+    button:hover { background: #284d9a; }
+    .card { margin-top: 28px; border-top: 5px solid #345fba; overflow-wrap: anywhere; }
+    .card h2 { margin-top: 0; font-size: 23px; }
+    .sentence { padding: 16px; background: #f3f6fb; border-radius: 8px; white-space: pre-wrap; }
+    .answer { border-top: 1px solid #e0e5ee; margin-top: 24px; padding-top: 18px; }
+    .reason { white-space: pre-wrap; }
+    [hidden] { display: none; }
+    @media (max-width: 480px) { main { margin: 24px auto; } form, .card { padding: 20px; } h1 { font-size: 26px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>품사 문제 출제기</h1>
+    <p class="intro">내가 쓴 문장으로 품사 문제를 만들어 보세요.</p>
+    <nav aria-label="활동 선택" style="display:flex; gap:12px; margin-bottom:24px;">
+      <button id="create-mode" type="button" aria-pressed="true">문제 만들기</button>
+      <button id="solve-mode" type="button" aria-pressed="false">문제 풀기</button>
+    </nav>
+    <div id="create-panel">
+    <form id="problem-form">
+      <label for="sentence">내가 쓴 문장</label>
+      <textarea id="sentence" placeholder="예: 학생이 책을 읽는다." required></textarea>
+
+      <label for="word">문제로 낼 낱말</label>
+      <input id="word" type="text" placeholder="예: 학생" required aria-describedby="word-hint">
+      <p class="hint" id="word-hint">‘학생이’처럼 조사가 붙은 말은 ‘학생’과 ‘이’로 나눠 적으세요. 문제로 낼 낱말 칸에는 둘 중 하나만 적으세요.</p>
+
+      <label for="part">정답 품사</label>
+      <select id="part" required>
+        <option value="">품사를 선택하세요</option>
+        <option>명사</option><option>대명사</option><option>수사</option>
+        <option>동사</option><option>형용사</option><option>관형사</option>
+        <option>부사</option><option>조사</option><option>감탄사</option>
+      </select>
+
+      <label for="reason">그렇게 생각한 이유</label>
+      <textarea id="reason" placeholder="예: ‘학생’은 사람을 가리키는 이름이므로 명사입니다." required></textarea>
+      <button type="submit">문제 카드 만들기</button>
+    </form>
+
+    <section class="card">
+      <h2>선생님 확인</h2>
+      <p id="guide"></p>
+      <form id="teacher-form">
+        <label for="password">교사용 비밀번호</label>
+        <input id="password" type="password" minlength="4" required autocomplete="off">
+        <button id="unlock" type="submit">교사용 확인 열기</button>
+      </form>
+      <button id="lock" type="button" hidden>교사용 확인 잠그기</button>
+      <p id="teacher-message" role="status"></p>
+      <p class="hint">선생님이 먼저 비밀번호를 설정해 주세요. 같은 브라우저에서 사용하는 간단한 잠금장치이며, 실제 교사 계정을 인증하는 기능은 아닙니다.</p>
+    </section>
+    <section aria-labelledby="list-title">
+      <h2 id="list-title">만든 문제 목록</h2>
+      <p id="save-message" role="status">문제와 확인 상태는 이 브라우저에 저장됩니다.</p>
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <button id="export-problems" type="button" style="flex:1; min-width:180px;">문제 파일 내려받기</button>
+        <button id="import-problems" type="button" style="flex:1; min-width:180px;">문제 파일 불러오기</button>
+      </div>
+      <input id="import-file" type="file" accept=".json,application/json" hidden>
+      <p class="hint">내려받은 문제 파일을 다른 컴퓨터로 옮긴 뒤, 이 화면에서 불러오세요. 문제와 확인 상태가 함께 옮겨지며, 불러온 문제는 기존 목록에 추가됩니다. 교사용 비밀번호는 포함되지 않습니다.</p>
+      <p id="file-message" role="status"></p>
+      <div id="list" aria-live="polite"></div>
+    </section>
+    </div>
+    <section id="solve-panel" aria-labelledby="solve-title" hidden>
+      <h2 id="solve-title">문제 풀기</h2>
+      <p>선생님이 확인 완료한 문제입니다. 품사를 고르면 정답과 출제한 친구의 이유를 볼 수 있어요.</p>
+      <div id="solve-list" aria-live="polite"></div>
+    </section>
+  </main>
+  <script>
+    const get = id => document.getElementById(id);
+    const key = 'pos-question-list';
+    const teacherKey = 'pos-teacher-hash';
+    let problems = [], teacherHash = '', unlocked = false;
+    try {
+      const data = JSON.parse(localStorage.getItem(key) || '[]');
+      if (Array.isArray(data)) problems = data.filter(p => p && ['sentence','word','part','reason'].every(k => typeof p[k] === 'string')).map(p => ({...p, approved: p.approved === true}));
+      teacherHash = localStorage.getItem(teacherKey) || '';
+    } catch (_) { get('save-message').textContent = '저장된 내용을 불러오지 못했습니다.'; }
+    function save() {
+      try { localStorage.setItem(key, JSON.stringify(problems)); }
+      catch (_) { get('save-message').textContent = '저장하지 못했습니다. 창을 닫으면 변경 내용이 사라질 수 있습니다.'; }
+    }
+    function node(tag, text, style) {
+      const el = document.createElement(tag);
+      el.textContent = text;
+      if (style) el.className = style;
+      return el;
+    }
+    get('export-problems').addEventListener('click', () => {
+      if (!problems.length) {
+        get('file-message').textContent = '내려받을 문제가 없습니다. 먼저 문제를 만들어 주세요.';
+        return;
+      }
+      const content = { format: 'korean-pos-questions', version: 1, problems: problems.map(p => ({ sentence: p.sentence, word: p.word, part: p.part, reason: p.reason, approved: p.approved === true })) };
+      const blob = new Blob([JSON.stringify(content, null, 2)], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const date = new Date();
+      const stamp = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+      link.download = '품사_문제_' + stamp + '.json';
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      get('file-message').textContent = '문제 ' + problems.length + '개의 파일 내려받기를 요청했습니다.';
+    });
+    get('import-problems').addEventListener('click', () => {
+      get('import-file').value = '';
+      get('import-file').click();
+    });
+    get('import-file').addEventListener('change', async function() {
+      const file = this.files[0];
+      if (!file) return;
+      if (file.size > 10 * 1024 * 1024) {
+        get('file-message').textContent = '파일이 너무 큽니다. 10메가바이트 이하의 문제 파일을 선택해 주세요.';
+        return;
+      }
+      try {
+        const data = JSON.parse((await file.text()).replace(/^\uFEFF/, ''));
+        const parts = ['명사','대명사','수사','동사','형용사','관형사','부사','조사','감탄사'];
+        if (!data || data.format !== 'korean-pos-questions' || data.version !== 1 || !Array.isArray(data.problems)) throw new Error();
+        const incoming = data.problems;
+        if (!incoming.every(p => p && ['sentence','word','part','reason'].every(k => typeof p[k] === 'string' && p[k].trim().length > 0) && parts.includes(p.part) && typeof p.approved === 'boolean')) throw new Error();
+        if (!incoming.length) {
+          get('file-message').textContent = '파일에 문제가 없습니다.';
+          return;
+        }
+        const added = incoming.map(p => ({ sentence: p.sentence.trim(), word: p.word.trim(), part: p.part, reason: p.reason.trim(), approved: p.approved }));
+        problems.push(...added);
+        save();
+        render();
+        get('file-message').textContent = '문제 ' + added.length + '개를 목록에 추가했습니다. 같은 파일을 다시 불러오면 중복으로 추가됩니다.';
+      } catch (_) {
+        get('file-message').textContent = '문제 파일을 불러오지 못했습니다. 이 출제기에서 내려받은 올바른 문제 파일을 선택해 주세요.';
+      } finally { this.value = ''; }
+    });
+    function renderQuiz() {
+      const list = get('solve-list');
+      list.replaceChildren();
+      const approved = problems.filter(p => p.approved === true);
+      if (!approved.length) {
+        list.append(node('p', '아직 확인 완료된 문제가 없습니다. 선생님이 확인한 뒤 문제를 풀 수 있어요.'));
+        return;
+      }
+      approved.forEach((p, i) => {
+        const card = node('article', '', 'card');
+        card.append(node('h3', '문제 ' + (i + 1)), node('p', p.sentence, 'sentence'));
+        card.append(node('p', '위 문장에서 ‘' + p.word + '’의 품사는 무엇인가요?'));
+        const label = node('label', '품사를 골라 주세요');
+        label.htmlFor = 'quiz-part-' + i;
+        const select = document.createElement('select');
+        select.id = label.htmlFor;
+        const placeholder = node('option', '품사를 선택하세요');
+        placeholder.value = '';
+        select.append(placeholder);
+        ['명사','대명사','수사','동사','형용사','관형사','부사','조사','감탄사'].forEach(part => {
+          const option = node('option', part);
+          option.value = part;
+          select.append(option);
+        });
+        const feedback = node('div', '', 'answer');
+        feedback.hidden = true;
+        feedback.setAttribute('role', 'status');
+        select.addEventListener('change', () => {
+          if (!select.value) return;
+          feedback.replaceChildren(
+            node('p', select.value === p.part ? '정답입니다!' : '다시 생각해 보세요. 고른 품사: ' + select.value),
+            node('p', '정답 품사: ' + p.part),
+            node('p', '출제한 친구의 이유: ' + p.reason, 'reason')
+          );
+          feedback.hidden = false;
+          select.disabled = true;
+        });
+        card.append(label, select, feedback);
+        list.append(card);
+      });
+    }
+    get('solve-mode').addEventListener('click', () => {
+      unlocked = false;
+      get('password').value = '';
+      get('teacher-message').textContent = '교사용 확인 기능을 잠갔습니다.';
+      render();
+      renderQuiz();
+      get('create-panel').hidden = true;
+      get('solve-panel').hidden = false;
+      get('create-mode').setAttribute('aria-pressed', 'false');
+      get('solve-mode').setAttribute('aria-pressed', 'true');
+    });
+    get('create-mode').addEventListener('click', () => {
+      get('create-panel').hidden = false;
+      get('solve-panel').hidden = true;
+      get('create-mode').setAttribute('aria-pressed', 'true');
+      get('solve-mode').setAttribute('aria-pressed', 'false');
+    });
+    function render() {
+      get('list').replaceChildren();
+      if (!problems.length) get('list').append(node('p', '아직 만든 문제가 없습니다.'));
+      problems.forEach((p, i) => {
+        const card = node('article', '', 'card');
+        card.append(node('h3', '문제 ' + (i + 1)), node('p', p.approved ? '확인 완료' : '선생님 확인 대기'));
+        card.append(node('p', p.sentence, 'sentence'));
+        card.append(node('p', '위 문장에서 ‘' + p.word + '’의 품사는 무엇인가요?'));
+        const answer = node('div', '', 'answer');
+        answer.append(node('p', '정답 품사: ' + p.part), node('p', '그렇게 생각한 이유: ' + p.reason, 'reason'));
+        card.append(answer);
+        if (unlocked && !p.approved) {
+          const label = node('label', '');
+          const check = document.createElement('input');
+          check.type = 'checkbox';
+          check.style.width = 'auto';
+          label.append(check, document.createTextNode(' 문장, 낱말, 정답 품사와 이유를 확인했습니다.'));
+          const button = node('button', '확인 완료');
+          button.type = 'button';
+          button.disabled = true;
+          button.style.opacity = '.5';
+          check.addEventListener('change', () => { button.disabled = !check.checked; button.style.opacity = check.checked ? '1' : '.5'; });
+          button.addEventListener('click', () => {
+            if (!unlocked || !check.checked || p.approved) return;
+            p.approved = true;
+            save(); render();
+          });
+          card.append(label, button);
+        }
+        get('list').append(card);
+      });
+      get('teacher-form').hidden = unlocked;
+      get('lock').hidden = !unlocked;
+      get('guide').textContent = unlocked ? '각 문제를 검토한 뒤 확인 항목에 체크하고 ‘확인 완료’를 눌러 주세요.' : teacherHash ? '선생님은 비밀번호를 입력해 확인 기능을 열어 주세요.' : '처음 사용하는 선생님은 네 글자 이상의 비밀번호를 설정해 주세요.';
+      get('unlock').textContent = teacherHash ? '교사용 확인 열기' : '비밀번호 설정하고 확인 열기';
+    }
+    get('problem-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const p = {approved: false};
+      for (const name of ['sentence','word','part','reason']) {
+        const field = get(name);
+        if (!field.value.trim()) {
+          field.setCustomValidity('내용을 입력해 주세요.');
+          field.reportValidity();
+          field.oninput = function() { this.setCustomValidity(''); };
+          return;
+        }
+        p[name] = field.value.trim();
+      }
+      problems.push(p); save(); render(); this.reset();
+    });
+    get('teacher-form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      try {
+        const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(get('password').value));
+        const hash = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+        if (!teacherHash) {
+          localStorage.setItem(teacherKey, hash);
+          teacherHash = hash;
+        } else if (hash !== teacherHash) {
+          get('teacher-message').textContent = '비밀번호가 일치하지 않습니다.';
+          get('password').value = '';
+          return;
+        }
+        unlocked = true;
+        get('password').value = '';
+        get('teacher-message').textContent = '교사용 확인 기능이 열렸습니다. 확인을 마치면 잠가 주세요.';
+        render();
+      } catch (_) { get('teacher-message').textContent = '비밀번호 기능을 사용할 수 없습니다. 크롬의 브라우저 저장 설정을 확인해 주세요.'; }
+    });
+    get('lock').addEventListener('click', () => {
+      unlocked = false;
+      get('teacher-message').textContent = '교사용 확인 기능을 잠갔습니다.';
+      render();
+    });
+    render();
+  </script>
+</body>
+</html>
+
+

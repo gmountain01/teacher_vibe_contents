@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>공문서 표기 점검기</title>
+<style>
+:root{font-family:system-ui,-apple-system,"맑은 고딕",sans-serif;color:#203047;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}main{max-width:1200px;margin:auto;padding:48px 28px}header{margin-bottom:28px}.eyebrow{color:#456cbd;font-size:13px;font-weight:800;letter-spacing:.12em}h1{font-size:32px;letter-spacing:-1.2px;margin:10px 0}header p{color:#68778b;line-height:1.7;margin:0}.rules{display:flex;gap:10px;flex-wrap:wrap;margin:23px 0}.rule{background:white;border:1px solid #e1e7ef;border-radius:9px;padding:10px 14px;font-size:13px}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px}.date{--ink:#b36a00;--wash:#fff0ba}.time{--ink:#176bcc;--wash:#dceeff}.period{--ink:#8750c2;--wash:#eee0ff}.dot{background:var(--ink)}.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px}.panel{background:white;border:1px solid #e0e6ee;border-radius:15px;overflow:hidden;box-shadow:0 4px 18px #1e395008}.bar{padding:18px 22px;border-bottom:1px solid #edf0f5;display:flex;align-items:center;justify-content:space-between;gap:12px}h2{font-size:16px;margin:0}.actions{display:flex;gap:7px}button{font:inherit;cursor:pointer;border:1px solid #dce3ed;background:white;border-radius:7px;padding:7px 11px;font-size:12px;color:#52647b}button:hover{background:#f0f5ff}button.primary{background:#3467cf;color:white;border-color:#3467cf}#editor{padding:25px;min-height:430px;outline:none;line-height:2;font-size:16px;white-space:pre-wrap;overflow-wrap:anywhere}#editor:empty:before{content:attr(data-placeholder);color:#99a4b3;pointer-events:none}mark{color:inherit;background:var(--wash);text-decoration:underline;text-decoration-color:var(--ink);text-decoration-thickness:2px;text-underline-offset:4px;border-radius:3px;padding:2px 0}.foot{padding:13px 22px;border-top:1px solid #edf0f5;font-size:12px;color:#8994a3;display:flex;justify-content:space-between}.badge{font-size:12px;color:#426ac0;background:#eef3ff;border-radius:20px;padding:5px 10px}#results{padding:16px;max-height:520px;overflow:auto}.empty{padding:32px 12px;text-align:center;color:#8491a3;font-size:14px;line-height:1.8}.issue{border:1px solid #e5e9f0;border-radius:10px;padding:14px;margin-bottom:12px}.label{font-size:12px;font-weight:700;color:var(--ink)}.before{margin:10px 0 5px;overflow-wrap:anywhere;font-size:14px}.after{font-size:14px;color:#3664a8;overflow-wrap:anywhere;margin-bottom:12px}.hint{font-size:12px;line-height:1.7;color:#8190a3;margin:18px 3px}#toast{font-size:12px;color:#3768b6;min-height:18px;margin-top:10px}@media(max-width:800px){main{padding:28px 16px}.layout{grid-template-columns:1fr}h1{font-size:27px}#editor{min-height:320px}.bar{padding:15px}.actions{gap:4px}}
+</style>
+</head>
+<body><main>
+<header><div class="eyebrow">DOCUMENT CHECK</div><h1>공문서 표기 점검기</h1><p>본문을 붙여 넣으면 바로 점검합니다. 표시된 부분도 본문에서 직접 고칠 수 있어요.</p></header>
+<div class="rules"><div class="rule date"><span class="dot"></span>날짜 · 2026. 10. 29.</div><div class="rule time"><span class="dot"></span>시각 · 14:30</div><div class="rule period"><span class="dot"></span>기간 · 2026. 11. 2. ~ 11. 6.</div></div>
+<div class="layout"><section class="panel"><div class="bar"><h2>본문 편집</h2><div class="actions"><button id="example">예시 넣기</button><button id="copy">본문 복사</button><button id="clear">비우기</button></div></div><div id="editor" contenteditable="true" role="textbox" aria-label="점검할 공문서 본문" aria-multiline="true" spellcheck="false" data-placeholder="여기에 공문서 본문을 입력하거나 붙여 넣으세요."></div><div class="foot"><span>입력 즉시 자동 점검</span><span id="length">0자</span></div></section>
+<aside><section class="panel"><div class="bar"><h2>점검 결과</h2><span id="count" class="badge" role="status" aria-live="polite">0건</span></div><div id="results"></div></section><p class="hint">날짜는 연·월·일 뒤에 마침표와 띄어쓰기를, 시각은 24시간제와 쌍점을 사용합니다. 기간은 물결표 양쪽을 띄우며 같은 연도는 끝 날짜에서 생략합니다.<br>현재 날짜·시각·기간의 표기 형식만 점검합니다. 다른 문법과 실제 일정의 정확성은 확인하지 않습니다. 입력한 본문은 외부로 전송되지 않습니다.</p><div id="toast" role="status"></div></aside></div>
+</main>
+<script>
+const editor=document.querySelector('#editor'),results=document.querySelector('#results');
+let issues=[],composing=false;
+const esc=s=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dateSource=String.raw`(?:\d{4}\s*(?:[.\/-]\s*|년\s*))?\d{1,2}\s*(?:[.\/-]\s*|월\s*)\d{1,2}(?:\s*일|\.)?`;
+function parseDate(s){return (s.match(/\d+/g)||[]).map(Number)}
+function fmt(a,year=true){return (a.length===3?(year?a[0]+'. ':'')+a[1]+'. '+a[2]:a[0]+'. '+a[1])+'.'}
+function scan(text){
+ const found=[],occupied=[];
+ function add(start,end,type,suggestion){occupied.push([start,end]);if(text.slice(start,end)!==suggestion)found.push({start,end,type,suggestion,original:text.slice(start,end)})}
+ const periods=new RegExp('(?<![\\d])('+dateSource+')\\s*(~|～|∼|–|—|부터)\\s*('+dateSource+')(?:까지)?','g');
+ for(const m of text.matchAll(periods)){const a=parseDate(m[1]),b=parseDate(m[3]);if(a.length!==3)continue;const same=b.length===2||a[0]===b[0];add(m.index,m.index+m[0].length,'period',fmt(a)+' ~ '+fmt(b,!same))}
+ const dates=new RegExp('(?<![\\d])\\d{4}\\s*(?:[.\\/-]\\s*|년\\s*)\\d{1,2}\\s*(?:[.\\/-]\\s*|월\\s*)\\d{1,2}(?:\\s*일|\\.)?(?!\\d)','g');
+ for(const m of text.matchAll(dates)){if(occupied.some(([s,e])=>m.index<e&&m.index+m[0].length>s))continue;add(m.index,m.index+m[0].length,'date',fmt(parseDate(m[0])))}
+ const times=/(?<!\d)(?:(오전|오후)\s*)?(\d{1,2})\s*(?::|：|시)\s*(\d{1,2})(?:\s*분)?(?!\d)/g;
+ for(const m of text.matchAll(times)){let h=+m[2],min=+m[3];if(m[1]&&h>=1&&h<=12)h=h%12+(m[1]==='오후'?12:0);if(h>23||min>59)continue;add(m.index,m.index+m[0].length,'time',String(h).padStart(2,'0')+':'+String(min).padStart(2,'0'))}
+ return found.sort((a,b)=>a.start-b.start);
+}
+function caret(){const s=getSelection();if(!s.rangeCount||!editor.contains(s.anchorNode))return null;const r=s.getRangeAt(0),a=r.cloneRange(),b=r.cloneRange();a.selectNodeContents(editor);a.setEnd(r.startContainer,r.startOffset);b.selectNodeContents(editor);b.setEnd(r.endContainer,r.endOffset);return[a.toString().length,b.toString().length]}
+function restore(offsets){if(!offsets)return;const w=document.createTreeWalker(editor,NodeFilter.SHOW_TEXT),nodes=[];let n;while(n=w.nextNode())nodes.push(n);function point(p){for(const node of nodes){if(p<=node.length)return[node,p];p-=node.length}return[editor,editor.childNodes.length]}const r=document.createRange();r.setStart(...point(offsets[0]));r.setEnd(...point(offsets[1]));const s=getSelection();s.removeAllRanges();s.addRange(r)}
+function update(){const pos=caret(),text=editor.textContent;issues=scan(text);let html='',last=0;for(const i of issues){html+=esc(text.slice(last,i.start))+`<mark class="${i.type}" title="권장 표기: ${esc(i.suggestion)}">${esc(i.original)}</mark>`;last=i.end}html+=esc(text.slice(last));editor.innerHTML=html;restore(pos);document.querySelector('#length').textContent=text.length.toLocaleString()+'자';document.querySelector('#count').textContent=issues.length+'건';results.innerHTML=issues.length?issues.map((i,k)=>`<div class="issue ${i.type}"><div class="label">${{date:'날짜',time:'시각',period:'기간'}[i.type]} 표기</div><div class="before">${esc(i.original)}</div><div class="after">→ ${esc(i.suggestion)}</div><button class="primary" data-fix="${k}">이 표기로 고치기</button></div>`).join(''):`<div class="empty">${text?'표기 형식 문제가 발견되지 않았습니다.':'본문을 입력하면<br>점검 결과가 여기에 표시됩니다.'}</div>`}
+editor.addEventListener('compositionstart',()=>composing=true);editor.addEventListener('compositionend',()=>{composing=false;update()});editor.addEventListener('input',()=>{if(!composing)update()});
+function insert(text){const s=getSelection();if(!s.rangeCount)return;const r=s.getRangeAt(0);r.deleteContents();const n=document.createTextNode(text);r.insertNode(n);r.setStartAfter(n);r.collapse(true);s.removeAllRanges();s.addRange(r);update()}
+editor.addEventListener('paste',e=>{e.preventDefault();insert(e.clipboardData.getData('text/plain').replace(/\r\n?/g,'\n'))});editor.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();insert('\n')}});
+results.addEventListener('click',e=>{const btn=e.target.closest('[data-fix]');if(!btn)return;const i=issues[+btn.dataset.fix],t=editor.textContent;editor.textContent=t.slice(0,i.start)+i.suggestion+t.slice(i.end);update()});
+document.querySelector('#example').onclick=()=>{editor.textContent='회의 안내\n\n일자: 2026.10.29\n시각: 오후 2시 30분\n신청 기간: 2026.11.2~11.6\n\n담당자는 기간 내에 신청해 주시기 바랍니다.';update()};
+document.querySelector('#clear').onclick=()=>{editor.textContent='';update();editor.focus()};
+document.querySelector('#copy').onclick=async()=>{try{await navigator.clipboard.writeText(editor.textContent);document.querySelector('#toast').textContent='본문을 복사했습니다.'}catch{document.querySelector('#toast').textContent='본문을 선택한 뒤 Ctrl+C로 복사해 주세요.'}};
+update();
+</script></body></html>

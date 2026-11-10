@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>문장 구조 학습판</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f4f6fa; color: #243044; font-family: "맑은 고딕", sans-serif; line-height: 1.7; }
+    main { max-width: 820px; margin: 0 auto; padding: 48px 24px; }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .guide { margin: 0 0 14px; color: #566278; }
+    .legend { display: flex; gap: 24px; margin-bottom: 30px; }
+    .subject-key, .selected .subject { text-decoration: underline; text-decoration-color: #2463df; text-decoration-thickness: 3px; text-underline-offset: 6px; }
+    .predicate-key, .selected .predicate { text-decoration: underline; text-decoration-color: #dc3545; text-decoration-thickness: 3px; text-underline-offset: 6px; }
+    .examples { display: grid; gap: 16px; }
+    article { padding: 22px 24px; background: white; border: 1px solid #dce2ec; border-radius: 14px; }
+    article.selected { border-color: #9eb3d7; }
+    .embedded { border-radius: 8px; }
+    .selected .embedded { padding: 4px 8px 9px; background: #f0e8ff; box-shadow: inset 0 0 0 2px #9a72cf; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+    button { display: block; width: 100%; padding: 4px 0 10px; border: 0; background: transparent; color: inherit; font: inherit; font-size: 23px; line-height: 1.9; text-align: left; cursor: pointer; }
+    button:focus-visible { outline: 3px solid #738fc0; outline-offset: 5px; border-radius: 3px; }
+    .type { margin: 6px 0 0; color: #627087; font-size: 15px; }
+    @media (max-width: 520px) { main { padding: 28px 18px; } h1 { font-size: 27px; } article { padding: 18px; } button { font-size: 20px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>문장 구조 학습판</h1>
+    <p class="guide">예문을 누르면 주어와 서술어에 밑줄이 나타납니다. 안은문장에서는 안에 들어 있는 문장이 보라색 상자로 표시됩니다.</p>
+    <div class="legend"><span class="subject-key">주어</span><span class="predicate-key">서술어</span></div>
+    <div class="examples">
+      <article>
+        <button type="button" aria-pressed="false"><span class="subject">새가</span> <span class="predicate">노래한다</span>.</button>
+        <p class="type">홑문장</p>
+      </article>
+      <article>
+        <button type="button" aria-pressed="false"><span class="subject">아이가</span> 책을 <span class="predicate">읽는다</span>.</button>
+        <p class="type">홑문장</p>
+      </article>
+      <article>
+        <button type="button" aria-pressed="false"><span class="subject">나는</span> <span class="embedded"><span class="subject">동생이</span> <span class="predicate">왔음</span></span>을 <span class="predicate">알았다</span>.</button>
+        <p class="type">안은문장 · 명사절을 안은 문장</p>
+      </article>
+      <article>
+        <button type="button" aria-pressed="false"><span class="subject">토끼는</span> <span class="embedded"><span class="subject">귀가</span> <span class="predicate">길다</span></span>.</button>
+        <p class="type">안은문장 · 서술절을 안은 문장</p>
+      </article>
+      <article>
+        <button type="button" aria-pressed="false"><span class="subject">해가</span> <span class="predicate">뜨<strong>고</strong></span> <span class="subject">새가</span> <span class="predicate">운다</span>.</button>
+        <p class="type">이어진문장 · 대등하게 이어진 문장</p>
+      </article>
+      <article>
+        <button type="button" aria-pressed="false"><span class="subject">비가</span> <span class="predicate">그쳤<strong>지만</strong></span> <span class="subject">바람이</span> <span class="predicate">불<strong>어서</strong></span> <span class="subject">나뭇가지가</span> <span class="predicate">흔들린다</span>.</button>
+        <p class="type">이어진문장 · 대등한 연결과 종속적인 연결이 함께 있는 문장</p>
+      </article>
+    </div>
+  </main>
+  <script>
+    document.querySelectorAll('article button').forEach(function (button) {
+      button.addEventListener('click', function () {
+        button.closest('article').classList.add('selected');
+        button.setAttribute('aria-pressed', 'true');
+      });
+    });
+  </script>
+</body>
+</html>

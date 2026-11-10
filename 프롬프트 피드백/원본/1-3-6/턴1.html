@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>고쳐쓰기 비교판</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f6f8; color: #242a33; font-family: "맑은 고딕", sans-serif; line-height: 1.7; }
+    main { max-width: 1100px; margin: 48px auto; padding: 0 24px; }
+    h1 { margin: 0 0 8px; font-size: 30px; }
+    .안내 { margin: 0 0 28px; color: #576170; }
+    .입력영역 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    label { display: block; font-weight: bold; margin-bottom: 9px; }
+    textarea { width: 100%; min-height: 280px; padding: 18px; border: 1px solid #c8ced7; border-radius: 10px; font: inherit; background: white; color: inherit; resize: vertical; }
+    textarea:focus { outline: 3px solid #c8d8ff; border-color: #355fbd; }
+    button { display: block; margin: 24px auto 32px; padding: 12px 38px; border: 0; border-radius: 8px; background: #315bb0; color: white; font: inherit; font-weight: bold; cursor: pointer; }
+    button:hover { background: #26498f; }
+    button:focus-visible { outline: 3px solid #829fe0; outline-offset: 4px; }
+    .결과영역 { background: white; border: 1px solid #d9dde5; border-radius: 12px; padding: 24px; }
+    h2 { margin: 0 0 10px; font-size: 21px; }
+    .범례 { display: flex; gap: 24px; margin-bottom: 20px; font-size: 14px; }
+    del { color: #b42332; background: #fff0f1; text-decoration: line-through; text-decoration-color: #c32338; text-decoration-thickness: 2px; }
+    ins { color: #146638; background: #eaf8ef; text-decoration: underline; text-decoration-color: #168346; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+    #결과 { white-space: pre-wrap; overflow-wrap: anywhere; min-height: 100px; font-size: 18px; }
+    .빈안내 { color: #77808e; font-size: 16px; }
+    @media (max-width: 650px) { main { margin: 24px auto; padding: 0 16px; } .입력영역 { grid-template-columns: 1fr; } textarea { min-height: 200px; } .결과영역 { padding: 18px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>고쳐쓰기 비교판</h1>
+    <p class="안내">처음 쓴 글과 고쳐 쓴 글을 붙여 넣고 비교하기를 눌러 주세요.</p>
+    <div class="입력영역">
+      <div><label for="처음글">처음 쓴 글</label><textarea id="처음글" placeholder="처음 쓴 글을 여기에 붙여 넣으세요."></textarea></div>
+      <div><label for="고친글">고쳐 쓴 글</label><textarea id="고친글" placeholder="고쳐 쓴 글을 여기에 붙여 넣으세요."></textarea></div>
+    </div>
+    <button id="비교버튼" type="button">비교하기</button>
+    <section class="결과영역" aria-labelledby="결과제목">
+      <h2 id="결과제목">비교 결과</h2>
+      <div class="범례"><span><del>지운 글자</del></span><span><ins>더한 글자</ins></span></div>
+      <div id="결과" aria-live="polite"><span class="빈안내">비교한 글이 여기에 나타납니다.</span></div>
+    </section>
+  </main>
+  <script>
+    // 최장 공통 부분 수열을 선형 메모리로 구해 글자별 변경을 나눈다.
+    function 길이표(a, 시작, 끝, b, 앞, 뒤, 역방향) {
+      const 폭 = 뒤 - 앞;
+      let 이전 = new Uint32Array(폭 + 1);
+      let 현재 = new Uint32Array(폭 + 1);
+      for (let i = 0; i < 끝 - 시작; i++) {
+        현재[0] = 0;
+        const 글자 = a[역방향 ? 끝 - 1 - i : 시작 + i];
+        for (let j = 1; j <= 폭; j++) {
+          현재[j] = 글자 === b[역방향 ? 뒤 - j : 앞 + j - 1]
+            ? 이전[j - 1] + 1 : Math.max(이전[j], 현재[j - 1]);
+        }
+        [이전, 현재] = [현재, 이전];
+      }
+      return 이전;
+    }
+    function 비교(a, b) {
+      const 조각 = [];
+      function 추가(종류, 글) {
+        if (!글) return;
+        const 마지막 = 조각[조각.length - 1];
+        if (마지막 && 마지막.종류 === 종류) 마지막.글 += 글;
+        else 조각.push({ 종류, 글 });
+      }
+      function 나누기(시작, 끝, 앞, 뒤) {
+        while (시작 < 끝 && 앞 < 뒤 && a[시작] === b[앞]) {
+          추가('같음', a[시작++]); 앞++;
+        }
+        let 꼬리 = 0;
+        while (시작 < 끝 - 꼬리 && 앞 < 뒤 - 꼬리 && a[끝 - 1 - 꼬리] === b[뒤 - 1 - 꼬리]) 꼬리++;
+        const 원래끝 = 끝;
+        끝 -= 꼬리; 뒤 -= 꼬리;
+        if (시작 === 끝) 추가('추가', b.slice(앞, 뒤).join(''));
+        else if (앞 === 뒤) 추가('삭제', a.slice(시작, 끝).join(''));
+        else if (끝 - 시작 === 1) {
+          let 위치 = -1;
+          for (let j = 앞; j < 뒤; j++) if (b[j] === a[시작]) { 위치 = j; break; }
+          if (위치 < 0) { 추가('삭제', a[시작]); 추가('추가', b.slice(앞, 뒤).join('')); }
+          else { 추가('추가', b.slice(앞, 위치).join('')); 추가('같음', a[시작]); 추가('추가', b.slice(위치 + 1, 뒤).join('')); }
+        } else {
+          const 중간 = Math.floor((시작 + 끝) / 2);
+          let 분할 = 0;
+          {
+            const 왼쪽 = 길이표(a, 시작, 중간, b, 앞, 뒤, false);
+            const 오른쪽 = 길이표(a, 중간, 끝, b, 앞, 뒤, true);
+            let 최고 = -1;
+            for (let j = 0; j <= 뒤 - 앞; j++) {
+              const 점수 = 왼쪽[j] + 오른쪽[뒤 - 앞 - j];
+              if (점수 > 최고) { 최고 = 점수; 분할 = j; }
+            }
+          }
+          나누기(시작, 중간, 앞, 앞 + 분할);
+          나누기(중간, 끝, 앞 + 분할, 뒤);
+        }
+        if (꼬리) 추가('같음', a.slice(원래끝 - 꼬리, 원래끝).join(''));
+      }
+      나누기(0, a.length, 0, b.length);
+      return 조각;
+    }
+    document.getElementById('비교버튼').addEventListener('click', () => {
+      const 처음 = document.getElementById('처음글').value;
+      const 고침 = document.getElementById('고친글').value;
+      const 결과 = document.getElementById('결과');
+      결과.replaceChildren();
+      if (!처음 && !고침) {
+        const 안내 = document.createElement('span');
+        안내.className = '빈안내';
+        안내.textContent = '비교할 글을 입력해 주세요.';
+        결과.append(안내);
+        return;
+      }
+      const 묶음 = document.createDocumentFragment();
+      for (const 조각 of 비교(Array.from(처음), Array.from(고침))) {
+        if (조각.종류 === '같음') 묶음.append(document.createTextNode(조각.글));
+        else {
+          const 표시 = document.createElement(조각.종류 === '삭제' ? 'del' : 'ins');
+          표시.textContent = 조각.글;
+          묶음.append(표시);
+        }
+      }
+      결과.append(묶음);
+    });
+  </script>
+</body>
+</html>

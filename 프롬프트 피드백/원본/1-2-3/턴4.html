@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 교실 소음 지수</title>
+<style>
+:root{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#19352f;background:#f4f7f2;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;min-height:100svh;display:grid;place-items:center;padding:28px}
+main{width:min(760px,100%);text-align:center}.eyebrow{font-size:13px;font-weight:800;letter-spacing:.18em;color:#638176}h1{font-size:clamp(26px,5vw,40px);letter-spacing:-.05em;margin:16px 0 10px}.intro{color:#61756e;line-height:1.7;margin:0 0 30px}
+.panel{--accent:#23886a;background:white;border:1px solid #e1e9df;border-radius:32px;padding:32px clamp(20px,5vw,56px);box-shadow:0 20px 70px #19352f08}
+.status{display:inline-flex;align-items:center;gap:9px;color:#61756e;font-size:14px}.dot{width:9px;height:9px;border-radius:50%;background:#a7b5ad}.active .dot{background:var(--accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 12%,transparent)}
+.reading{display:flex;justify-content:center;align-items:baseline;margin:12px 0 0;gap:8px}.number{font-size:clamp(110px,24vw,184px);font-weight:750;line-height:1.25;font-variant-numeric:tabular-nums;letter-spacing:-.07em;color:var(--accent);transition:color .5s}.unit{font-size:22px;color:#87958f}.label{font-size:16px;font-weight:650;color:#61756e;margin:0 0 28px}
+.track{height:14px;background:#eef2ec;border-radius:20px;overflow:hidden}.fill{height:100%;width:0;background:var(--accent);border-radius:20px;transition:background .5s}.scale{display:flex;justify-content:space-between;font-size:12px;color:#8a9890;margin-top:10px}.message{min-height:28px;font-size:20px;font-weight:700;margin:27px 0 23px}
+button{border:0;border-radius:16px;background:#193f34;color:white;font:inherit;font-size:18px;font-weight:700;min-width:180px;padding:17px 32px;cursor:pointer;transition:background .2s,transform .2s}button:hover{background:#285d4d;transform:translateY(-1px)}button:focus-visible{outline:3px solid #6fbfa0;outline-offset:5px}button:disabled{opacity:.6;cursor:wait;transform:none}
+.error{color:#ac382e;line-height:1.6;font-size:14px;margin:20px 0 0}.error:empty{display:none}.note{font-size:13px;line-height:1.8;color:#77897f;margin:22px 0 0}.privacy{font-size:12px;color:#89978f;margin-top:22px}@media(max-width:440px){body{padding:18px}.panel{padding-top:25px;border-radius:25px}.intro{font-size:14px}}
+.traffic{display:flex;justify-content:center;gap:20px;margin:24px auto 10px;padding:16px 24px;background:#253c34;border-radius:24px;width:fit-content}.lamp{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:#ffffff0c;color:#b9c5bf;font-size:12px;font-weight:700;border:2px solid #ffffff12;transition:background .4s,box-shadow .4s,color .4s}.lamp.on{background:var(--lamp);color:#122e24;box-shadow:0 0 22px color-mix(in srgb,var(--lamp) 40%,transparent)}.settings{margin-top:26px;padding-top:22px;border-top:1px solid #e8eee7;text-align:left}.settings h2{font-size:15px;margin:0 0 16px}.setting{display:grid;grid-template-columns:90px 1fr 50px;gap:12px;align-items:center;margin:15px 0;font-size:14px}.setting input{width:100%;accent-color:#285d4d;cursor:pointer}.setting output{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}.hint{font-size:12px;line-height:1.7;color:#77897f;margin:14px 0 0}
+.microphone{margin:24px 0 16px;text-align:left}.microphone label{display:block;font-size:14px;font-weight:650;margin-bottom:8px}select{width:100%;padding:12px;border:1px solid #ccd9cf;border-radius:12px;background:white;color:#19352f;font:inherit}.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}#calibrate{background:#e6efe8;color:#285d4d;min-width:140px}#calibrationStatus{min-height:22px}button:disabled{cursor:default}
+.sound-setting{margin-top:22px;text-align:left}.sound-setting label{display:block;font-size:14px;font-weight:650;margin-bottom:8px}#board{margin-top:12px;background:#e6efe8;color:#285d4d}.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:100}.confetti i{position:absolute;top:-30px;width:12px;height:20px;background:var(--color);animation:fall var(--duration) ease-in forwards;animation-delay:var(--delay)}@keyframes fall{to{transform:translate(var(--drift),110vh) rotate(800deg)}}body.board-mode{padding:0;background:#10271f}body.board-mode main{width:100%;height:100svh;display:grid;place-items:center}body.board-mode main>.eyebrow,body.board-mode h1,body.board-mode .intro,body.board-mode .privacy{display:none}body.board-mode .panel{border:0;border-radius:0;box-shadow:none;background:#10271f;width:100%;height:100%;padding:3vh 3vw;display:flex;flex-direction:column;justify-content:center;align-items:center}body.board-mode .panel>*{display:none}body.board-mode .panel>.traffic,body.board-mode .panel>.reading{display:flex}body.board-mode .traffic{gap:5vw;padding:2vh 3vw;margin:0;background:transparent}body.board-mode .lamp{width:min(20vw,24vh);height:min(20vw,24vh);font-size:clamp(16px,3vw,40px)}body.board-mode .reading{margin:0}body.board-mode .number{font-size:min(42vw,52vh);line-height:1.15}body.board-mode .unit{font-size:clamp(24px,6vw,80px);color:#baccc0}#exitBoard{display:none;position:fixed;right:18px;top:18px;z-index:110;min-width:0;padding:10px 16px;font-size:14px;background:#ffffff20}body.board-mode #exitBoard{display:block}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">OUR CLASSROOM</div>
+  <h1>우리 교실, 지금 얼마나 조용할까요?</h1>
+  <p class="intro">모둠 활동의 소리 크기를 함께 살펴봐요.</p>
+  <section class="panel" id="panel" aria-label="교실 소음 측정기">
+    <div class="status"><span class="dot" aria-hidden="true"></span><span id="status" role="status">마이크 연결 전</span></div>
+    <div class="traffic" role="img" aria-label="신호등 대기 중" id="traffic">
+      <span class="lamp" id="lamp0" style="--lamp:#56d69b" aria-hidden="true">초록</span>
+      <span class="lamp" id="lamp1" style="--lamp:#ffd35a" aria-hidden="true">노랑</span>
+      <span class="lamp" id="lamp2" style="--lamp:#ff7a68" aria-hidden="true">빨강</span>
+    </div>
+    <div class="reading"><span class="number" id="number">0</span><span class="unit">/ 100</span></div>
+    <p class="label">소음 지수</p>
+    <div class="track" role="meter" aria-label="소음 지수" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="meter"><div class="fill" id="fill"></div></div>
+    <div class="scale"><span>0 · 조용해요</span><span>100 · 소리가 커요</span></div>
+    <p class="message" id="message">준비되면 시작을 눌러 주세요</p>
+    <div class="microphone"><label for="microphone">사용할 마이크</label><select id="microphone"><option value="">기본 마이크 · 시작 후 이름 확인 가능</option></select></div>
+    <div class="actions"><button id="toggle" type="button">시작</button><button id="calibrate" type="button" disabled>3초 보정</button></div>
+    <p class="hint" id="calibrationStatus" role="status">보정 전 · 측정을 시작한 뒤 조용할 때 눌러 주세요.</p>
+    <button id="board" type="button" disabled>전광판 보기</button>
+    <p class="error" id="error" role="alert"></p>
+    <div class="settings">
+      <div class="sound-setting"><label for="signalSound">빨강 신호음 · 최대 음량</label><select id="signalSound"><option value="bell">맑은 종소리</option><option value="beep">삐삐 알림</option><option value="chime">상승 차임</option></select><p class="hint">실제 음량은 기기와 스피커의 볼륨 설정에 따라 달라집니다. 신호음 재생 중에는 측정과 보정이 일시 정지됩니다.</p></div>
+      <h2>신호등 기준 조절</h2>
+      <label class="setting" for="yellow">노랑 시작<input id="yellow" type="range" min="5" max="95" step="1" value="55"><output id="yellowValue" for="yellow">55점</output></label>
+      <label class="setting" for="red">빨강 시작<input id="red" type="range" min="10" max="100" step="1" value="72"><output id="redValue" for="red">72점</output></label>
+      <p class="hint" id="thresholdHint">새 상태가 1.5초 유지되면 색이 바뀝니다. 내려올 때는 빨강 68점 이하, 노랑 51점 이하에서 바뀝니다. 두 기준은 최소 5점 간격입니다.</p>
+    </div>
+    <p class="note">마이크 접근을 허용하면 측정이 시작됩니다.<br>기기와 마이크 위치에 따라 달라지는 상대 지수이며, 데시벨(dB) 측정값은 아닙니다.</p>
+  </section>
+  <p class="privacy">소리는 이 기기에서만 분석하며, 녹음하거나 전송하지 않습니다.</p>
+</main>
+<button id="exitBoard" type="button">전광판 닫기 · Esc</button>
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+let context, stream, analyser, source, samples, frame, running = false, displayed = 0, lastTime = 0;
+let lastBand = 0, pendingBand = null, pendingMs = 0;
+let yellowThreshold = 55, redThreshold = 72;
+let calibrationOffset = 0, calibration = null, calibrationTimer = null, calibratedDevice = null;
+let alerting = false, alertTimer = null, soundNodes = [], confettiTimer = null;
+function burstConfetti() {
+  clearTimeout(confettiTimer);
+  const pieces = [];
+  for (let i = 0; i < 90; i++) {
+    const piece = document.createElement('i');
+    piece.style.cssText = `left:${Math.random()*100}%;--color:${['#ffd35a','#56d69b','#ff7a68','#87baff','#d8a2ff'][i%5]};--duration:${1.4+Math.random()*1.4}s;--delay:${Math.random()*.25}s;--drift:${(Math.random()-.5)*30}vw`;
+    pieces.push(piece);
+  }
+  $('confetti').replaceChildren(...pieces);
+  confettiTimer = setTimeout(() => $('confetti').replaceChildren(), 3200);
+}
+function finishAlert() {
+  clearTimeout(alertTimer); alertTimer = null;
+  for (const node of soundNodes) { try { node.stop(); } catch {} node.disconnect(); }
+  soundNodes = []; alerting = false; lastTime = 0;
+  pendingBand = null; pendingMs = 0;
+  if (running) {
+    $('status').textContent = '실시간 측정 중';
+    $('calibrate').disabled = false;
+  }
+}
+function playRedAlert() {
+  if (!running || alerting || !context || context.state !== 'running') return;
+  if (calibration) cancelCalibration('신호음으로 보정이 취소되었습니다. 조용해지면 다시 눌러 주세요.');
+  alerting = true;
+  $('calibrate').disabled = true;
+  $('status').textContent = '신호음 재생 중 · 측정 일시 정지';
+  burstConfetti();
+  const now = context.currentTime;
+  const notes = {
+    bell:[[0,880,.65],[.7,880,.65],[1.4,880,.65]],
+    beep:[[0,1000,.25],[.45,1000,.25],[.9,1000,.25],[1.35,1000,.25]],
+    chime:[[0,523.25,.45],[.45,659.25,.45],[.9,783.99,.45],[1.35,1046.5,.65]]
+  }[$('signalSound').value];
+  let end = 0;
+  for (const [offset, frequency, duration] of notes) {
+    const oscillator = context.createOscillator(), gain = context.createGain();
+    oscillator.type = 'sine'; oscillator.frequency.value = frequency;
+    gain.gain.setValueAtTime(0, now + offset);
+    gain.gain.linearRampToValueAtTime(1, now + offset + .015);
+    gain.gain.setValueAtTime(1, now + offset + duration - .04);
+    gain.gain.linearRampToValueAtTime(0, now + offset + duration);
+    oscillator.connect(gain); gain.connect(context.destination);
+    oscillator.onended = () => { oscillator.disconnect(); gain.disconnect(); };
+    oscillator.start(now + offset); oscillator.stop(now + offset + duration);
+    soundNodes.push(oscillator);
+    end = Math.max(end, offset + duration);
+  }
+  // Leave a short quiet interval so speaker reverberation does not enter the meter.
+  alertTimer = setTimeout(finishAlert, end * 1000 + 500);
+}
+async function closeBoard() {
+  document.body.classList.remove('board-mode');
+  if (document.fullscreenElement) { try { await document.exitFullscreen(); } catch {} }
+}
+$('board').addEventListener('click', async () => {
+  if (!running) return;
+  document.body.classList.add('board-mode');
+  try { await document.documentElement.requestFullscreen(); } catch { /* CSS view remains available. */ }
+});
+$('exitBoard').addEventListener('click', closeBoard);
+document.addEventListener('keydown', event => { if (event.key === 'Escape') closeBoard(); });
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) document.body.classList.remove('board-mode');
+});
+function rawScore() {
+  analyser.getFloatTimeDomainData(samples);
+  let sum = 0;
+  for (const sample of samples) sum += sample * sample;
+  const dbfs = 20 * Math.log10(Math.max(Math.sqrt(sum / samples.length), 0.000001));
+  return (dbfs + 60) * 2;
+}
+function median(values) {
+  const sorted = [...values].sort((a,b) => a-b), middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : (sorted[middle-1] + sorted[middle]) / 2;
+}
+function cancelCalibration(message) {
+  clearInterval(calibrationTimer); calibrationTimer = null; calibration = null;
+  $('calibrate').disabled = !running;
+  $('calibrate').textContent = '3초 보정';
+  if (message) $('calibrationStatus').textContent = message;
+}
+function resetCalibration() {
+  calibrationOffset = 0; calibratedDevice = null;
+  cancelCalibration('보정 전 · 조용할 때 3초 보정을 눌러 주세요.');
+  pendingBand = null; pendingMs = 0;
+}
+$('calibrate').addEventListener('click', () => {
+  if (!running || calibration || alerting) return;
+  calibration = {started:performance.now(), values:[]};
+  $('calibrate').disabled = true;
+  $('calibrate').textContent = '보정 중…';
+  $('calibrationStatus').textContent = '조용히 기다려 주세요 · 3초 남음';
+  calibrationTimer = setInterval(() => {
+    if (!running || document.hidden) {
+      cancelCalibration('보정이 취소되었습니다. 화면을 열고 다시 눌러 주세요.'); return;
+    }
+    calibration.values.push(rawScore());
+    const remaining = 3000 - (performance.now() - calibration.started);
+    $('calibrationStatus').textContent = `조용히 기다려 주세요 · ${Math.max(0, Math.ceil(remaining / 1000))}초 남음`;
+    if (remaining <= 0) {
+      calibrationOffset = 35 - median(calibration.values);
+      calibratedDevice = stream.getAudioTracks()[0].getSettings().deviceId || $('microphone').value;
+      pendingBand = null; pendingMs = 0;
+      cancelCalibration('보정 완료 · 3초 동안 들은 소리의 중앙값을 35점으로 맞췄습니다.');
+    }
+  }, 50);
+});
+async function refreshMicrophones() {
+  if (!navigator.mediaDevices?.enumerateDevices) return;
+  try {
+    const devices = (await navigator.mediaDevices.enumerateDevices()).filter(device => device.kind === 'audioinput');
+    const selected = $('microphone').value;
+    const options = [new Option('시스템 기본 마이크', '')];
+    devices.forEach((device, index) => options.push(new Option(device.label || `마이크 ${index + 1}`, device.deviceId)));
+    $('microphone').replaceChildren(...options);
+    $('microphone').value = devices.some(device => device.deviceId === selected) ? selected : '';
+    if (selected && $('microphone').value !== selected) {
+      if (running) stop();
+      resetCalibration();
+      $('error').textContent = '선택한 마이크가 연결 해제되었습니다. 마이크를 선택하고 다시 시작해 주세요.';
+    }
+  } catch { /* The start button reports permission and connection errors. */ }
+}
+$('microphone').addEventListener('change', async () => {
+  const restart = running;
+  if (restart) stop();
+  resetCalibration();
+  displayed = 0; paint(0);
+  if (restart) await start();
+});
+navigator.mediaDevices?.addEventListener('devicechange', refreshMicrophones);
+refreshMicrophones();
+const HOLD_MS = 1500, HYSTERESIS = 4;
+function showBand(band) {
+  lastBand = band;
+  $('panel').style.setProperty('--accent', ['#23886a','#b37b19','#d45b47'][band]);
+  for (let i = 0; i < 3; i++) $('lamp' + i).classList.toggle('on', i === band);
+  $('traffic').setAttribute('aria-label', ['초록 신호','노랑 신호','빨강 신호'][band]);
+  $('message').textContent = ['차분한 소리로 활동하고 있어요','이야기 소리가 들려요','목소리를 조금 낮춰 볼까요?'][band];
+  if (band === 2) playRedAlert();
+}
+function updateSignal(value, elapsed) {
+  let next = lastBand;
+  if (lastBand === 0) next = value >= redThreshold ? 2 : value >= yellowThreshold ? 1 : 0;
+  else if (lastBand === 1) next = value >= redThreshold ? 2 : value <= yellowThreshold - HYSTERESIS ? 0 : 1;
+  else next = value <= yellowThreshold - HYSTERESIS ? 0 : value <= redThreshold - HYSTERESIS ? 1 : 2;
+  if (next === lastBand) { pendingBand = null; pendingMs = 0; return; }
+  if (next !== pendingBand) { pendingBand = next; pendingMs = 0; }
+  else pendingMs += elapsed;
+  if (pendingMs >= HOLD_MS) {
+    showBand(next);
+    pendingBand = null; pendingMs = 0;
+  }
+}
+function changeThreshold(changed) {
+  if (changed === 'yellow') {
+    yellowThreshold = Number($('yellow').value);
+    redThreshold = Math.max(redThreshold, yellowThreshold + 5);
+  } else {
+    redThreshold = Number($('red').value);
+    yellowThreshold = Math.min(yellowThreshold, redThreshold - 5);
+  }
+  $('yellow').value = yellowThreshold;
+  $('red').value = redThreshold;
+  $('yellowValue').textContent = yellowThreshold + '점';
+  $('redValue').textContent = redThreshold + '점';
+  $('thresholdHint').textContent = `새 상태가 1.5초 유지되면 색이 바뀝니다. 내려올 때는 빨강 ${redThreshold - HYSTERESIS}점 이하, 노랑 ${yellowThreshold - HYSTERESIS}점 이하에서 바뀝니다. 두 기준은 최소 5점 간격입니다.`;
+  pendingBand = null; pendingMs = 0;
+}
+for (const id of ['yellow', 'red']) $(id).addEventListener('input', () => changeThreshold(id));
+document.addEventListener('visibilitychange', () => {
+  pendingBand = null; pendingMs = 0; lastTime = 0;
+  if (document.hidden && calibration) cancelCalibration('보정이 취소되었습니다. 화면을 열고 다시 눌러 주세요.');
+});
+function paint(value) {
+  const rounded = Math.round(value);
+  $('number').textContent = rounded;
+  $('fill').style.width = value + '%';
+  $('meter').setAttribute('aria-valuenow', rounded);
+}
+function tick(time) {
+  if (!running) return;
+  if (alerting) { lastTime = 0; frame = requestAnimationFrame(tick); return; }
+  // Apply calibration before clipping so even very quiet inputs can map to 35.
+  const target = Math.max(0, Math.min(100, rawScore() + calibrationOffset));
+  const elapsed = lastTime ? Math.min(time - lastTime, 100) : 16;
+  lastTime = time;
+  // Time-based smoothing keeps movement consistent across display refresh rates.
+  displayed += (target - displayed) * (1 - Math.exp(-elapsed / 350));
+  paint(displayed);
+  if (!document.hidden) updateSignal(displayed, elapsed);
+  frame = requestAnimationFrame(tick);
+}
+function release() {
+  running = false;
+  finishAlert();
+  $('board').disabled = true;
+  closeBoard();
+  cancelCalibration(calibration ? '측정이 멈춰 보정이 취소되었습니다. 다시 시작한 뒤 눌러 주세요.' : null);
+  cancelAnimationFrame(frame);
+  if (stream) stream.getTracks().forEach(track => track.stop());
+  if (source) source.disconnect();
+  if (context && context.state !== 'closed') context.close().catch(() => {});
+  stream = context = source = analyser = null;
+  $('panel').classList.remove('active');
+  pendingBand = null; pendingMs = 0;
+  for (let i = 0; i < 3; i++) $('lamp' + i).classList.remove('on');
+  $('traffic').setAttribute('aria-label', '신호등 꺼짐');
+}
+function stop() {
+  release();
+  $('status').textContent = '측정 멈춤 · 마이크 꺼짐';
+  $('message').textContent = '다시 시작하면 새로 측정해요';
+  $('toggle').textContent = '다시 시작';
+}
+async function start() {
+  $('error').textContent = '';
+  $('toggle').disabled = true;
+  $('microphone').disabled = true;
+  $('status').textContent = '마이크 연결 중…';
+  try {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      throw Object.assign(new Error(), {name:'UnsupportedError'});
+    }
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) throw Object.assign(new Error(), {name:'UnsupportedError'});
+    context = new AudioContextClass();
+    await context.resume();
+    const deviceId = $('microphone').value;
+    stream = await navigator.mediaDevices.getUserMedia({audio:{...(deviceId ? {deviceId:{exact:deviceId}} : {}),echoCancellation:false,noiseSuppression:false,autoGainControl:false},video:false});
+    const actualDevice = stream.getAudioTracks()[0].getSettings().deviceId || deviceId;
+    if (calibratedDevice !== null && calibratedDevice !== actualDevice) resetCalibration();
+    await refreshMicrophones();
+    analyser = context.createAnalyser();
+    analyser.fftSize = 2048;
+    source = context.createMediaStreamSource(stream);
+    source.connect(analyser);
+    // Do not connect to speakers: this prevents microphone feedback.
+    samples = new Float32Array(analyser.fftSize);
+    stream.getAudioTracks()[0].addEventListener('ended', () => { if (running) stop(); });
+    displayed = 0; lastTime = 0; pendingBand = null; pendingMs = 0; running = true;
+    showBand(0);
+    $('panel').classList.add('active');
+    $('status').textContent = '실시간 측정 중';
+    $('toggle').textContent = '멈춤';
+    $('calibrate').disabled = false;
+    $('board').disabled = false;
+    paint(0);
+    frame = requestAnimationFrame(tick);
+  } catch (error) {
+    release();
+    $('status').textContent = '마이크 연결을 확인해 주세요';
+    $('toggle').textContent = '다시 시작';
+    const messages = {
+      NotAllowedError:'마이크 권한이 허용되지 않았습니다. 브라우저의 사이트 설정에서 마이크를 허용한 뒤 다시 시작해 주세요.',
+      NotFoundError:'연결된 마이크가 없습니다. 마이크를 연결한 뒤 다시 시작해 주세요.',
+      NotReadableError:'마이크를 사용할 수 없습니다. 다른 앱이 사용 중인지 확인해 주세요.',
+      UnsupportedError:'이 브라우저에서는 마이크에 접근할 수 없습니다. 최신 Chrome 또는 Edge에서 열어 주세요. 파일에서 실행되지 않으면 localhost 또는 HTTPS 환경에서 열어 주세요.'
+    };
+    $('error').textContent = messages[error.name] || '마이크 연결에 실패했습니다. 브라우저 권한과 마이크 연결을 확인한 뒤 다시 시도해 주세요.';
+  } finally { $('toggle').disabled = false; $('microphone').disabled = false; }
+}
+$('toggle').addEventListener('click', async () => {
+  if (running) stop();
+  else await start();
+});
+window.addEventListener('pagehide', release);
+</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>학교생활기록부 문장 점검기</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f6fb; color: #203047; font-family: 'Malgun Gothic', sans-serif; line-height: 1.6; }
+    main { max-width: 940px; margin: 64px auto; padding: 0 24px; }
+    .badge { color: #3267c7; font-size: 14px; font-weight: 700; }
+    h1 { margin: 8px 0 12px; font-size: clamp(26px, 5vw, 36px); letter-spacing: -1px; }
+    .intro { margin: 0 0 30px; color: #637087; }
+    .panel { padding: 28px; background: white; border: 1px solid #e1e7ef; border-radius: 20px; box-shadow: 0 10px 35px #243e6310; }
+    .label-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+    label { font-weight: 700; font-size: 17px; }
+    button { border: 1px solid #dbe2ed; background: white; color: #526078; border-radius: 8px; padding: 7px 13px; cursor: pointer; font: inherit; font-size: 13px; }
+    button:hover { background: #f0f5fd; }
+    textarea { display: block; width: 100%; min-height: 280px; resize: vertical; padding: 18px; border: 1px solid #cdd7e6; border-radius: 12px; color: #203047; font: inherit; line-height: 1.9; background: #fcfdff; }
+    textarea:focus { outline: 3px solid #dbe8ff; border-color: #5281d5; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+    .stat { padding: 22px 18px; border-radius: 12px; background: #f1f6ff; text-align: center; }
+    .stat dt { color: #596a84; font-size: 14px; }
+    .stat dd { margin: 8px 0 0; color: #245cc0; font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .unit { font-size: 14px; font-weight: 400; margin-left: 4px; }
+    dl { margin-bottom: 0; }
+    .note { margin: 20px 0 0; color: #718096; font-size: 13px; }
+    footer { margin-top: 20px; text-align: center; font-size: 13px; color: #7a879a; }
+    .section { margin-top: 26px; padding-top: 24px; border-top: 1px solid #e1e7ef; }
+    h2 { margin: 0 0 12px; font-size: 17px; }
+    .register { display: flex; gap: 8px; }
+    .register input { flex: 1; min-width: 0; padding: 11px 12px; border: 1px solid #cdd7e6; border-radius: 8px; font: inherit; }
+    .primary { background: #245cc0; color: white; border-color: #245cc0; }
+    .primary:hover { background: #194a9f; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; }
+    .chips li { background: #f1f6ff; padding: 5px 10px; border-radius: 8px; overflow-wrap: anywhere; }
+    .chips button { padding: 0 5px; margin-left: 6px; border: 0; background: transparent; }
+    .preview { min-height: 100px; padding: 18px; border: 1px solid #e1e7ef; border-radius: 12px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.9; }
+    mark { background: #ffe09a; color: #733f00; border-radius: 3px; }
+    .status { min-height: 22px; margin: 8px 0; color: #637087; font-size: 13px; }
+    .budget { margin-top: 22px; padding: 18px; background: #f8faff; border-radius: 12px; }
+    .budget input { width: 130px; margin-left: 10px; padding: 8px; border: 1px solid #cdd7e6; border-radius: 8px; font: inherit; }
+    progress { display: block; width: 100%; height: 20px; margin-top: 14px; accent-color: #245cc0; }
+    progress.over { accent-color: #c63c35; }
+    .over-text { color: #b52f29; font-weight: 700; }
+    .example { background: #f8faff; border-radius: 12px; padding: 18px; }
+    .example pre { white-space: pre-wrap; margin: 8px 0; font: inherit; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #e1e7ef; }
+    @media (max-width: 580px) { main { margin: 30px auto; padding: 0 16px; } .panel { padding: 20px; } .stats { gap: 8px; } .stat { padding: 18px 6px; } .stat dt { font-size: 12px; } .stat dd { font-size: 25px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="badge">선생님을 위한 기록 도구</div>
+    <h1>학교생활기록부 문장 점검기</h1>
+    <p class="intro">작성한 문장을 붙여 넣고 글자 수와 바이트 수를 바로 확인하세요.</p>
+    <section class="panel" aria-label="문장 입력 및 글자 수 확인">
+      <div class="label-row"><label for="sentence">문장 입력·수정</label><div><button id="copy" type="button" class="primary">문장 복사</button> <button id="clear" type="button">전체 지우기</button></div></div>
+      <textarea id="sentence" placeholder="학교생활기록부에 작성할 문장을 입력하거나 붙여 넣으세요." spellcheck="false"></textarea>
+      <p id="copy-status" class="status" role="status"></p>
+      <dl class="stats" aria-live="polite" aria-atomic="true">
+        <div class="stat"><dt>공백 포함 글자 수</dt><dd><span id="with-space">0</span><span class="unit">자</span></dd></div>
+        <div class="stat"><dt>공백 제외 글자 수</dt><dd><span id="without-space">0</span><span class="unit">자</span></dd></div>
+        <div class="stat"><dt>바이트 수</dt><dd><span id="bytes">0</span><span class="unit">B</span></dd></div>
+      </dl>
+      <div class="budget">
+        <label for="byte-limit">바이트 기준값 (B)</label><input id="byte-limit" type="number" min="1" step="1" value="1500" inputmode="numeric">
+        <progress id="byte-progress" value="0" max="1500" aria-label="바이트 기준값 대비 사용량"></progress>
+        <p id="budget-status" class="status" role="status"></p>
+      </div>
+      <p class="note">바이트는 UTF-8 기준으로 계산합니다. 한글은 3바이트, 영문·숫자·일반 공백은 1바이트입니다. 줄바꿈은 1바이트이며, 특수문자와 이모지는 종류에 따라 다릅니다. 공백 제외 글자 수는 띄어쓰기·줄바꿈·탭을 제외합니다.</p>
+      <p class="note">학교 입력 시스템의 글자 수·바이트 계산 기준은 이 도구와 다를 수 있습니다. 최종 분량은 실제 입력 시스템에서 확인해 주세요.</p>
+      <section class="section">
+        <h2><label for="expression">주의할 표현 등록</label></h2>
+        <form id="register" class="register"><input id="expression" placeholder="주의할 표현을 하나씩 입력하세요" autocomplete="off" required><button class="primary" type="submit">등록</button></form>
+        <p id="register-status" class="status" role="status"></p>
+        <ul id="expressions" class="chips" aria-label="등록한 표현"></ul>
+        <p class="note">등록한 표현과 정확히 일치하는 부분을 찾아 강조합니다. 문장과 등록 목록은 자동 저장하지 않습니다.</p>
+      </section>
+      <section class="section">
+        <h2>주의 표현 강조 보기</h2>
+        <div id="preview" class="preview"></div>
+        <h2 style="margin-top:20px">발견된 표현</h2>
+        <p id="match-status" class="status" role="status"></p>
+        <ul id="matches" class="chips"></ul>
+      </section>
+      <section class="section">
+        <h2>혼합 문자 계산 예시</h2>
+        <div class="example">
+          <p>아래 두 줄 사이에는 줄바꿈 1개가 있습니다.</p>
+          <pre id="example-text"></pre>
+          <table>
+            <thead><tr><th scope="col">구성</th><th scope="col">계산</th></tr></thead>
+            <tbody>
+              <tr><td>한글 ‘가’, ‘나’</td><td>2자 × 3 = 6B</td></tr>
+              <tr><td>영문 ‘A’, 숫자 ‘1’</td><td>2자 × 1 = 2B</td></tr>
+              <tr><td>공백, 줄바꿈</td><td>각 1개 × 1 = 2B</td></tr>
+              <tr><td>특수문자 ‘!’, ‘★’</td><td>1B + 3B = 4B</td></tr>
+            </tbody>
+          </table>
+          <p>합계: <strong>공백 포함 8자 · 공백 제외 6자 · 14B</strong></p>
+          <p id="example-result" class="status"></p>
+          <button id="load-example" type="button">빈 입력창에 예시 넣기</button>
+          <p id="example-status" class="status" role="status"></p>
+        </div>
+      </section>
+    </section>
+    <footer>입력한 문장은 외부로 전송하거나 자동 저장하지 않습니다. 이 브라우저에서만 계산하며, 페이지를 닫으면 문장은 유지되지 않습니다.</footer>
+  </main>
+  <script>
+    const sentence = document.getElementById('sentence');
+    const encoder = new TextEncoder();
+    const format = value => value.toLocaleString('ko-KR');
+    const exampleText = '가A1 !\n나★';
+    document.getElementById('example-text').textContent = exampleText;
+    document.getElementById('example-result').textContent = '현재 계산기로 계산한 결과: 공백 포함 ' + Array.from(exampleText).length + '자 · 공백 제외 ' + Array.from(exampleText.replace(/\s/gu, '')).length + '자 · ' + encoder.encode(exampleText).length + 'B';
+    sentence.setAttribute('autocomplete', 'off');
+    document.getElementById('load-example').addEventListener('click', () => {
+      const status = document.getElementById('example-status');
+      if (sentence.value) {
+        status.textContent = '작성 중인 문장이 있습니다. 예시를 넣으려면 입력창을 먼저 비워 주세요.';
+        return;
+      }
+      sentence.value = exampleText;
+      updateCounts();
+      status.textContent = '예시를 입력했습니다. 위의 집계와 진행 막대에서 확인하세요.';
+      sentence.focus();
+    });
+    function updateBudget(bytes) {
+      const limit = Number(document.getElementById('byte-limit').value);
+      const progress = document.getElementById('byte-progress');
+      const status = document.getElementById('budget-status');
+      const valid = Number.isSafeInteger(limit) && limit > 0;
+      progress.max = valid ? limit : 1;
+      progress.value = valid ? Math.min(bytes, limit) : 0;
+      progress.classList.toggle('over', valid && bytes > limit);
+      status.classList.toggle('over-text', valid && bytes > limit);
+      status.textContent = valid
+        ? format(bytes) + ' / ' + format(limit) + 'B (' + (bytes / limit * 100).toFixed(1) + '%) · ' + (bytes > limit ? format(bytes - limit) + 'B 초과' : format(limit - bytes) + 'B 남음')
+        : '바이트 기준값을 1 이상의 정수로 입력해 주세요.';
+      progress.setAttribute('aria-valuetext', status.textContent);
+    }
+    document.getElementById('byte-limit').addEventListener('input', () => updateBudget(encoder.encode(sentence.value).length));
+    let expressions = [];
+    function renderExpressions() {
+      const list = document.getElementById('expressions');
+      list.replaceChildren();
+      expressions.forEach(expression => {
+        const item = document.createElement('li');
+        item.append(document.createTextNode(expression));
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.textContent = '×';
+        remove.setAttribute('aria-label', expression + ' 삭제');
+        remove.addEventListener('click', () => {
+          expressions = expressions.filter(value => value !== expression);
+          saveExpressions();
+        });
+        item.append(remove);
+        list.append(item);
+      });
+      updateCounts();
+    }
+    function saveExpressions() {
+      document.getElementById('register-status').textContent = '';
+      renderExpressions();
+    }
+    function highlightExpressions(text) {
+      const ranges = [];
+      const matches = document.getElementById('matches');
+      matches.replaceChildren();
+      let found = 0;
+      expressions.forEach(expression => {
+        let count = 0;
+        let start = text.indexOf(expression);
+        while (start !== -1) {
+          ranges.push([start, start + expression.length]);
+          count++;
+          start = text.indexOf(expression, start + 1);
+        }
+        if (count) {
+          found++;
+          const item = document.createElement('li');
+          item.textContent = expression + ' · ' + format(count) + '회';
+          matches.append(item);
+        }
+      });
+      document.getElementById('match-status').textContent = !expressions.length ? '주의할 표현을 등록해 주세요.' : found ? format(found) + '개의 주의 표현이 발견되었습니다.' : '등록한 주의 표현이 발견되지 않았습니다.';
+      ranges.sort((a, b) => a[0] - b[0]);
+      const merged = [];
+      ranges.forEach(range => {
+        const last = merged[merged.length - 1];
+        if (last && range[0] <= last[1]) last[1] = Math.max(last[1], range[1]);
+        else merged.push([...range]);
+      });
+      const preview = document.getElementById('preview');
+      preview.replaceChildren();
+      let cursor = 0;
+      merged.forEach(([start, end]) => {
+        preview.append(document.createTextNode(text.slice(cursor, start)));
+        const mark = document.createElement('mark');
+        mark.textContent = text.slice(start, end);
+        preview.append(mark);
+        cursor = end;
+      });
+      preview.append(document.createTextNode(text.slice(cursor)));
+      if (!text) preview.textContent = '문장을 입력하면 주의할 표현이 이곳에 강조됩니다.';
+    }
+    function updateCounts() {
+      const text = sentence.value;
+      document.getElementById('with-space').textContent = format(Array.from(text).length);
+      document.getElementById('without-space').textContent = format(Array.from(text.replace(/\s/gu, '')).length);
+      document.getElementById('bytes').textContent = format(encoder.encode(text).length);
+      updateBudget(encoder.encode(text).length);
+      highlightExpressions(text);
+    }
+    sentence.addEventListener('input', updateCounts);
+    document.getElementById('clear').addEventListener('click', () => {
+      sentence.value = '';
+      updateCounts();
+      sentence.focus();
+    });
+    document.getElementById('register').addEventListener('submit', event => {
+      event.preventDefault();
+      const input = document.getElementById('expression');
+      const expression = input.value.trim();
+      if (!expression) return;
+      if (expressions.includes(expression)) {
+        document.getElementById('register-status').textContent = '이미 등록한 표현입니다.';
+        return;
+      }
+      expressions.push(expression);
+      input.value = '';
+      saveExpressions();
+      input.focus();
+    });
+    document.getElementById('copy').addEventListener('click', async () => {
+      const status = document.getElementById('copy-status');
+      if (!sentence.value) { status.textContent = '복사할 문장을 입력해 주세요.'; return; }
+      try {
+        if (!navigator.clipboard || !window.isSecureContext) throw new Error('fallback');
+        await navigator.clipboard.writeText(sentence.value);
+        status.textContent = '수정한 문장을 복사했습니다.';
+      } catch (_) {
+        sentence.focus();
+        sentence.select();
+        try {
+          if (!document.execCommand('copy')) throw new Error('copy');
+          status.textContent = '수정한 문장을 복사했습니다.';
+        } catch (_) {
+          status.textContent = '자동 복사가 지원되지 않습니다. 선택된 문장을 Ctrl+C 또는 ⌘C로 복사해 주세요.';
+        }
+      }
+    });
+    sentence.addEventListener('input', () => { document.getElementById('copy-status').textContent = ''; });
+    renderExpressions();
+  </script>
+</body>
+</html>

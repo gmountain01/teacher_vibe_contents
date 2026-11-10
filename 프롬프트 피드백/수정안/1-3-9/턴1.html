@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시간탐사대: 선사시대</title>
+<script>
+// ✏️ 조사 내용 편집: 시대 → 스테이지 → 조사 순서입니다.
+// 각 시대에는 스테이지 3개, 각 스테이지에는 조사 3개를 유지해 주세요.
+const ERAS = [
+  {name:'구석기', icon:'🪨', intro:'돌을 깨뜨려 도구를 만들고 자연을 따라 이동해요.', keywords:['뗀석기','이동 생활','동굴','사냥과 채집'], stages:[
+    {title:'돌에 남은 기술', investigations:[
+      {title:'뗀석기 살펴보기', text:'구석기 사람들은 돌을 깨뜨려 날카로운 날을 만들었어요. 이렇게 만든 도구를 뗀석기라고 해요.'},
+      {title:'주먹도끼의 쓰임', text:'주먹도끼는 나무를 자르거나 사냥한 동물의 가죽과 고기를 손질하는 등 여러 용도로 쓰였어요.'},
+      {title:'도구의 변화', text:'시간이 흐르며 돌에서 떼어 낸 작은 조각을 이용해 더욱 정교한 도구도 만들었어요.'}]},
+    {title:'이동하는 사람들', investigations:[
+      {title:'먹거리 찾기', text:'사람들은 동물을 사냥하고 물고기를 잡았으며 열매와 뿌리 등을 채집했어요.'},
+      {title:'살 곳 찾기', text:'동굴이나 바위 그늘에 살기도 하고, 강가에 나뭇가지와 가죽 등을 이용해 막집을 짓기도 했어요.'},
+      {title:'이동의 이유', text:'한곳의 먹거리가 줄거나 계절이 바뀌면 동물과 식물을 찾아 다른 곳으로 이동했어요.'}]},
+    {title:'구석기 생활 복원', investigations:[
+      {title:'불의 이용', text:'불을 이용해 음식을 익히고 추위를 견디며 맹수로부터 몸을 보호했어요.'},
+      {title:'함께하는 생활', text:'사람들은 무리를 이루어 살며 사냥과 채집에 협력했어요.'},
+      {title:'우리 땅의 흔적', text:'경기 연천 전곡리에서는 주먹도끼를 비롯한 구석기 시대의 도구들이 발견되었어요.'}]}
+  ]},
+  {name:'신석기', icon:'🌾', intro:'농경을 시작하고 한곳에 머무는 생활이 늘어나요.', keywords:['간석기','빗살무늬 토기','농경','움집'], stages:[
+    {title:'새로운 도구와 그릇', investigations:[
+      {title:'간석기 살펴보기', text:'돌을 갈아 날을 매끄럽게 만든 도구를 간석기라고 해요. 돌도끼와 돌낫 등이 사용되었어요.'},
+      {title:'토기의 등장', text:'흙으로 빚어 불에 구운 토기를 이용해 음식물을 저장하거나 조리했어요.'},
+      {title:'빗살무늬 찾기', text:'빗살무늬 토기에는 빗으로 그은 듯한 무늬가 있어요. 신석기 시대를 대표하는 유물이에요.'}]},
+    {title:'마을과 먹거리', investigations:[
+      {title:'농경의 시작', text:'조와 피 등을 기르는 농경이 시작되었어요. 사냥, 채집, 고기잡이도 여전히 중요한 먹거리 마련 방법이었어요.'},
+      {title:'움집 탐사', text:'땅을 파고 기둥과 지붕을 세운 움집에서 살았어요. 집 안에는 불을 피우는 화덕을 두었어요.'},
+      {title:'정착 생활', text:'농경과 고기잡이 등에 유리한 강가나 바닷가에 마을을 이루고 한곳에 머무는 생활이 늘어났어요.'}]},
+    {title:'생활 속 흔적', investigations:[
+      {title:'실과 옷', text:'가락바퀴로 실을 뽑고 뼈바늘을 이용해 옷이나 그물을 만들었어요.'},
+      {title:'자연과 믿음', text:'자연과 동식물에 영혼이 있다고 여기거나 특정 동식물을 특별하게 여기는 믿음이 나타났어요.'},
+      {title:'암사동 유적', text:'서울 암사동 유적에서는 신석기 시대의 집터와 빗살무늬 토기 등이 발견되었어요.'}]}
+  ]},
+  {name:'청동기', icon:'🗡️', intro:'농업이 발달하고 재산과 권력의 차이가 생겨나요.', keywords:['청동기','벼농사','고인돌','계급'], stages:[
+    {title:'금속과 농업', investigations:[
+      {title:'청동의 등장', text:'구리에 주석 등을 섞어 청동을 만들었어요. 청동은 주로 무기나 의례용 도구에 사용되었어요.'},
+      {title:'농기구의 재료', text:'청동기가 등장한 뒤에도 반달 돌칼과 돌도끼 같은 돌로 만든 농기구를 널리 사용했어요.'},
+      {title:'벼농사의 확대', text:'벼농사가 널리 퍼지고 농업 생산이 늘어났어요. 밭에서는 조, 보리, 콩 등도 길렀어요.'}]},
+    {title:'달라지는 사회', investigations:[
+      {title:'남는 생산물', text:'농업 생산이 늘면서 먹고 남는 생산물을 저장할 수 있게 되었고, 이를 차지하는 차이도 커졌어요.'},
+      {title:'계급의 발생', text:'재산과 권력의 차이가 커지며 지배하는 사람과 지배받는 사람이 나뉘는 계급이 나타났어요.'},
+      {title:'군장의 등장', text:'힘 있는 지배자인 군장이 나타났어요. 군장은 정치적 권력과 종교적 권위를 함께 갖기도 했어요.'}]},
+    {title:'유물로 읽는 권력', investigations:[
+      {title:'비파형 동검', text:'비파라는 악기를 닮은 비파형 동검은 청동기 문화를 보여 주는 대표적인 유물이에요.'},
+      {title:'고인돌의 의미', text:'고인돌은 청동기 시대를 대표하는 무덤이에요. 큰 돌을 옮길 수 있는 노동력과 지배자의 힘을 짐작하게 해요.'},
+      {title:'민무늬 토기', text:'무늬가 없거나 적은 민무늬 토기를 널리 사용했어요. 토기의 모양과 쓰임도 다양해졌어요.'}]}
+  ]}
+];
+</script>
+<style>
+:root{font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;color:#21382f;background:#f5f3eb;line-height:1.65}*{box-sizing:border-box}body{margin:0}header{background:#173e34;color:#fff;padding:45px 22px 64px}header>div,main,footer{max-width:1060px;margin:auto}.eyebrow{font-size:13px;letter-spacing:2px;color:#bce0bd;font-weight:700}h1{font-size:clamp(29px,5vw,46px);margin:8px 0}header p{color:#d6e6dc;margin:8px 0}main{padding:0 20px 35px}.status{margin-top:-25px;background:#fff;border:1px solid #dce3d8;border-radius:16px;padding:18px 22px;display:flex;justify-content:space-between;gap:14px;align-items:center;box-shadow:0 6px 22px #173e3410}.status strong{color:#285e43}h2{font-size:23px;margin:30px 0 14px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:#fff;border:1px solid #dde2d7;border-radius:20px;padding:23px;display:flex;flex-direction:column;position:relative}.card.current{border:2px solid #448463}.icon{font-size:40px}.card h3{font-size:25px;margin:8px 0}.card p{margin:0 0 15px;color:#5b6860;min-height:53px}.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}.tag{font-size:13px;background:#eef3e8;border-radius:8px;padding:4px 9px}.count{font-weight:700;font-size:14px;margin-top:auto}.track{height:6px;background:#e8ede4;border-radius:8px;margin:10px 0 18px;overflow:hidden}.fill{height:100%;background:#4b8762}button{font:inherit;font-weight:700;min-height:50px;border:0;border-radius:12px;padding:12px 18px;cursor:pointer;background:#246347;color:white}button:hover:not(:disabled){background:#194c35}button:focus-visible{outline:3px solid #e2a332;outline-offset:3px}button:disabled{background:#e8ebe5;color:#748074;cursor:not-allowed}.secondary{background:#e9efe5;color:#244f38}.secondary:hover:not(:disabled){background:#d7e3d1}.stage-list{display:grid;gap:12px}.stage{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;gap:15px}.panel{background:white;padding:25px;border:1px solid #dce3d8;border-radius:20px;margin-top:20px}.panel h2{margin:12px 0}.muted{color:#69756c;font-size:14px}.investigation{padding:20px 0;border-top:1px solid #e3e8de}.investigation h3{margin:0 0 10px;font-size:19px}.investigation p{margin:0 0 15px}.investigation button{width:100%}.badge{font-size:13px;color:#3c6948;background:#edf4e8;padding:5px 10px;border-radius:20px}.notice{padding:16px;background:#edf5e9;border-radius:12px;margin-top:18px}footer{padding:0 20px 28px;display:flex;gap:15px;align-items:center;justify-content:space-between;font-size:13px;color:#6c756b}footer button{font-size:13px;min-height:46px}dialog{border:0;border-radius:18px;padding:25px;max-width:360px;width:90%;color:#21382f}dialog::backdrop{background:#10251e88}.actions{display:flex;gap:10px}.actions button{flex:1}[hidden]{display:none!important}@media(max-width:700px){header{padding-top:30px}.cards{grid-template-columns:1fr}.card p{min-height:0}.card{padding:22px}.status{align-items:flex-start;flex-direction:column;gap:4px}.panel{padding:20px}.stage{align-items:flex-start;flex-direction:column;gap:4px}footer{align-items:flex-start;flex-direction:column}button{min-height:54px}}
+</style>
+</head>
+<body>
+<header><div><span class="eyebrow">HISTORY EXPLORER · 중학교 역사</span><h1>시간탐사대: 선사시대</h1><p>흔적을 조사하고, 시대의 비밀을 하나씩 발견해 보세요.</p></div></header>
+<main>
+<div class="status" role="status" aria-live="polite"><strong id="total"></strong><span id="guide" class="muted"></span></div>
+<section aria-labelledby="era-heading"><h2 id="era-heading">탐사할 시대를 선택하세요</h2><div id="cards" class="cards"></div></section>
+<section id="detail" class="panel" hidden aria-labelledby="detail-heading"></section>
+</main>
+<footer><span id="save-note">탐사 기록은 이 브라우저에 자동 저장됩니다.</span><button class="secondary" id="reset">탐사 기록 초기화</button></footer>
+<dialog id="reset-dialog"><h3>탐사를 처음부터 시작할까요?</h3><p>완료한 모든 조사 기록이 지워집니다.</p><div class="actions"><button class="secondary" id="cancel-reset">취소</button><button id="confirm-reset">초기화</button></div></dialog>
+<script>
+const KEY='prehistoric-time-explorers-v1';
+let done=new Set(), selectedEra=null, selectedStage=null;
+try{const saved=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(saved)){for(let e=0;e<3;e++)for(let s=0;s<3;s++)for(let i=0;i<3;i++){const k=`${e}-${s}-${i}`;if(saved.includes(k))done.add(k);}}}catch{document.getElementById('save-note').textContent='자동 저장을 사용할 수 없어 이번 탐사 동안만 기록됩니다.';}
+const stageDone=(e,s)=>ERAS[e].stages[s].investigations.every((_,i)=>done.has(`${e}-${s}-${i}`));
+const eraDone=e=>ERAS[e].stages.every((_,s)=>stageDone(e,s));
+const eraOpen=e=>e===0||ERAS.slice(0,e).every((_,n)=>eraDone(n));
+const stageOpen=(e,s)=>eraOpen(e)&&(s===0||ERAS[e].stages.slice(0,s).every((_,n)=>stageDone(e,n)));
+function save(){try{localStorage.setItem(KEY,JSON.stringify([...done]));}catch{document.getElementById('save-note').textContent='자동 저장을 사용할 수 없어 이번 탐사 동안만 기록됩니다.';}}
+function render(){
+ const completed=ERAS.reduce((n,e,ei)=>n+e.stages.filter((_,s)=>stageDone(ei,s)).length,0);
+ document.getElementById('total').textContent=`전체 ${completed} / 9 스테이지 완료`;
+ document.getElementById('guide').textContent=completed===9?'🎉 모든 시대의 탐사를 마쳤습니다!':'조사 3개 완료 → 다음 스테이지 → 다음 시대';
+ document.getElementById('cards').innerHTML=ERAS.map((e,ei)=>{const open=eraOpen(ei),n=e.stages.filter((_,s)=>stageDone(ei,s)).length;return `<article class="card ${selectedEra===ei?'current':''}"><span class="icon" aria-hidden="true">${e.icon}</span><h3>${e.name}</h3><p>${e.intro}</p><div class="tags">${e.keywords.map(k=>`<span class="tag">${k}</span>`).join('')}</div><span class="count">${n} / 3 스테이지 완료</span><div class="track"><div class="fill" style="width:${n/3*100}%"></div></div><button data-era="${ei}" ${open?'':'disabled'}>${open?(n===3?'✓ 다시 탐사하기':'탐사 시작 →'):`🔒 ${ERAS[ei-1].name} 완료 후 열림`}</button></article>`}).join('');
+ renderDetail();
+}
+function renderDetail(){
+ const el=document.getElementById('detail');el.hidden=selectedEra===null;if(selectedEra===null)return;
+ const e=ERAS[selectedEra];
+ if(selectedStage===null){el.innerHTML=`<span class="badge">${e.name} 탐사 지도</span><h2 id="detail-heading">세 개의 스테이지를 탐사하세요</h2><p class="muted">각 스테이지의 조사 3개를 읽고 조사 완료를 눌러 주세요.</p><div class="stage-list">${e.stages.map((s,si)=>`<button class="stage ${stageDone(selectedEra,si)?'secondary':''}" data-stage="${si}" ${stageOpen(selectedEra,si)?'':'disabled'}><span>${si+1}. ${s.title}</span><span>${stageDone(selectedEra,si)?'✓ 완료 · 다시 보기':stageOpen(selectedEra,si)?`${s.investigations.filter((_,i)=>done.has(`${selectedEra}-${si}-${i}`)).length} / 3 조사 완료 →`:'🔒 앞 스테이지 완료 필요'}</span></button>`).join('')}</div>${eraDone(selectedEra)?`<div class="notice">🎉 ${e.name} 탐사 완료! ${selectedEra<2?'다음 시대가 열렸어요.':'모든 시대를 탐사한 시간탐사대원입니다!'}</div>`:''}`;return;}
+ const s=e.stages[selectedStage],complete=stageDone(selectedEra,selectedStage);
+ el.innerHTML=`<button class="secondary" id="back">← 스테이지 목록</button><h2 id="detail-heading">${e.name} · ${selectedStage+1}. ${s.title}</h2><p class="muted">자료를 읽고 각 조사의 완료 버튼을 눌러 기록하세요.</p>${s.investigations.map((v,i)=>{const checked=done.has(`${selectedEra}-${selectedStage}-${i}`);return `<article class="investigation"><h3><span class="badge">조사 ${i+1}</span> ${v.title}</h3><p>${v.text}</p><button data-investigation="${i}" ${checked?'disabled':''}>${checked?'✓ 조사 완료':'조사 완료하기'}</button></article>`}).join('')}${complete?`<div class="notice" role="status">✓ 스테이지 완료! 세 가지 흔적을 모두 조사했어요.</div><button id="next" style="width:100%;margin-top:14px">${selectedStage<2?'다음 스테이지로 →':selectedEra<2?'다음 시대로 →':'전체 탐사 결과 보기 →'}</button>`:''}`;
+}
+document.addEventListener('click',ev=>{
+ const b=ev.target.closest('button');if(!b||b.disabled)return;
+ if(b.dataset.era!==undefined){const e=Number(b.dataset.era);if(!eraOpen(e))return;selectedEra=e;selectedStage=null;render();showDetail();}
+ if(b.dataset.stage!==undefined){const s=Number(b.dataset.stage);if(!stageOpen(selectedEra,s))return;selectedStage=s;renderDetail();showDetail();}
+ if(b.dataset.investigation!==undefined){if(!stageOpen(selectedEra,selectedStage))return;const i=Number(b.dataset.investigation);done.add(`${selectedEra}-${selectedStage}-${i}`);save();render();const next=document.querySelector('[data-investigation]:not(:disabled)')||document.getElementById('next');if(next)next.focus({preventScroll:true});}
+ if(b.id==='back'){selectedStage=null;renderDetail();showDetail();}
+ if(b.id==='next'){if(selectedStage<2)selectedStage++;else if(selectedEra<2){selectedEra++;selectedStage=null;}else{selectedEra=null;selectedStage=null;}render();if(selectedEra!==null)showDetail();else document.getElementById('era-heading').scrollIntoView({behavior:'smooth'});}
+});
+function showDetail(){document.getElementById('detail').scrollIntoView({behavior:'smooth',block:'start'});const h=document.getElementById('detail-heading');h.tabIndex=-1;h.focus({preventScroll:true});}
+const resetDialog=document.getElementById('reset-dialog');
+document.getElementById('reset').onclick=()=>resetDialog.showModal();
+document.getElementById('cancel-reset').onclick=()=>resetDialog.close();
+document.getElementById('confirm-reset').onclick=()=>{done.clear();selectedEra=null;selectedStage=null;save();render();resetDialog.close();};
+render();
+</script>
+</body>
+</html>

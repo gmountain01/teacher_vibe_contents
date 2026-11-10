@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>과제 점검판</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fb;color:#17243b;font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif}main{max-width:1280px;margin:auto;padding:36px 24px 60px}h1{font-size:32px;margin:0 0 10px}.intro{color:#627089;margin:0 0 28px}.setup{background:white;border:1px solid #dce3ef;border-radius:20px;padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px;box-shadow:0 6px 24px #23395308}label{display:block;font-size:17px;font-weight:700;margin-bottom:10px}input,textarea{width:100%;font:inherit;padding:13px 15px;border:1px solid #b9c5d7;border-radius:10px;color:inherit;background:#fff}textarea{resize:vertical;min-height:138px}input:focus,textarea:focus{outline:3px solid #b7d2ff;border-color:#326bce}.hint{font-size:14px;color:#627089;line-height:1.7;margin:10px 0}.primary{background:#285fbd;color:white;border:0;border-radius:10px;padding:14px 22px;font:inherit;font-weight:750;cursor:pointer}.primary:hover{background:#204f9e}.error{color:#b42318;min-height:22px;margin:12px 0 0}.board{margin-top:32px}.board-head{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:18px}h2{font-size:30px;margin:0;overflow-wrap:anywhere}.count{font-size:26px;font-weight:800;color:#175c43;background:#e0f3eb;border-radius:14px;padding:13px 20px;white-space:nowrap}.progress{height:10px;background:#dfe6f0;border-radius:10px;overflow:hidden;margin-bottom:24px}.progress div{height:100%;background:#26966c;transition:width .2s}.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}.card{min-height:156px;padding:24px 14px;border:2px solid #d4ddeb;background:white;border-radius:18px;cursor:pointer;font:inherit;color:#27364e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;box-shadow:0 4px 10px #23395306;transition:background .15s,border-color .15s}.card:hover{border-color:#7d9ac9}.card:focus-visible{outline:4px solid #91baff;outline-offset:3px}.name{font-size:30px;font-weight:800;overflow-wrap:anywhere;max-width:100%}.status{font-size:18px;font-weight:700;color:#6b7890}.card.done{background:#dcf5e8;border-color:#239363;color:#14553c}.done .status{color:#146341}.empty{text-align:center;padding:55px 20px;background:#fff;border:2px dashed #d4ddeb;border-radius:18px;color:#64728a;line-height:1.8}.guide{color:#627089;font-size:15px;margin:0 0 18px}@media(max-width:640px){main{padding:24px 16px}.setup{grid-template-columns:1fr;padding:20px}h2{font-size:25px}.count{font-size:22px}.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.name{font-size:26px}.card{min-height:140px}}
+.toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}.teacher{font:inherit;font-weight:750;border:2px solid #8b9bb5;border-radius:10px;background:white;color:#34445f;padding:11px 20px;cursor:pointer}.teacher[aria-pressed="true"]{background:#285fbd;color:white;border-color:#285fbd}.mode-note{color:#627089;font-size:14px}.student-card{min-width:0}.student-card .card{width:100%}.card.retry{background:#fff0dc;border-color:#ed912c;color:#924308}.retry .status{color:#a34a08}.attempts{font-size:13px;color:#627089;font-weight:500}.rating{display:flex;gap:6px;margin-top:8px}.rating button{flex:1;font:inherit;font-weight:700;cursor:pointer;padding:10px 4px;border:1px solid #b9c5d7;border-radius:9px;background:white;color:#34445f}.rating button:hover{background:#e7efff}.rating button[aria-pressed="true"]{background:#285fbd;color:white;border-color:#285fbd}.rating button:focus-visible,.teacher:focus-visible{outline:3px solid #91baff;outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<h1>과제 점검판</h1>
+<p class="intro">학생 카드를 눌러 제출 여부를 한눈에 확인하세요.</p>
+<form class="setup" id="setup">
+<div><label for="assignment">과제 이름</label><input id="assignment" placeholder="예: 수학 익힘책 24쪽" maxlength="150"><p class="hint">과제 이름과 명단을 입력한 뒤 점검판을 만들어 주세요.</p><button class="primary" type="submit">점검판 만들기</button><p class="error" id="error" role="alert"></p></div>
+<div><label for="students">학생 명단</label><textarea id="students" placeholder="김민준&#10;이서연&#10;박지우"></textarea><p class="hint">한 줄에 한 명씩 입력하세요. 쉼표로 구분해도 됩니다.<br>명단을 새로 적용하면 제출 상태가 초기화됩니다.</p></div>
+</form>
+<section class="board" aria-label="학생별 과제 제출 현황">
+<div class="board-head"><h2 id="boardTitle">과제 제출 현황</h2><div class="count" id="count" aria-live="polite">제출 0/0명</div></div>
+<div class="toolbar"><button type="button" class="teacher" id="teacher" aria-pressed="false">선생님</button><span class="mode-note" id="modeNote">학생 모드 · 카드를 눌러 제출하거나 취소하세요.</span></div>
+<div class="progress" aria-hidden="true"><div id="bar" style="width:0%"></div></div>
+<p class="guide" id="guide" hidden>주황색 ‘다시 도전’ 카드를 누르면 재제출됩니다. 선생님 모드에서는 제출한 카드만 평가할 수 있습니다.</p>
+<div class="cards" id="cards"></div><div class="empty" id="empty">아직 점검판이 없습니다.<br>위에서 과제 이름과 학생 명단을 입력해 주세요.</div>
+</section>
+</main>
+<script>
+const form=document.getElementById('setup'),cards=document.getElementById('cards');
+let students=[],teacherMode=false;
+const teacherButton=document.getElementById('teacher');
+teacherButton.addEventListener('click',()=>{
+ teacherMode=!teacherMode;teacherButton.setAttribute('aria-pressed',String(teacherMode));
+ document.getElementById('modeNote').textContent=teacherMode?'선생님 모드 · 제출한 카드 아래에서 상·중·하를 선택하세요.':'학생 모드 · 카드를 눌러 제출하거나 취소하세요.';
+ renderCards();
+});
+function updateCount(){const n=students.filter(s=>s.done).length;document.getElementById('count').textContent=`제출 ${n}/${students.length}명`;document.getElementById('bar').style.width=students.length?`${n/students.length*100}%`:'0%'}
+function renderCards(){
+ cards.replaceChildren();
+ students.forEach(student=>{
+  const wrapper=document.createElement('div');wrapper.className='student-card';
+  const button=document.createElement('button');button.type='button';button.className='card';
+  button.classList.toggle('done',student.done);button.classList.toggle('retry',student.grade==='하');
+  button.setAttribute('aria-pressed',String(student.done));
+  const name=document.createElement('span');name.className='name';name.textContent=student.name;
+  const status=document.createElement('span');status.className='status';
+  status.textContent=student.grade==='하'?'다시 도전':student.done?(student.grade?`✓ 제출 · ${student.grade}`:'✓ 제출 · 평가 대기'):'미제출';
+  const attempts=document.createElement('span');attempts.className='attempts';attempts.textContent=`도전 ${student.attempts}회`;
+  button.append(name,status,attempts);button.setAttribute('aria-label',`${student.name}, ${status.textContent}, 도전 ${student.attempts}회`);
+  button.addEventListener('click',()=>{
+   if(teacherMode)return;
+   if(student.done){student.done=false;student.attempts=Math.max(0,student.attempts-1);student.grade=student.previousGrade;}
+   else{student.previousGrade=student.grade;student.done=true;student.attempts++;student.grade=null;}
+   renderCards();
+  });
+  wrapper.append(button);
+  if(teacherMode&&student.done){
+   const rating=document.createElement('div');rating.className='rating';rating.setAttribute('role','group');rating.setAttribute('aria-label',`${student.name} 평가`);
+   ['상','중','하'].forEach(grade=>{
+    const option=document.createElement('button');option.type='button';option.textContent=grade;option.setAttribute('aria-label',grade==='하'?'하 · 다시 도전':grade);option.setAttribute('aria-pressed',String(student.grade===grade));
+    option.addEventListener('click',()=>{if(!teacherMode||!student.done)return;student.grade=grade;if(grade==='하')student.done=false;renderCards();});rating.append(option);
+   });wrapper.append(rating);
+  }
+  cards.append(wrapper);
+ });updateCount();
+}
+form.addEventListener('submit',event=>{
+ event.preventDefault();
+ const title=document.getElementById('assignment').value.trim();
+ const names=document.getElementById('students').value.split(/[\n,，]+/).map(s=>s.trim()).filter(Boolean);
+ const error=document.getElementById('error');
+ if(!title||!names.length){error.textContent='과제 이름과 학생 명단을 모두 입력해 주세요.';return}
+ error.textContent='';students=names.map(name=>({name,done:false,grade:null,previousGrade:null,attempts:0}));
+ document.getElementById('boardTitle').textContent=title;
+ document.getElementById('empty').hidden=true;document.getElementById('guide').hidden=false;cards.replaceChildren();
+ renderCards();
+});
+</script>
+</body>
+</html>

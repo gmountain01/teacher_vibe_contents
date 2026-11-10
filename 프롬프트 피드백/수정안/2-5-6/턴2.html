@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>방학 중 안부 체크인</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#273b39;background:#edf5f1;font-synthesis:none}*{box-sizing:border-box}body{margin:0}main{max-width:480px;margin:auto;padding:30px 20px 40px}.eyebrow{font-size:12px;font-weight:750;letter-spacing:2px;color:#508074}header{padding:8px 5px 22px}h1{font-size:29px;letter-spacing:-1.4px;margin:12px 0}header p{font-size:14px;line-height:1.8;color:#687d76;margin:0}.demo{display:inline-block;background:#dcebe3;border-radius:20px;padding:6px 10px;font-size:11px;margin-top:14px;color:#4e7063}.card{background:white;border:1px solid #e1ebe5;border-radius:23px;padding:22px;margin-bottom:14px;box-shadow:0 5px 18px #294f3a04}h2{font-size:17px;letter-spacing:-.5px;margin:0 0 8px}.num{color:#70a58c;font-size:12px;margin-right:8px}.hint{color:#7c8984;font-size:12px;line-height:1.6;margin:0 0 17px}.row{display:flex;gap:12px}.row>label{flex:1}label.field{display:block;font-size:12px;color:#697b73}select,input,textarea{width:100%;border:1px solid #dae5de;background:#f9fbf9;border-radius:12px;padding:12px;font:inherit;color:#334b40;margin-top:7px}textarea{resize:vertical;min-height:112px;line-height:1.7;font-size:14px}fieldset{border:0;padding:0;margin:0}legend{font-size:13px;margin:15px 0 9px;color:#596f64}.moods{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.choice{position:relative;cursor:pointer}.choice input{position:absolute;opacity:0;width:1px;height:1px}.choice span{display:block;text-align:center;border:1px solid #e4eae5;border-radius:12px;padding:11px 3px;font-size:11px;color:#728078;background:#fafcfb}.choice b{display:block;font-size:25px;font-weight:400;margin-bottom:6px}.choice input:checked+span{background:#e6f2e9;border-color:#75a58b;color:#2d6147}.choice input:focus-visible+span{outline:3px solid #88bba7;outline-offset:2px}.pills{display:flex;gap:7px;flex-wrap:wrap}.pills .choice{flex:1}.pills .choice span{padding:12px 8px;font-size:12px;white-space:nowrap}.count{text-align:right;font-size:11px;color:#8a9690;margin:6px 0 0}.submit{width:100%;border:0;border-radius:15px;background:#37775d;color:white;font:inherit;font-weight:700;padding:17px;cursor:pointer;margin-top:7px;box-shadow:0 6px 16px #37775d20}.foot{text-align:center;font-size:11px;line-height:1.8;color:#819087;margin:15px 6px}.done{display:none;text-align:center;padding:50px 23px}.done .icon{font-size:48px}.done h2{font-size:24px;margin:20px 0 12px}.done p{font-size:14px;line-height:1.9;color:#6c8076}.done button{margin-top:20px}button:hover{filter:brightness(.96)}@media(max-width:360px){main{padding:20px 12px}.card{padding:18px}.moods{gap:4px}}
+</style>
+</head>
+<body>
+<main>
+<header><div class="eyebrow">SUMMER CHECK-IN · 방학 안부</div><h1>잘 지내고 있나요? 🌿</h1><p>잠깐 쉬어 가며 오늘의 안부를 들려주세요.<br>어떤 하루든 괜찮아요. 선생님이 기다릴게요.</p><div class="demo">가명 예시 · 제출 화면 미리보기</div></header>
+<form id="checkin">
+<section class="card"><h2><span class="num">01</span>누가 안부를 전하나요?</h2><p class="hint">예시 학생 ‘김하늘’의 정보가 들어 있어요.</p><div class="row"><label class="field">학급<select name="class" required><option>1학년 1반</option><option selected>1학년 2반</option><option>1학년 3반</option><option>2학년 1반</option><option>2학년 2반</option><option>3학년 1반</option></select></label><label class="field">번호<input name="number" type="number" min="1" max="50" value="12" required></label></div></section>
+<section class="card"><h2><span class="num">02</span>오늘 마음의 날씨는?</h2><p class="hint">지금 내 기분에 가장 가까운 것을 골라주세요.</p><fieldset aria-label="오늘의 기분" class="moods"><label class="choice"><input type="radio" name="mood" value="아주 좋아요" required><span><b>😄</b>아주 좋아요</span></label><label class="choice"><input type="radio" name="mood" value="좋아요" checked><span><b>🙂</b>좋아요</span></label><label class="choice"><input type="radio" name="mood" value="그저 그래요"><span><b>😐</b>그저 그래요</span></label><label class="choice"><input type="radio" name="mood" value="조금 지쳐요"><span><b>😔</b>조금 지쳐요</span></label><label class="choice"><input type="radio" name="mood" value="힘들어요"><span><b>😢</b>힘들어요</span></label></fieldset></section>
+<section class="card"><h2><span class="num">03</span>요즘 어떻게 지내나요?</h2><p class="hint">잘하고 있는 날도, 쉬어 가는 날도 괜찮아요.</p><fieldset><legend>🌙 잠은 잘 자고 있나요?</legend><div class="pills"><label class="choice"><input type="radio" name="sleep" value="잘 자요" checked><span>잘 자요</span></label><label class="choice"><input type="radio" name="sleep" value="불규칙해요"><span>불규칙해요</span></label><label class="choice"><input type="radio" name="sleep" value="잠들기 어려워요"><span>잠들기 어려워요</span></label></div></fieldset><fieldset><legend>🍚 식사는 챙겨 먹고 있나요?</legend><div class="pills"><label class="choice"><input type="radio" name="meal" value="잘 챙겨요" checked><span>잘 챙겨요</span></label><label class="choice"><input type="radio" name="meal" value="가끔 걸러요"><span>가끔 걸러요</span></label><label class="choice"><input type="radio" name="meal" value="잘 못 먹어요"><span>잘 못 먹어요</span></label></div></fieldset><fieldset><legend>🚶 몸을 움직이고 있나요?</legend><div class="pills"><label class="choice"><input type="radio" name="activity" value="자주 움직여요"><span>자주 움직여요</span></label><label class="choice"><input type="radio" name="activity" value="가끔 움직여요" checked><span>가끔 움직여요</span></label><label class="choice"><input type="radio" name="activity" value="주로 쉬어요"><span>주로 쉬어요</span></label></div></fieldset></section>
+<section class="card"><h2><span class="num">04</span>선생님께 하고 싶은 말</h2><p class="hint" id="messageHint">기억에 남는 일이나 고민을 자유롭게 적어주세요. (선택)</p><textarea name="message" aria-label="선생님께 전하고 싶은 말" aria-describedby="messageHint" maxlength="500" placeholder="선생님, 저는 요즘…">선생님, 저는 요즘 저녁마다 산책하고 있어요. 방학이 끝나면 친구들을 만나는 게 기대돼요!</textarea><p class="count"><span id="count"></span> / 500</p></section>
+<section class="card"><h2><span class="num">05</span>선생님과 이야기하고 싶나요?</h2><p class="hint">지금 마음에 맞게 골라주세요.</p><fieldset aria-label="선생님과 이야기하고 싶은지"><div class="pills"><label class="choice"><input type="radio" name="talk" value="이야기하고 싶어요"><span>네, 이야기하고 싶어요</span></label><label class="choice"><input type="radio" name="talk" value="지금은 괜찮아요" checked><span>지금은 괜찮아요</span></label></div></fieldset></section>
+<button class="submit" type="submit">선생님께 안부 전하기 💌</button><p class="foot">가명으로 체험하는 예시 화면입니다.<br>입력한 내용은 저장되거나 실제로 전송되지 않습니다.</p>
+</form>
+<section class="card done" id="done" role="status" tabindex="-1"><div class="icon">💌</div><h2>안부를 작성했어요!</h2><p>오늘의 이야기를 들려줘서 고마워요.<br>남은 방학도 나만의 속도로 지내요.</p><p>미리보기 체험이 완료되었어요.<br>선생님께 실제로 전송되지는 않았어요.</p><button type="button" class="submit" id="back">다시 작성 화면 보기</button></section>
+</main>
+<script>
+const form=document.getElementById('checkin'),done=document.getElementById('done'),message=form.elements.message,count=document.getElementById('count');
+function updateCount(){count.textContent=message.value.length}updateCount();message.addEventListener('input',updateCount);
+const statusBox=document.createElement('p');statusBox.setAttribute('role','status');statusBox.className='hint';form.append(statusBox);
+const sendButton=form.querySelector('button[type="submit"]');
+document.querySelector('.demo').textContent='방학 중 안부 전하기';
+document.querySelector('.card .hint').textContent='내 학급과 번호를 확인해 주세요.';
+document.querySelector('.foot').textContent='제출 내용과 응답 시간은 선생님의 구글 시트에 저장됩니다.';
+done.querySelector('h2').textContent='안부가 저장되었어요!';
+const savedInfo=done.querySelectorAll('p')[1];savedInfo.textContent='';
+document.getElementById('back').textContent='작성한 내용 보기';
+form.elements.number.value='';message.value='';updateCount();
+const blankOption=new Option('학급 선택','','true',true);blankOption.disabled=true;form.elements.class.prepend(blankOption);form.elements.class.value='';
+const draftKey='vacation-checkin-draft-v1';let busy=false,pending=null,lastSuccess='';
+function fields(){return Object.fromEntries(new FormData(form).entries())}
+function remember(){try{sessionStorage.setItem(draftKey,JSON.stringify({data:fields(),pending}));}catch(e){}}
+try{const draft=JSON.parse(sessionStorage.getItem(draftKey)||'null');if(draft&&draft.data){for(const [key,value] of Object.entries(draft.data)){const field=form.elements.namedItem(key);if(field)field.value=value;}pending=draft.pending||null;updateCount();}}catch(e){}
+form.addEventListener('input',remember);form.addEventListener('change',remember);
+function setBusy(value){busy=value;for(const el of form.elements)el.disabled=value;sendButton.textContent=value?'안부를 저장하고 있어요…':'선생님께 안부 전하기 💌';form.setAttribute('aria-busy',String(value))}
+function fail(){setBusy(false);remember();statusBox.textContent='저장 완료를 확인하지 못했어요. 쓴 내용은 그대로 남아 있어요. 연결 상태를 확인하고 다시 보내 주세요. 이미 저장되었다면 중복으로 저장하지 않아요.';sendButton.textContent='다시 보내기';}
+form.addEventListener('submit',event=>{
+ event.preventDefault();if(busy)return;
+ const data=fields(),signature=JSON.stringify(data);
+ if(signature===lastSuccess){form.hidden=true;done.style.display='block';done.focus();return;}
+ if(!(window.google&&google.script&&google.script.run)){statusBox.textContent='구글 Apps Script 배포 주소에서 열어 주세요. 현재 파일에서는 저장할 수 없어요. 입력 내용은 유지됩니다.';return;}
+ if(!pending||pending.signature!==signature){const id=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Array.from(crypto.getRandomValues(new Uint32Array(4)),n=>n.toString(16)).join('-');pending={signature,requestId:id};}
+ remember();setBusy(true);statusBox.textContent='저장을 확인하고 있어요. 잠시 기다려 주세요.';
+ let settled=false;
+ const timer=setTimeout(()=>{if(!settled){settled=true;fail();}},45000);
+ google.script.run.withSuccessHandler(result=>{
+  if(settled)return;settled=true;clearTimeout(timer);
+  if(!result||result.ok!==true){fail();return;}
+  setBusy(false);lastSuccess=signature;statusBox.textContent='';
+  savedInfo.textContent=(result.duplicate?'이미 저장된 안부를 확인했어요.':'선생님의 구글 시트에 저장했어요.')+' 응답 시간: '+result.savedAt+' (한국 시간)';
+  form.hidden=true;done.style.display='block';done.focus();window.scrollTo({top:0,behavior:'smooth'});
+  try{sessionStorage.removeItem(draftKey)}catch(e){}
+ }).withFailureHandler(()=>{if(settled)return;settled=true;clearTimeout(timer);fail();}).submitCheckin({...data,requestId:pending.requestId});
+});
+document.getElementById('back').addEventListener('click',()=>{done.style.display='none';form.hidden=false;form.elements.class.focus();window.scrollTo({top:0,behavior:'smooth'})});
+</script>
+</body>
+</html>

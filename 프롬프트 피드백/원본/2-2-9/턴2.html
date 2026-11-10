@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 반 학급 문고</title>
+<style>
+:root{font-family:"Malgun Gothic",Arial,sans-serif;color:#18332f;background:#f4f7f3;font-size:20px}*{box-sizing:border-box}body{margin:0}header{padding:32px 5% 24px;background:#fff;border-bottom:1px solid #dce5de}h1{font-size:42px;margin:0 0 8px}p{margin:8px 0;line-height:1.6}.sub{color:#586c65}.tools{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}button,.upload{font:inherit;font-weight:700;padding:15px 22px;border:2px solid #246354;border-radius:12px;cursor:pointer;background:#fff;color:#246354}.upload{background:#246354;color:#fff;display:inline-block}button:hover,.upload:hover{filter:brightness(.94)}button:focus-visible,.upload:focus-within,input:focus-visible{outline:4px solid #edb941;outline-offset:3px}.upload input{position:absolute;width:1px;height:1px;opacity:0}.index{position:sticky;top:0;z-index:2;background:#e7efe9;padding:14px 5%;display:flex;gap:8px;flex-wrap:wrap;box-shadow:0 2px 5px #18332f14}.index button{padding:8px 15px;font-size:26px;min-width:52px}.index button:disabled{opacity:.3;cursor:default}main{max-width:1500px;margin:auto;padding:24px 5% 60px}.summary{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}.summary strong{font-size:26px}#status{font-size:18px;color:#50675d}section{scroll-margin-top:180px}h2{font-size:34px;color:#246354;margin:32px 0 14px}.book{background:white;border:1px solid #dce5de;border-radius:16px;padding:24px;margin:12px 0;display:flex;gap:24px;align-items:center;justify-content:space-between}.info{min-width:0;flex:1}.title{font-size:34px;font-weight:700;overflow-wrap:anywhere;line-height:1.4}.author{font-size:24px;color:#65746d;margin-top:8px}.loan{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.loan input{font:inherit;width:155px;padding:13px;border:1px solid #9baa9f;border-radius:10px}.badge{font-size:22px;font-weight:bold;color:#246354}.borrowed{color:#9a591e}.empty{padding:65px 28px;text-align:center;background:white;border:2px dashed #bdcfc3;border-radius:20px}.empty h2{margin-top:0}.help{margin-top:26px;font-size:17px;color:#65746d}footer{font-size:16px;color:#65746d;margin-top:30px}@media(max-width:800px){h1{font-size:32px}.book{align-items:stretch;flex-direction:column}.loan{justify-content:flex-start}.title{font-size:29px}.summary{align-items:flex-start;flex-direction:column}.index{padding:10px 3%;gap:5px}.index button{font-size:22px;min-width:40px;padding:7px 10px}section{scroll-margin-top:220px}}
+.book{cursor:pointer}.book:focus-visible{outline:4px solid #edb941}.book.overdue{background:#ffe8e8;border:3px solid #c63535}.overdue .badge{color:#ac2020}.loan{flex-direction:column;align-items:flex-end}.loan-note{font-size:18px;color:#65746d}</style>
+</head>
+<body>
+<header><h1>📚 우리 반 학급 문고</h1><p class="sub">읽고 싶은 책을 찾고, 빌린 책을 기록해요.</p>
+<div class="tools"><button id="download">책 목록 틀 내려받기</button><label class="upload">책 목록 올리기<input id="upload" type="file" accept=".csv,text/csv" aria-label="책 목록 CSV 올리기"></label></div>
+<p class="help">① CSV 틀을 내려받아요. ② 제목·저자를 채워 CSV로 저장해요. ③ 책 목록을 올려요.</p><p class="help">책 카드를 눌러 학생 번호를 입력하면 대출됩니다. 다시 누르면 반납됩니다. 대출 기간은 7일이며, 연체된 책을 모두 반납해야 새 책을 빌릴 수 있습니다.</p></header>
+<nav class="index" id="index" aria-label="책 제목 첫 글자 바로가기"></nav>
+<main><div class="summary"><strong id="count">책 목록을 준비해 주세요</strong><span id="status" role="status" aria-live="polite"></span></div><div id="books"></div><footer>인터넷 없이 사용할 수 있습니다. 책 목록과 대출 기록은 이 컴퓨터의 현재 브라우저에 저장됩니다. 브라우저 데이터를 지우면 기록도 사라지므로 원본 CSV는 보관해 주세요.</footer></main>
+<script>
+'use strict';
+const initials=['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const groups=['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ','ABC','기타'];
+const storageKey='class-library-v1';let books=[];let storageOK=true;
+const $=id=>document.getElementById(id);
+function group(title){const c=title.trim().charAt(0),n=c.charCodeAt(0);if(n>=44032&&n<=55203){const x=initials[Math.floor((n-44032)/588)];return ({'ㄲ':'ㄱ','ㄸ':'ㄷ','ㅃ':'ㅂ','ㅆ':'ㅅ','ㅉ':'ㅈ'})[x]||x}if(/[a-z]/i.test(c))return 'ABC';return groups.includes(c)?c:'기타'}
+const collator=new Intl.Collator('ko',{numeric:true,sensitivity:'base'});
+function save(){try{localStorage.setItem(storageKey,JSON.stringify(books));return true}catch(e){storageOK=false;$('status').textContent='브라우저 저장 공간을 사용할 수 없어 현재 화면에서만 기록됩니다.';return false}}
+function element(tag,text,cls){const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el}
+function dayNumber(date){return Date.UTC(date.getFullYear(),date.getMonth(),date.getDate())/86400000}
+function overdueDays(book){return book.borrower&&book.borrowedAt?Math.max(0,dayNumber(new Date())-dayNumber(new Date(book.borrowedAt))-7):0}
+function studentNumber(value){const n=String(value).trim();return /^[0-9]+$/.test(n)&&Number(n)>0&&Number.isSafeInteger(Number(n))?String(Number(n)):null}
+function useBook(book){
+ if(book.borrower){const number=book.borrower;book.borrower='';book.borrowedAt=null;const stored=save();render();if(stored)$('status').textContent=number+'번 학생의 책을 반납했습니다.';return}
+ const value=prompt('‘'+book.title+'’을 빌릴 학생 번호를 입력해 주세요.');if(value===null)return;
+ const number=studentNumber(value);if(!number){alert('학생 번호는 1 이상의 숫자로 입력해 주세요.');return}
+ const late=books.filter(b=>b.borrower&&studentNumber(b.borrower)===number&&overdueDays(b)>0);
+ if(late.length){const message=number+'번 학생은 연체 중인 책이 '+late.length+'권 있어 새로 빌릴 수 없습니다. 연체된 책을 먼저 반납해 주세요.';$('status').textContent=message;alert(message);render();return}
+ book.borrower=number;book.borrowedAt=new Date().toISOString();const stored=save();render();if(stored)$('status').textContent=number+'번 학생이 책을 대출했습니다.';
+}
+function render(){
+ books.sort((a,b)=>groups.indexOf(group(a.title))-groups.indexOf(group(b.title))||collator.compare(a.title,b.title)||collator.compare(a.author,b.author));$('index').replaceChildren();$('books').replaceChildren();const active=new Set(books.map(b=>group(b.title)));
+ groups.forEach((g,i)=>{const b=element('button',g);b.disabled=!active.has(g);b.onclick=()=>document.getElementById('group-'+i).scrollIntoView({behavior:'smooth',block:'start'});$('index').append(b)});
+ $('count').textContent=books.length?'전체 '+books.length+'권 · 대출 중 '+books.filter(b=>b.borrower).length+'권 · 연체 '+books.filter(b=>overdueDays(b)>0).length+'권':'책 목록을 준비해 주세요';
+ if(!books.length){const box=element('div',undefined,'empty');box.append(element('h2','우리 반 책을 등록해 볼까요?'),element('p','위의 ‘책 목록 틀 내려받기’ 버튼부터 눌러 주세요.'),element('p','제목은 ㄱㄴㄷ → ABC → 기타 순으로 표시됩니다.'));$('books').append(box);return}
+ groups.forEach((g,i)=>{const subset=books.filter(b=>group(b.title)===g);if(!subset.length)return;const section=element('section');section.id='group-'+i;section.append(element('h2',g+' · '+subset.length+'권'));
+ subset.forEach(book=>{const days=overdueDays(book),row=element('article',undefined,'book'+(days?' overdue':'')),info=element('div',undefined,'info'),loan=element('div',undefined,'loan');info.append(element('div',book.title,'title'),element('div',book.author||'저자 미입력','author'));
+ if(book.borrower){loan.append(element('span',book.borrower+'번 · 대출 중','badge borrowed'));if(book.borrowedAt){const due=new Date(book.borrowedAt);due.setDate(due.getDate()+7);loan.append(element('span','반납일 '+due.getFullYear()+'. '+(due.getMonth()+1)+'. '+due.getDate()+'.','loan-note'))}if(days)loan.append(element('span','연체 '+days+'일','badge'));loan.append(element('span','누르면 반납','loan-note'))}else{loan.append(element('span','대출 가능','badge'),element('span','눌러서 학생 번호 입력','loan-note'))}
+ row.tabIndex=0;row.setAttribute('role','button');row.setAttribute('aria-label',book.title+' · '+(book.borrower?book.borrower+'번 대출 중, '+(days?'연체 '+days+'일, ':'')+'누르면 반납':'누르면 대출'));row.onclick=()=>useBook(book);row.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();useBook(book)}};row.append(info,loan);section.append(row)});$('books').append(section)})
+}
+function parseCSV(text){text=text.replace(/^\uFEFF/,'');const rows=[];let row=[],field='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(quoted){if(c==='"'){if(text[i+1]==='"'){field+='"';i++}else quoted=false}else field+=c}else if(c==='"'&&field==='')quoted=true;else if(c===','){row.push(field);field=''}else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;row.push(field);if(row.some(v=>v.trim()))rows.push(row);row=[];field=''}else field+=c}if(quoted)throw new Error('따옴표가 닫히지 않은 칸이 있습니다. CSV 파일을 확인해 주세요.');row.push(field);if(row.some(v=>v.trim()))rows.push(row);return rows}
+$('download').onclick=()=>{const blob=new Blob(['\uFEFF제목,저자\r\n'],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob),a=element('a');a.href=url;a.download='학급_문고_책목록_틀.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+$('upload').onchange=async event=>{const file=event.target.files[0];if(!file)return;try{const buffer=await file.arrayBuffer();let text;try{text=new TextDecoder('utf-8',{fatal:true}).decode(buffer)}catch(e){text=new TextDecoder('euc-kr').decode(buffer)}const rows=parseCSV(text);if(!rows.length||rows[0][0]?.trim()!=='제목'||rows[0][1]?.trim()!=='저자')throw new Error('첫 줄이 ‘제목,저자’인 CSV 파일을 올려 주세요.');const data=rows.slice(1);if(!data.length)throw new Error('책 제목을 한 권 이상 입력한 뒤 올려 주세요.');if(data.some(r=>r.length!==2||!r[0].trim()))throw new Error('각 줄에 제목과 저자 두 칸을 넣고, 제목이 비어 있는 줄을 확인해 주세요.');if(books.length&&!confirm('새 책 목록으로 교체합니다. 현재 대출 기록도 초기화됩니다. 계속할까요?'))return;books=data.map(r=>({title:r[0].trim(),author:r[1].trim(),borrower:'',borrowedAt:null}));const stored=save();render();if(stored)$('status').textContent=books.length+'권을 불러와 저장했습니다.'}catch(e){$('status').textContent=e.message||'파일을 읽을 수 없습니다. CSV 형식을 확인해 주세요.'}finally{event.target.value=''}};
+try{const data=JSON.parse(localStorage.getItem(storageKey)||'[]');if(Array.isArray(data))books=data.filter(b=>b&&typeof b.title==='string'&&b.title.trim()).map(b=>({title:b.title,author:typeof b.author==='string'?b.author:'',borrower:typeof b.borrower==='string'?b.borrower:'',borrowedAt:b.borrower?(typeof b.borrowedAt==='string'&&Number.isFinite(Date.parse(b.borrowedAt))?b.borrowedAt:new Date().toISOString()):null}))}catch(e){storageOK=false;$('status').textContent='저장된 목록을 읽지 못했습니다. CSV 파일을 다시 올려 주세요.'}save();render();
+setInterval(render,60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});
+</script>
+</body>
+</html>

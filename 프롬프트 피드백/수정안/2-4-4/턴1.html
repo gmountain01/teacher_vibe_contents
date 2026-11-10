@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>분실물 알리미</title>
+<style>
+:root{font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;color:#233547;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}header{background:#224f68;color:white;padding:38px 24px}header div,main{max-width:1100px;margin:auto}h1{margin:0 0 10px;font-size:32px}header p{margin:0;color:#dbeaf2}main{padding:28px 20px 60px;display:grid;grid-template-columns:320px 1fr;gap:28px;align-items:start}.panel{background:white;border:1px solid #e1e7ed;border-radius:18px;padding:24px}h2{font-size:20px;margin:0 0 20px}label{display:block;font-weight:650;font-size:14px;margin:18px 0 7px}input{width:100%;border:1px solid #c9d4df;border-radius:9px;padding:11px;font:inherit;background:white}input:focus{outline:3px solid #cee7f3;border-color:#397a9c}input[type=file]{font-size:13px}button{font:inherit;cursor:pointer;border:0;border-radius:9px;padding:11px 16px}button:focus-visible{outline:3px solid #74b5d7;outline-offset:3px}.submit{width:100%;background:#216984;color:white;font-weight:700;margin-top:22px}.submit:disabled{opacity:.6;cursor:wait}.hint{font-size:12px;color:#647586;line-height:1.7}.list-heading{display:flex;align-items:center;justify-content:space-between;margin:4px 0 18px}.list-heading h2{margin:0}.count{font-size:13px;color:#647586}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.card{background:white;border:1px solid #e1e7ed;border-radius:16px;overflow:hidden}.photo{width:100%;height:200px;object-fit:contain;background:#eaf0f5;display:block}.placeholder{display:flex;align-items:center;justify-content:center;color:#8193a3;font-size:15px}.body{padding:20px}.body h3{font-size:20px;margin:0 0 16px;overflow-wrap:anywhere}dl{margin:0;display:grid;grid-template-columns:70px 1fr;gap:10px;font-size:14px}dt{color:#738191}dd{margin:0;overflow-wrap:anywhere}.delete{display:block;margin:18px 0 0 auto;background:#f1f4f7;color:#697787;font-size:12px}.empty{grid-column:1/-1;text-align:center;padding:75px 20px;border:2px dashed #d7e0e8;border-radius:16px;color:#728393;line-height:1.9}.preview{width:100%;max-height:160px;object-fit:contain;margin-top:12px;border-radius:8px;background:#edf2f6}.status{font-size:13px;line-height:1.6;color:#a13636;margin:12px 0 0}footer{font-size:12px;color:#738191;margin-top:18px;line-height:1.7}@media(max-width:800px){main{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:500px){.cards{grid-template-columns:1fr}header{padding:28px 20px}h1{font-size:27px}}
+</style>
+</head>
+<body>
+<header><div><h1>분실물 알리미</h1><p>주인을 기다리는 물건들, 이곳에서 찾아보세요.</p></div></header>
+<main>
+<section class="panel" aria-labelledby="form-title"><h2 id="form-title">분실물 등록</h2>
+<form id="form">
+<label for="name">분실물 이름 *</label><input id="name" required maxlength="80" placeholder="예: 파란색 물통">
+<label for="date">습득일 *</label><input id="date" type="date" required>
+<label for="found">습득 장소 *</label><input id="found" required maxlength="120" placeholder="예: 운동장 벤치">
+<label for="storage">보관 장소 *</label><input id="storage" required maxlength="120" placeholder="예: 1층 교무실">
+<label for="photo">사진</label><input id="photo" type="file" accept="image/*"><p class="hint">사진은 긴 변이 최대 1,200px이 되도록 자동 축소됩니다.</p>
+<img id="preview" class="preview" alt="등록할 사진 미리보기" hidden>
+<button class="submit" id="submit" type="submit">분실물 등록하기</button><p id="status" class="status" role="status" aria-live="polite"></p>
+</form><footer>등록한 내용은 현재 브라우저에 저장됩니다. 같은 기기와 브라우저에서 다시 확인할 수 있습니다.</footer></section>
+<section aria-labelledby="list-title"><div class="list-heading"><h2 id="list-title">주인을 찾고 있어요</h2><span id="count" class="count"></span></div><div id="cards" class="cards"></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const key='lost-and-found-v1';
+let items=[],photo='',processing=false;
+try{const saved=JSON.parse(localStorage.getItem(key)||'[]');if(Array.isArray(saved))items=saved.filter(x=>x&&typeof x.id==='string'&&typeof x.name==='string');}catch(e){$('status').textContent='저장된 내용을 불러오지 못했습니다. 브라우저 저장 설정을 확인해 주세요.';}
+function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+$('date').value=today();
+function save(next){try{localStorage.setItem(key,JSON.stringify(next));items=next;return true;}catch(e){$('status').textContent='저장 공간이 부족하거나 브라우저 저장이 차단되어 있습니다. 기존 카드를 삭제하거나 더 작은 사진으로 다시 등록해 주세요.';return false;}}
+function render(){
+ $('cards').replaceChildren();$('count').textContent=`총 ${items.length}개`;
+ if(!items.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='아직 등록된 분실물이 없습니다.\n찾은 물건을 등록해 주세요.';empty.style.whiteSpace='pre-line';$('cards').append(empty);return;}
+ items.forEach(item=>{const card=document.createElement('article');card.className='card';
+ if(typeof item.photo==='string'&&item.photo.startsWith('data:image/')){const img=document.createElement('img');img.className='photo';img.src=item.photo;img.alt=item.name+' 사진';img.loading='lazy';card.append(img);}else{const p=document.createElement('div');p.className='photo placeholder';p.textContent='등록된 사진이 없어요';card.append(p);}
+ const body=document.createElement('div');body.className='body';const title=document.createElement('h3');title.textContent=item.name;body.append(title);const dl=document.createElement('dl');[['습득일',item.date],['습득 장소',item.found],['보관 장소',item.storage]].forEach(([label,value])=>{const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=value;dl.append(dt,dd);});body.append(dl);
+ const button=document.createElement('button');button.type='button';button.className='delete';button.textContent='삭제';button.setAttribute('aria-label',item.name+' 삭제');button.onclick=()=>{if(confirm('이 분실물 카드를 삭제할까요?')&&save(items.filter(x=>x.id!==item.id))){$('status').textContent='';render();}};body.append(button);card.append(body);$('cards').append(card);});
+}
+function shrink(file){return new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{try{const ratio=Math.min(1,1200/Math.max(img.naturalWidth,img.naturalHeight));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.naturalWidth*ratio));canvas.height=Math.max(1,Math.round(img.naturalHeight*ratio));const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/jpeg',.78));}catch(e){reject(e);}finally{URL.revokeObjectURL(url);}};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('image'));};img.src=url;});}
+$('photo').addEventListener('change',async()=>{photo='';$('preview').hidden=true;$('status').textContent='';const file=$('photo').files[0];if(!file)return;if(file.type&&!file.type.startsWith('image/')){$('status').textContent='이미지 파일을 선택해 주세요.';$('photo').value='';return;}processing=true;$('submit').disabled=true;$('status').textContent='사진을 줄이는 중입니다…';try{photo=await shrink(file);$('preview').src=photo;$('preview').hidden=false;$('status').textContent='';}catch(e){$('status').textContent='사진을 읽을 수 없습니다. JPG, PNG 등 다른 이미지로 다시 선택해 주세요.';$('photo').value='';}finally{processing=false;$('submit').disabled=false;}});
+$('form').addEventListener('submit',event=>{event.preventDefault();if(processing)return;const name=$('name').value.trim(),found=$('found').value.trim(),storage=$('storage').value.trim();if(!name||!found||!storage){$('status').textContent='이름과 장소를 공백 없이 입력해 주세요.';return;}const item={id:globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2),name,date:$('date').value,found,storage,photo};if(save([item,...items])){$('form').reset();$('date').value=today();photo='';$('preview').hidden=true;$('preview').removeAttribute('src');$('status').textContent='분실물이 등록되었습니다.';render();}});
+render();
+</script>
+</body>
+</html>

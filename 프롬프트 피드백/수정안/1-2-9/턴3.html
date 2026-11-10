@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>활동 사진 제출함</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f2f6fb; color: #24344a; font-family: system-ui, -apple-system, "Malgun Gothic", sans-serif; line-height: 1.6; }
+    main { width: min(100% - 32px, 560px); margin: 40px auto; }
+    .badge { display: inline-block; padding: 6px 12px; border-radius: 20px; background: #fff1d6; color: #79500b; font-size: 13px; font-weight: 700; }
+    h1 { font-size: 28px; margin: 16px 0 6px; letter-spacing: -1px; }
+    .intro { margin: 0 0 24px; color: #607086; }
+    form { background: white; border: 1px solid #e0e7f0; border-radius: 22px; padding: 26px; box-shadow: 0 10px 32px #25395308; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .field { margin-bottom: 20px; min-width: 0; }
+    label { display: block; margin-bottom: 7px; font-size: 15px; font-weight: 700; }
+    input { width: 100%; min-height: 50px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 12px; background: #fff; color: inherit; font: inherit; font-size: 16px; }
+    input:focus-visible, button:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+    input[aria-invalid="true"] { border-color: #c53030; background: #fffafa; }
+    input[type=file] { padding: 12px; background: #f7faff; }
+    input::file-selector-button { border: 0; border-radius: 6px; background: #e0ebff; color: #244a86; padding: 8px 10px; margin-right: 10px; font-weight: 700; }
+    .hint { font-size: 13px; color: #65758a; margin: 7px 0 0; }
+    .error { color: #b42318; font-size: 13px; margin: 5px 0 0; }
+    .preview { margin: 0 0 20px; padding: 12px; border: 1px dashed #cbd5e1; border-radius: 12px; background: #f8fafc; text-align: center; }
+    .preview img { display: block; width: 100%; max-height: 340px; object-fit: contain; border-radius: 8px; }
+    figcaption { font-size: 13px; overflow-wrap: anywhere; margin-top: 8px; color: #607086; }
+    button { width: 100%; min-height: 54px; border: 0; border-radius: 12px; background: #2864da; color: white; font: inherit; font-weight: 700; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    .notice { text-align: center; color: #607086; font-size: 13px; margin-bottom: 0; }
+    #status { padding: 12px; border-radius: 10px; background: #eef5ff; margin: 16px 0 0; }
+    [hidden] { display: none !important; }
+    @media (max-width: 420px) { main { margin: 24px auto; } form { padding: 20px 16px; } .grid { gap: 8px; } h1 { font-size: 26px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <span class="badge" id="connection">미리보기 · 실제로 제출되지 않음</span>
+    <h1>활동 사진 제출함</h1>
+    <p class="intro">학생 정보를 적고, 활동 사진을 골라 주세요.</p>
+    <form id="photo-form" novalidate><input type="hidden" name="requestId" id="request-id">
+      <div class="grid">
+        <div class="field"><label for="grade">학년</label><input id="grade" name="grade" type="text" inputmode="numeric" placeholder="예: 3" required aria-describedby="grade-error"><p class="error" id="grade-error" hidden></p></div>
+        <div class="field"><label for="classroom">반</label><input id="classroom" name="classroom" type="text" inputmode="numeric" placeholder="예: 2" required aria-describedby="classroom-error"><p class="error" id="classroom-error" hidden></p></div>
+        <div class="field"><label for="number">번호</label><input id="number" name="number" type="text" inputmode="numeric" placeholder="예: 15" required aria-describedby="number-error"><p class="error" id="number-error" hidden></p></div>
+      </div>
+      <div class="field"><label for="student-name">이름</label><input id="student-name" name="studentName" type="text" autocomplete="name" placeholder="이름을 입력해 주세요" required aria-describedby="student-name-error"><p class="error" id="student-name-error" hidden></p></div>
+      <div class="field">
+        <label for="photo">활동 사진</label>
+        <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp,image/gif" required aria-describedby="photo-hint photo-error">
+        <p class="hint" id="photo-hint">JPG, PNG, WEBP, GIF 사진 1장 · 최대 10MB</p>
+        <p class="error" id="photo-error" hidden></p>
+      </div>
+      <figure class="preview" id="preview" hidden><img id="preview-image" alt="선택한 활동 사진 미리보기"><figcaption id="filename"></figcaption></figure>
+      <button type="submit" id="submit-button">제출 전 확인하기</button>
+      <p id="status" role="status" aria-live="polite" hidden></p>
+      <p class="notice" id="connection-notice">연결 전 화면입니다. 입력 정보와 사진은 전송되지 않습니다.</p>
+    </form>
+  </main>
+  <script>
+    const form = document.getElementById('photo-form');
+    const photo = document.getElementById('photo');
+    const preview = document.getElementById('preview');
+    const previewImage = document.getElementById('preview-image');
+    const status = document.getElementById('status');
+    const fields = [['grade', '학년'], ['classroom', '반'], ['number', '번호'], ['student-name', '이름']];
+    const connected = typeof google !== 'undefined' && !!google.script?.run;
+    const button = document.getElementById('submit-button');
+    const requestId = document.getElementById('request-id');
+    function newRequestId() { requestId.value = Date.now().toString(36) + '-' + (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2)); }
+    newRequestId();
+    if (connected) {
+      document.getElementById('connection').textContent = '구글 드라이브 · 시트 제출';
+      document.getElementById('connection-notice').textContent = '제출하면 학생 정보와 사진이 선생님의 구글 드라이브 및 시트에 저장됩니다.';
+      button.textContent = '사진 제출하기';
+    }
+    let imageUrl;
+    let photoReady = false;
+    function error(id, message) {
+      const input = document.getElementById(id);
+      const note = document.getElementById(id + '-error');
+      input.setAttribute('aria-invalid', message ? 'true' : 'false');
+      note.textContent = message;
+      note.hidden = !message;
+    }
+    fields.forEach(([id]) => document.getElementById(id).addEventListener('input', () => {
+      error(id, '');
+      status.hidden = true;
+    }));
+    photo.addEventListener('change', () => {
+      if (imageUrl) URL.revokeObjectURL(imageUrl);
+      photoReady = false;
+      preview.hidden = true;
+      previewImage.removeAttribute('src');
+      status.hidden = true;
+      error('photo', '');
+      const file = photo.files[0];
+      if (!file) return;
+      if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type) || file.size > 10 * 1024 * 1024) {
+        error('photo', '10MB 이하의 JPG, PNG, WEBP, GIF 사진을 선택해 주세요.');
+        return;
+      }
+      previewImage.onload = () => { photoReady = true; preview.hidden = false; error('photo', ''); };
+      previewImage.onerror = () => {
+        photoReady = false;
+        preview.hidden = true;
+        error('photo', '이 사진은 미리보기를 표시할 수 없습니다. JPG 또는 PNG 사진을 골라 주세요.');
+      };
+      document.getElementById('filename').textContent = file.name;
+      imageUrl = URL.createObjectURL(file);
+      previewImage.src = imageUrl;
+    });
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      if (button.disabled) return;
+      let firstInvalid;
+      fields.forEach(([id, label]) => {
+        const input = document.getElementById(id);
+        const empty = !input.value.trim();
+        error(id, empty ? label + '을(를) 입력해 주세요.' : '');
+        if (empty && !firstInvalid) firstInvalid = input;
+      });
+      if (!photo.files.length || !photoReady) {
+        error('photo', !photo.files.length ? '활동 사진을 선택해 주세요.' : '미리보기가 가능한 사진을 선택하고 로딩이 끝난 후 다시 확인해 주세요.');
+        firstInvalid ||= photo;
+      }
+      status.hidden = false;
+      status.textContent = firstInvalid ? '입력하지 않은 항목 또는 사진을 확인해 주세요.' : '입력과 사진 확인이 완료되었습니다. 미리보기 · 실제로 제출되지 않음';
+      if (firstInvalid) { firstInvalid.focus(); return; }
+      if (!connected) return;
+      button.disabled = true;
+      button.textContent = '제출 중…';
+      status.textContent = '사진을 저장하고 있습니다. 화면을 닫지 말아 주세요.';
+      const runner = google.script.run
+        .withSuccessHandler(result => {
+          form.querySelectorAll('input').forEach(input => { input.disabled = false; });
+          form.reset();
+          newRequestId();
+          photoReady = false;
+          preview.hidden = true;
+          previewImage.removeAttribute('src');
+          if (imageUrl) URL.revokeObjectURL(imageUrl);
+          status.textContent = result.message;
+          button.disabled = false;
+          button.textContent = '사진 제출하기';
+        })
+        .withFailureHandler(err => {
+          form.querySelectorAll('input').forEach(input => { input.disabled = false; });
+          status.textContent = '제출 실패: ' + (err.message || '잠시 후 다시 시도해 주세요.') + ' 입력 내용과 사진은 유지됩니다. 다시 제출하기를 눌러 주세요.';
+          button.disabled = false;
+          button.textContent = '다시 제출하기';
+        });
+      runner.submitPhoto(form);
+      form.querySelectorAll('input').forEach(input => { input.disabled = true; });
+    });
+  </script>
+</body>
+</html>

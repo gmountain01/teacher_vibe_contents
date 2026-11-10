@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>학교생활기록부 문장 점검기</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f6fb; color: #203047; font-family: 'Malgun Gothic', sans-serif; line-height: 1.6; }
+    main { max-width: 940px; margin: 64px auto; padding: 0 24px; }
+    .badge { color: #3267c7; font-size: 14px; font-weight: 700; }
+    h1 { margin: 8px 0 12px; font-size: clamp(26px, 5vw, 36px); letter-spacing: -1px; }
+    .intro { margin: 0 0 30px; color: #637087; }
+    .panel { padding: 28px; background: white; border: 1px solid #e1e7ef; border-radius: 20px; box-shadow: 0 10px 35px #243e6310; }
+    .label-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+    label { font-weight: 700; font-size: 17px; }
+    button { border: 1px solid #dbe2ed; background: white; color: #526078; border-radius: 8px; padding: 7px 13px; cursor: pointer; font: inherit; font-size: 13px; }
+    button:hover { background: #f0f5fd; }
+    textarea { display: block; width: 100%; min-height: 280px; resize: vertical; padding: 18px; border: 1px solid #cdd7e6; border-radius: 12px; color: #203047; font: inherit; line-height: 1.9; background: #fcfdff; }
+    textarea:focus { outline: 3px solid #dbe8ff; border-color: #5281d5; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+    .stat { padding: 22px 18px; border-radius: 12px; background: #f1f6ff; text-align: center; }
+    .stat dt { color: #596a84; font-size: 14px; }
+    .stat dd { margin: 8px 0 0; color: #245cc0; font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .unit { font-size: 14px; font-weight: 400; margin-left: 4px; }
+    dl { margin-bottom: 0; }
+    .note { margin: 20px 0 0; color: #718096; font-size: 13px; }
+    footer { margin-top: 20px; text-align: center; font-size: 13px; color: #7a879a; }
+    @media (max-width: 580px) { main { margin: 30px auto; padding: 0 16px; } .panel { padding: 20px; } .stats { gap: 8px; } .stat { padding: 18px 6px; } .stat dt { font-size: 12px; } .stat dd { font-size: 25px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="badge">선생님을 위한 기록 도구</div>
+    <h1>학교생활기록부 문장 점검기</h1>
+    <p class="intro">작성한 문장을 붙여 넣고 글자 수와 바이트 수를 바로 확인하세요.</p>
+    <section class="panel" aria-label="문장 입력 및 글자 수 확인">
+      <div class="label-row"><label for="sentence">점검할 문장</label><button id="clear" type="button">전체 지우기</button></div>
+      <textarea id="sentence" placeholder="학교생활기록부에 작성할 문장을 입력하거나 붙여 넣으세요." spellcheck="false"></textarea>
+      <dl class="stats" aria-live="polite" aria-atomic="true">
+        <div class="stat"><dt>공백 포함 글자 수</dt><dd><span id="with-space">0</span><span class="unit">자</span></dd></div>
+        <div class="stat"><dt>공백 제외 글자 수</dt><dd><span id="without-space">0</span><span class="unit">자</span></dd></div>
+        <div class="stat"><dt>바이트 수</dt><dd><span id="bytes">0</span><span class="unit">B</span></dd></div>
+      </dl>
+      <p class="note">바이트는 UTF-8 기준으로 계산합니다. 한글은 3바이트, 영문·숫자·일반 공백은 1바이트입니다. 줄바꿈은 1바이트이며, 특수문자와 이모지는 종류에 따라 다릅니다. 공백 제외 글자 수는 띄어쓰기·줄바꿈·탭을 제외합니다.</p>
+    </section>
+    <footer>입력한 문장은 외부로 전송되지 않고 이 브라우저에서만 계산됩니다.</footer>
+  </main>
+  <script>
+    const sentence = document.getElementById('sentence');
+    const encoder = new TextEncoder();
+    const format = value => value.toLocaleString('ko-KR');
+    function updateCounts() {
+      const text = sentence.value;
+      document.getElementById('with-space').textContent = format(Array.from(text).length);
+      document.getElementById('without-space').textContent = format(Array.from(text.replace(/\s/gu, '')).length);
+      document.getElementById('bytes').textContent = format(encoder.encode(text).length);
+    }
+    sentence.addEventListener('input', updateCounts);
+    document.getElementById('clear').addEventListener('click', () => {
+      sentence.value = '';
+      updateCounts();
+      sentence.focus();
+    });
+  </script>
+</body>
+</html>

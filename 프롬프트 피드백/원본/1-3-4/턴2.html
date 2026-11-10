@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>품사 분류 바구니</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #f7f5ef; color: #293b39; font-family: "맑은 고딕", "Apple SD Gothic Neo", sans-serif; }
+main { max-width: 1120px; margin: auto; padding: 38px 28px 40px; }
+header { margin-bottom: 26px; text-align: center; }
+h1 { margin: 0 0 12px; font-size: clamp(28px, 4vw, 40px); letter-spacing: -1.5px; }
+header p { margin: 0; color: #596964; font-size: 17px; line-height: 1.6; }
+.tray { min-height: 180px; padding: 24px; border: 2px solid #e1e4da; border-radius: 22px; background: #fffef9; display: flex; flex-wrap: wrap; gap: 12px; align-content: flex-start; justify-content: center; }
+.card { display: inline-flex; align-items: center; justify-content: center; min-width: 104px; height: 56px; padding: 10px 17px; border: 1px solid #dedbd0; border-radius: 12px; background: #fff; color: #34423f; box-shadow: 0 3px 0 #e7e3d8; font: 700 21px "맑은 고딕", "Apple SD Gothic Neo", sans-serif; cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none; }
+.card:focus-visible { outline: 3px solid #46736a; outline-offset: 4px; }
+.card.held { opacity: .22; }
+.card.correct { background: #d9f3df; border-color: #31824b; color: #205e32; box-shadow: 0 3px 0 #a5d5b0; }
+.card.incorrect { background: #ffe1df; border-color: #c24640; color: #932c28; box-shadow: 0 3px 0 #e9b3af; }
+.checking { margin-top: 26px; text-align: center; }
+#check { padding: 12px 36px; border: 0; border-radius: 12px; background: #376f5f; color: white; font: 700 20px "맑은 고딕", sans-serif; cursor: pointer; }
+#check:focus-visible { outline: 3px solid #b38c25; outline-offset: 4px; }
+#result { min-height: 28px; margin: 14px 0 0; font-size: 18px; line-height: 1.6; }
+.card.floating { position: fixed; margin: 0; z-index: 100; pointer-events: none; cursor: grabbing; transform: rotate(-3deg); box-shadow: 0 10px 22px #253e392b; }
+.baskets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin-top: 32px; }
+.basket { --ink: #49796b; --fill: #e9f3e9; min-height: 260px; border: 2px solid var(--ink); border-radius: 16px 16px 30px 30px; background: var(--fill); overflow: hidden; transition: box-shadow .12s, background .12s; }
+.basket:nth-child(2) { --ink: #b37540; --fill: #fcf0df; }
+.basket:nth-child(3) { --ink: #8570ac; --fill: #f1ecf8; }
+.basket:nth-child(4) { --ink: #4d82a2; --fill: #e9f3fa; }
+.basket h2 { margin: 0; padding: 17px 10px; border-bottom: 2px dashed color-mix(in srgb, var(--ink) 40%, transparent); text-align: center; color: var(--ink); font-size: 24px; }
+.contents { min-height: 190px; padding: 18px 10px 24px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 12px; }
+.over { box-shadow: 0 0 0 5px #cfb85b; }
+@media (max-width: 700px) {
+ main { padding: 24px 14px; }
+ header { margin-bottom: 20px; }
+ header p { font-size: 15px; }
+ .tray { padding: 16px 10px; gap: 10px; }
+ .card { min-width: 85px; height: 50px; padding: 8px 12px; font-size: 19px; }
+ .baskets { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 24px; }
+ .basket { min-height: 205px; }
+ .basket h2 { padding: 12px 8px; font-size: 22px; }
+ .contents { min-height: 150px; padding: 14px 8px 20px; }
+}
+</style>
+</head>
+<body>
+<main>
+ <header>
+  <h1>품사 분류 바구니</h1>
+  <p>낱말 카드를 끌어서 알맞은 바구니에 넣어 보세요.</p>
+ </header>
+ <div class="tray" id="tray" aria-label="낱말 카드"></div>
+ <section class="baskets" aria-label="품사 바구니">
+  <div class="basket"><h2>명사</h2><div class="contents" aria-label="명사 바구니"></div></div>
+  <div class="basket"><h2>동사</h2><div class="contents" aria-label="동사 바구니"></div></div>
+  <div class="basket"><h2>형용사</h2><div class="contents" aria-label="형용사 바구니"></div></div>
+  <div class="basket"><h2>부사</h2><div class="contents" aria-label="부사 바구니"></div></div>
+ </section>
+ <div class="checking">
+  <button type="button" id="check">확인</button>
+  <p id="result" role="status" aria-live="polite"></p>
+ </div>
+</main>
+<script>
+'use strict';
+const words = ['사과', '학교', '강아지', '연필', '먹다', '달리다', '읽다', '웃다', '예쁘다', '크다', '작다', '높다', '빨리', '천천히', '아주', '매우'];
+const answers = new Map(words.map((word, index) => [word, ['명사', '동사', '형용사', '부사'][Math.floor(index / 4)]]));
+for (let i = words.length - 1; i > 0; i--) {
+ const j = Math.floor(Math.random() * (i + 1));
+ [words[i], words[j]] = [words[j], words[i]];
+}
+const tray = document.getElementById('tray');
+words.forEach(word => {
+ const card = document.createElement('div');
+ card.className = 'card';
+ card.textContent = word;
+ tray.appendChild(card);
+});
+let drag = null;
+const result = document.getElementById('result');
+let checked = false;
+document.getElementById('check').addEventListener('click', () => {
+ if (drag) return;
+ let correct = 0;
+ let unplaced = 0;
+ document.querySelectorAll('.card').forEach(card => {
+  card.classList.remove('correct', 'incorrect');
+  const basket = card.closest('.basket');
+  if (!basket) {
+   unplaced++;
+   card.removeAttribute('aria-label');
+   return;
+  }
+  const matches = basket.querySelector('h2').textContent === answers.get(card.textContent);
+  card.classList.add(matches ? 'correct' : 'incorrect');
+  card.setAttribute('aria-label', card.textContent + (matches ? ', 맞았어요' : ', 다시 옮겨 보세요'));
+  if (matches) correct++;
+ });
+ result.textContent = `16개 중 ${correct}개 맞혔어요.` + (unplaced ? ` 아직 바구니에 넣지 않은 카드가 ${unplaced}개 있어요.` : '') + (correct < 16 ? ' 카드를 다시 옮긴 뒤 확인을 눌러 보세요.' : ' 모두 맞혔어요!');
+ checked = true;
+});
+function targetAt(x, y) {
+ const element = document.elementFromPoint(x, y);
+ if (!element) return null;
+ const basket = element.closest('.basket');
+ return basket ? basket.querySelector('.contents') : element.closest('.tray');
+}
+function clearHighlight() {
+ document.querySelectorAll('.over').forEach(element => element.classList.remove('over'));
+}
+document.addEventListener('pointerdown', event => {
+ const card = event.target.closest('.card');
+ if (!card || drag || !event.isPrimary || event.button !== 0) return;
+ event.preventDefault();
+ const rect = card.getBoundingClientRect();
+ const ghost = card.cloneNode(true);
+ ghost.classList.add('floating');
+ ghost.setAttribute('aria-hidden', 'true');
+ ghost.style.width = rect.width + 'px';
+ ghost.style.height = rect.height + 'px';
+ ghost.style.left = rect.left + 'px';
+ ghost.style.top = rect.top + 'px';
+ document.body.appendChild(ghost);
+ card.classList.add('held');
+ drag = { card, ghost, id: event.pointerId, dx: event.clientX - rect.left, dy: event.clientY - rect.top };
+ card.setPointerCapture(event.pointerId);
+});
+document.addEventListener('pointermove', event => {
+ if (!drag || drag.id !== event.pointerId) return;
+ event.preventDefault();
+ drag.ghost.style.left = (event.clientX - drag.dx) + 'px';
+ drag.ghost.style.top = (event.clientY - drag.dy) + 'px';
+ // 화면이 작은 기기에서는 가장자리로 끌면 아래 바구니까지 이동합니다.
+ if (event.clientY > window.innerHeight - 65) window.scrollBy(0, 12);
+ else if (event.clientY < 65) window.scrollBy(0, -12);
+ clearHighlight();
+ const target = targetAt(event.clientX, event.clientY);
+ if (target) (target.closest('.basket') || target).classList.add('over');
+}, { passive: false });
+function finish(event, cancelled) {
+ if (!drag || drag.id !== event.pointerId) return;
+ const { card, ghost } = drag;
+ const target = cancelled ? null : targetAt(event.clientX, event.clientY);
+ if (target && target !== card.parentElement) {
+  target.appendChild(card);
+  card.classList.remove('correct', 'incorrect');
+  card.removeAttribute('aria-label');
+  if (checked) result.textContent = '카드를 옮겼어요. 확인을 눌러 다시 확인해 보세요.';
+ }
+ card.classList.remove('held');
+ ghost.remove();
+ clearHighlight();
+ drag = null;
+ if (card.hasPointerCapture(event.pointerId)) card.releasePointerCapture(event.pointerId);
+}
+document.addEventListener('pointerup', event => finish(event, false));
+document.addEventListener('pointercancel', event => finish(event, true));
+document.addEventListener('lostpointercapture', event => finish(event, true));
+</script>
+</body>
+</html>

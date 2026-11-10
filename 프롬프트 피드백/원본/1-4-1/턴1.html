@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>품사 문제 출제기</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f6fb; color: #243047; font-family: "맑은 고딕", sans-serif; line-height: 1.65; }
+    main { width: min(720px, calc(100% - 32px)); margin: 48px auto; }
+    h1 { margin-bottom: 8px; font-size: 30px; }
+    .intro { margin-top: 0; color: #59667c; }
+    form, .card { padding: 28px; border: 1px solid #dde3ee; border-radius: 18px; background: white; }
+    label { display: block; margin: 20px 0 7px; font-weight: bold; }
+    label:first-child { margin-top: 0; }
+    input, textarea, select { width: 100%; padding: 12px; border: 1px solid #bdc7d8; border-radius: 8px; font: inherit; color: inherit; background: white; }
+    textarea { resize: vertical; min-height: 92px; }
+    input:focus, textarea:focus, select:focus { outline: 3px solid #dbe7ff; border-color: #4269b5; }
+    .hint { margin: 8px 0 0; font-size: 14px; color: #5c687c; }
+    button { width: 100%; margin-top: 24px; padding: 13px; border: 0; border-radius: 9px; background: #345fba; color: white; font: inherit; font-weight: bold; cursor: pointer; }
+    button:hover { background: #284d9a; }
+    .card { margin-top: 28px; border-top: 5px solid #345fba; overflow-wrap: anywhere; }
+    .card h2 { margin-top: 0; font-size: 23px; }
+    .sentence { padding: 16px; background: #f3f6fb; border-radius: 8px; white-space: pre-wrap; }
+    .answer { border-top: 1px solid #e0e5ee; margin-top: 24px; padding-top: 18px; }
+    .reason { white-space: pre-wrap; }
+    [hidden] { display: none; }
+    @media (max-width: 480px) { main { margin: 24px auto; } form, .card { padding: 20px; } h1 { font-size: 26px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>품사 문제 출제기</h1>
+    <p class="intro">내가 쓴 문장으로 품사 문제를 만들어 보세요.</p>
+    <form id="problem-form">
+      <label for="sentence">내가 쓴 문장</label>
+      <textarea id="sentence" placeholder="예: 학생이 책을 읽는다." required></textarea>
+
+      <label for="word">문제로 낼 낱말</label>
+      <input id="word" type="text" placeholder="예: 학생" required aria-describedby="word-hint">
+      <p class="hint" id="word-hint">‘학생이’처럼 조사가 붙은 말은 ‘학생’과 ‘이’로 나눠 적으세요. 문제로 낼 낱말 칸에는 둘 중 하나만 적으세요.</p>
+
+      <label for="part">정답 품사</label>
+      <select id="part" required>
+        <option value="">품사를 선택하세요</option>
+        <option>명사</option><option>대명사</option><option>수사</option>
+        <option>동사</option><option>형용사</option><option>관형사</option>
+        <option>부사</option><option>조사</option><option>감탄사</option>
+      </select>
+
+      <label for="reason">그렇게 생각한 이유</label>
+      <textarea id="reason" placeholder="예: ‘학생’은 사람을 가리키는 이름이므로 명사입니다." required></textarea>
+      <button type="submit">문제 카드 만들기</button>
+    </form>
+
+    <section class="card" id="card" hidden aria-live="polite" aria-label="만들어진 문제 카드">
+      <h2>내가 만든 품사 문제</h2>
+      <p class="sentence" id="card-sentence"></p>
+      <p>위 문장에서 ‘<strong id="card-word"></strong>’의 품사는 무엇인가요?</p>
+      <div class="answer">
+        <p><strong>정답 품사:</strong> <span id="card-part"></span></p>
+        <p><strong>그렇게 생각한 이유</strong></p>
+        <p class="reason" id="card-reason"></p>
+      </div>
+    </section>
+  </main>
+  <script>
+    document.getElementById('problem-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const fields = ['sentence', 'word', 'part', 'reason'];
+      for (const name of fields) {
+        const field = document.getElementById(name);
+        if (!field.value.trim()) {
+          field.setCustomValidity('내용을 입력해 주세요.');
+          field.reportValidity();
+          field.oninput = function () { this.setCustomValidity(''); };
+          return;
+        }
+      }
+      for (const name of fields) {
+        document.getElementById('card-' + name).textContent = document.getElementById(name).value.trim();
+      }
+      document.getElementById('card').hidden = false;
+    });
+  </script>
+</body>
+</html>

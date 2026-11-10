@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학부모 프로그램 참가 신청</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:#202c40;font-family:Arial,'Malgun Gothic',sans-serif;line-height:1.6}button,input{font:inherit}button{cursor:pointer}header{background:#fff;border-bottom:1px solid #e5eaf1}.top{max-width:1080px;margin:auto;padding:22px 28px;display:flex;align-items:center;gap:12px}.logo{background:#335ce8;color:#fff;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:22px}.brand{font-weight:800}.brand small{display:block;color:#8590a3;font-size:11px;letter-spacing:1.5px}main{max-width:1080px;margin:44px auto;padding:0 28px}h1{font-size:30px;margin:0 0 8px;letter-spacing:-1px}.intro{color:#718096;margin:0 0 30px}.preview{display:inline-block;background:#e9edff;color:#465dc5;border-radius:6px;padding:3px 9px;font-size:12px;font-weight:bold;margin-bottom:14px}.layout{display:grid;grid-template-columns:340px 1fr;gap:24px}.panel{background:white;border:1px solid #e3e8f0;border-radius:18px;overflow:hidden}.panel-title{padding:20px 22px;border-bottom:1px solid #edf0f5;font-weight:700;display:flex;justify-content:space-between}.panel-title span{color:#8a95a7;font-size:13px;font-weight:normal}.program{width:100%;text-align:left;border:0;border-bottom:1px solid #edf0f5;background:white;padding:23px 22px;color:inherit}.program:last-child{border-bottom:0}.program.active{background:#f1f5ff;box-shadow:inset 4px 0 #4263eb}.program:hover{background:#f5f7ff}.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:bold}.open{color:#158255;background:#e4f6ed}.closed{color:#727b8a;background:#edf0f4}.program h3{font-size:17px;margin:12px 0 7px}.meta{color:#7d889a;font-size:13px}.count{margin-top:15px;display:flex;justify-content:space-between;font-size:13px;color:#69768b}.count strong{color:#4263eb}.bar{height:5px;background:#e6ebf4;border-radius:5px;margin-top:9px;overflow:hidden}.bar i{display:block;background:#5272ec;height:100%;border-radius:5px}.detail{padding:30px}.detail h2{font-size:25px;line-height:1.4;letter-spacing:-.6px;margin:14px 0 12px}.description{color:#6d7b90;margin-bottom:25px}.info{background:#f7f9fc;padding:18px 20px;border-radius:12px;display:grid;grid-template-columns:95px 1fr;gap:12px;font-size:14px}.info dt{color:#7b8799}.info dd{margin:0;font-weight:600}.notice{font-size:13px;color:#79869a;margin:20px 0}.primary{background:#3e60df;color:white;border:0;border-radius:10px;padding:14px 22px;font-weight:bold;width:100%}.primary:hover{background:#304fca}.primary:disabled{background:#dce1e9;color:#858e9c;cursor:not-allowed}.form-section{border-top:1px solid #e6ebf3;margin-top:26px;padding-top:22px}.form-section h3{margin:0 0 5px;font-size:19px}.form-help{font-size:13px;color:#7b8799;margin:0 0 20px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field.full{grid-column:1/-1}label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}label b{color:#4263eb}input{width:100%;border:1px solid #dce2ec;border-radius:8px;padding:11px 12px;background:white;min-width:0}input:focus{outline:3px solid #e8edff;border-color:#5975e9}.children{display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:10px}.form-section .primary{margin-top:22px}.privacy{font-size:12px;color:#8993a3;margin:16px 0 0}footer{text-align:center;color:#929bad;font-size:12px;padding:32px 15px}#message{margin-top:18px;padding:14px;border-radius:9px;background:#edf7f0;color:#237649;font-size:14px} [hidden]{display:none!important}@media(max-width:760px){main{margin:28px auto;padding:0 18px}.top{padding:18px}.layout{grid-template-columns:1fr}.detail{padding:23px}.fields{grid-template-columns:1fr}.field.full{grid-column:auto}h1{font-size:25px}.info{grid-template-columns:82px 1fr;font-size:13px}}
+  </style>
+</head>
+<body>
+<header><div class="top"><div class="logo" aria-hidden="true">✦</div><div class="brand">함께하는 학교<small>PARENT PROGRAM</small></div></div></header>
+<main>
+  <span class="preview">예시 프로그램 미리보기</span>
+  <h1>배움으로 이어지는, 학부모 프로그램</h1>
+  <p class="intro">관심 있는 프로그램을 선택하고 참가 신청을 해 보세요.</p>
+  <div style="margin-bottom:20px"><button onclick="document.getElementById('admin').hidden=!document.getElementById('admin').hidden">관리자 · 프로그램 등록</button></div><section id="admin" class="panel detail" hidden><h2>프로그램 등록</h2><form id="register"><label>관리자 인증키<input name="key" type="password" required></label><label>프로그램 이름<input name="title" maxlength="120" required></label><label>설명<textarea name="description" maxlength="5000" required style="width:100%;min-height:120px"></textarea></label><label>운영일 형식<select name="scheduleType" onchange="changeType(this.value)"><option value="datetime">날짜와 시간</option><option value="period">기간</option></select></label><label>운영 시작<input name="start" type="datetime-local" required></label><label>운영 종료<input name="end" type="datetime-local" required></label><label>모집 인원<input name="capacity" type="number" min="1" max="10000" required></label><label>장소<input name="place" maxlength="200" required></label><label>모집 시작<input name="recruitStart" type="datetime-local" required></label><label>모집 종료<input name="recruitEnd" type="datetime-local" required></label><label>관련 문서 PDF (선택 · 설명 아래 미리보기)<input id="pdf" type="file" accept=".pdf"></label><label>추가 파일 (선택 · 다운로드 전용)<input id="extras" type="file" multiple accept=".pdf,.doc,.docx,.hwp,.hwpx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.7z,.rar"></label><p class="notice">파일당 10MB, 전체 20MB, 추가 파일 최대 5개. 첨부 파일은 링크를 가진 사람이 볼 수 있도록 드라이브에 저장됩니다.</p><button class="primary">프로그램 등록</button><p id="adminMessage" role="status"></p></form></section><div class="layout">
+    <section class="panel" aria-label="프로그램 목록"><div class="panel-title">프로그램 목록 <span>전체 3개</span></div><div id="programs"></div></section>
+    <section class="panel detail" aria-label="프로그램 상세 안내">
+      <div id="detail"></div>
+      <section id="application" class="form-section" hidden>
+        <h3>참가 신청서</h3><p class="form-help">필수 항목을 모두 입력해 주세요. <b>*</b> 필수 입력</p>
+        <form id="apply-form">
+          <div class="fields">
+            <div class="field full"><label for="parent">학부모 이름 <b>*</b></label><input id="parent" name="parent" autocomplete="name" placeholder="학부모 이름을 입력해 주세요" required maxlength="30"></div>
+            <div class="field full"><div class="children">
+              <div><label for="grade">자녀 학년 <b>*</b></label><input id="grade" name="grade" type="number" min="1" max="12" placeholder="예: 3" required></div>
+              <div><label for="classroom">자녀 반 <b>*</b></label><input id="classroom" name="classroom" type="number" min="1" max="99" placeholder="예: 2" required></div>
+              <div><label for="child">자녀 이름 <b>*</b></label><input id="child" name="child" placeholder="자녀 이름" required maxlength="30"></div>
+            </div></div>
+            <div class="field"><label for="phone">전화번호 <b>*</b></label><input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="010-1234-5678" pattern="01[0-9]-?[0-9]{3,4}-?[0-9]{4}" title="010-1234-5678 형식으로 입력해 주세요" required></div>
+            <div class="field"><label for="password">신청서 비밀번호 <b>*</b></label><input id="password" name="password" type="password" autocomplete="new-password" minlength="4" maxlength="30" placeholder="4자 이상 입력" required></div>
+          </div>
+          <p class="privacy">미리보기 화면입니다. 실제 개인정보 대신 예시 정보를 입력해 주세요. 입력 내용은 외부로 전송되거나 저장되지 않습니다.</p>
+          <button class="primary" type="submit">신청 완료 미리보기</button>
+        </form>
+      </section>
+      <div id="message" role="status" hidden></div>
+    </section>
+  </div>
+  <section id="completion" class="panel detail" hidden aria-labelledby="completion-title" tabindex="-1">
+    <span class="badge open">접수 완료</span>
+    <h2 id="completion-title">참가 신청이 완료되었습니다</h2>
+    <p id="completion-note"></p>
+    <dl id="completion-summary" class="info"></dl>
+    <p class="notice">신청서 비밀번호는 화면에 표시하지 않습니다.</p>
+    <button type="button" class="primary" onclick="goHome()">첫 화면으로</button>
+  </section>
+</main>
+<footer>함께하는 학교 · 학부모 프로그램 참가 신청 미리보기</footer>
+<script>
+let programs = [
+  {title:'자녀와 소통하는 마음 대화법',category:'학부모 교육',description:'아이의 마음을 이해하고 일상에서 실천할 수 있는 대화법을 함께 배웁니다. 다양한 상황 속 공감과 경청을 연습하는 학부모 참여 프로그램입니다.',schedule:'2026. 12. 05. (토) 10:00~12:00',period:'2026. 11. 10. ~ 11. 30.',place:'본교 2층 시청각실',count:18,capacity:25},
+  {title:'우리 가족 친환경 공방',category:'가족 체험',description:'자녀와 함께 친환경 생활용품을 만들며 환경을 위한 작은 실천을 배웁니다. 준비물은 학교에서 제공하며, 편안한 복장으로 참여해 주세요.',schedule:'2026. 12. 12. (토) 10:00~11:30',period:'2026. 11. 10. ~ 12. 04.',place:'본교 1층 미술실',count:8,capacity:20},
+  {title:'학부모 독서 모임: 함께 읽는 시간',category:'독서 모임',description:'한 권의 책을 함께 읽고 자녀의 성장과 부모의 일상에 대해 이야기를 나눕니다. 매주 한 번, 서로의 생각을 듣고 나누는 시간입니다.',schedule:'2026. 11. 18. ~ 12. 09. / 매주 수 14:00~15:30',period:'2026. 11. 01. ~ 11. 09.',place:'본교 도서관',count:15,capacity:15}
+];
+let selected=0;
+const list=document.getElementById('programs'), detail=document.getElementById('detail'), application=document.getElementById('application'), message=document.getElementById('message'), form=document.getElementById('apply-form');
+const live=typeof google!=='undefined' && !!google.script?.run;
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const state=p=>p.status||(p.count>=p.capacity?'마감':'모집 중');
+const rpc=(name,...args)=>new Promise((resolve,reject)=>google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[name](...args));
+function render(){
+ document.querySelector('.panel-title span').textContent=`전체 ${programs.length}개`;
+ list.innerHTML=programs.map((p,i)=>`<button class="program ${i===selected?'active':''}" onclick="selectProgram(${i})"><span class="badge ${state(p)==='모집 중'?'open':'closed'}">${state(p)}</span><h3>${esc(p.title)}</h3><div class="meta">${esc(p.place)}</div><div class="count">신청 인원 <strong>${p.count}명 / ${p.capacity}명</strong></div></button>`).join('');
+ const p=programs[selected];if(!p){detail.textContent='등록된 프로그램이 없습니다.';return;}
+ const schedule=p.schedule||`${p.start.replace('T',' ')} ~ ${p.end.replace('T',' ')}`;
+ const period=p.period||`${p.recruitStart.replace('T',' ')} ~ ${p.recruitEnd.replace('T',' ')}`;
+ const pdf=p.pdf?`<iframe title="관련 문서 PDF" src="https://drive.google.com/file/d/${encodeURIComponent(p.pdf.id)}/preview" style="width:100%;height:440px;border:1px solid #ddd" allowfullscreen></iframe><p><a target="_blank" rel="noopener" href="https://drive.google.com/file/d/${encodeURIComponent(p.pdf.id)}/view">PDF 새 창에서 보기</a></p>`:'';
+ const files=(p.attachments||[]).map(f=>`<p><a target="_blank" rel="noopener" href="https://drive.google.com/uc?export=download&amp;id=${encodeURIComponent(f.id)}">↓ ${esc(f.name)} 내려받기</a></p>`).join('');
+ detail.innerHTML=`<span class="badge ${state(p)==='모집 중'?'open':'closed'}">${state(p)}</span><h2>${esc(p.title)}</h2><p class="description" style="white-space:pre-wrap">${esc(p.description)}</p>${pdf}${files}<dl class="info"><dt>운영 일시·기간</dt><dd>${esc(schedule)}</dd><dt>모집 기간</dt><dd>${esc(period)}</dd><dt>운영 장소</dt><dd>${esc(p.place)}</dd><dt>신청 인원</dt><dd>${p.count}명 / ${p.capacity}명</dd></dl><p class="notice">선착순 모집하며 정원이 차면 자동 마감됩니다.</p><button class="primary" onclick="openApplication()" ${state(p)==='모집 중'?'':'disabled'}>${state(p)==='모집 중'?'참가 신청':state(p)}</button>`;
+}
+function selectProgram(i){selected=i;application.hidden=true;message.hidden=true;form.reset();render();}
+function openApplication(){if(state(programs[selected])!=='모집 중')return;application.hidden=false;document.getElementById('parent').focus();}
+async function reload(){const id=programs[selected]?.id;programs=await rpc('getPrograms');selected=Math.max(0,programs.findIndex(p=>p.id===id));render();}
+form.addEventListener('submit',async e=>{
+ e.preventDefault();const b=form.querySelector('button');b.disabled=true;
+ const p=programs[selected],data=Object.fromEntries(new FormData(form));
+ try{
+  let result;
+  if(live){result=await rpc('applyProgram',{...data,programId:p.id});p.count=result.count;p.status=result.status;}
+  else{
+    if(state(p)!=='모집 중'||p.count>=p.capacity)throw new Error('신청이 마감되었습니다.');
+    if(p.recruitStart&&Date.now()<new Date(p.recruitStart+':00+09:00').getTime())throw new Error('아직 모집 시작 전입니다.');
+    if(p.recruitEnd&&Date.now()>=new Date(p.recruitEnd+':00+09:00').getTime())throw new Error('모집 기간이 종료되었습니다.');
+    p.count++;if(p.count>=p.capacity)p.status='마감';
+    const {password,...publicData}=data;
+    result={summary:{...publicData,title:p.title,start:p.start,end:p.end,schedule:p.schedule,place:p.place}};
+  }
+  form.reset();application.hidden=true;message.hidden=true;render();showCompletion(result.summary);
+ }
+ catch(err){message.textContent=err.message;message.hidden=false;if(live)await reload().catch(()=>{});}finally{b.disabled=false;}
+});
+function showCompletion(s){
+ const schedule=s.schedule||`${s.start.replace('T',' ')} ~ ${s.end.replace('T',' ')}`;
+ const entries=[['프로그램',s.title],['학부모',s.parent],['자녀',`${s.grade}학년 ${s.classroom}반 ${s.child}`],['전화번호',s.phone],['운영 일정',schedule],['장소',s.place]];
+ document.getElementById('completion-summary').innerHTML=entries.map(([label,value])=>`<dt>${esc(label)}</dt><dd>${esc(value)}</dd>`).join('');
+ document.getElementById('completion-note').textContent=live?'아래 신청 내용으로 정상 접수되었습니다.':'예시 신청 결과입니다. 실제 접수는 되지 않습니다.';
+ document.querySelector('.layout').hidden=true;document.getElementById('admin').hidden=true;
+ const panel=document.getElementById('completion');panel.hidden=false;panel.focus();panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function goHome(){
+ document.getElementById('completion').hidden=true;document.getElementById('completion-summary').textContent='';
+ document.querySelector('.layout').hidden=false;document.getElementById('admin').hidden=true;
+ application.hidden=true;message.hidden=true;form.reset();selected=0;render();
+ if(live)await reload().catch(e=>{message.textContent='목록 갱신 실패: '+e.message;message.hidden=false;});
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function changeType(type){for(const name of ['start','end']){const input=document.querySelector(`#register [name="${name}"]`);input.value='';input.type=type==='period'?'date':'datetime-local';}}
+function readFile(f){return new Promise((resolve,reject)=>{if(f.size>10*1024*1024)return reject(new Error('파일당 10MB 이하여야 합니다.'));const r=new FileReader();r.onload=()=>resolve({name:f.name,data:r.result.split(',')[1]});r.onerror=()=>reject(new Error('파일 읽기 실패'));r.readAsDataURL(f);});}
+document.getElementById('register').addEventListener('submit',async e=>{
+ e.preventDefault();const f=e.target,b=f.querySelector('button'),note=document.getElementById('adminMessage');b.disabled=true;note.textContent='저장 중…';
+ try{
+  const data=Object.fromEntries(new FormData(f)),key=data.key;delete data.key;
+  if(data.end<data.start||data.recruitEnd<data.recruitStart)throw new Error('종료일은 시작일 이후여야 합니다.');
+  if(live)await rpc('verifyAdmin',key);
+  const pdf=document.getElementById('pdf').files[0],extras=Array.from(document.getElementById('extras').files);
+  if(extras.length>5)throw new Error('추가 파일은 최대 5개입니다.');
+  if([pdf,...extras].filter(Boolean).reduce((n,f)=>n+f.size,0)>20*1024*1024)throw new Error('전체 첨부는 20MB 이하여야 합니다.');
+  data.pdf=pdf?await readFile(pdf):null;data.attachments=await Promise.all(extras.map(readFile));
+  if(live){await rpc('createProgram',key,data);await reload();}else{programs.push({...data,pdf:null,attachments:[],count:0,capacity:Number(data.capacity),status:'모집 중'});render();}
+  f.reset();changeType('datetime');note.textContent=live?'프로그램을 등록했습니다.':'예시 등록 완료. 파일은 실제 저장되지 않으며 새로고침하면 초기화됩니다.';
+ }catch(err){note.textContent=err.message;}finally{b.disabled=false;}
+});
+if(live){
+ programs=[];render();document.querySelector('.preview').textContent='학부모 프로그램';
+ document.querySelector('#apply-form .privacy').textContent='입력한 정보는 학교의 참가 신청 관리용 구글 시트에 저장됩니다.';
+ form.querySelector('button').textContent='참가 신청 제출';
+ reload().catch(e=>{detail.textContent=e.message;});
+}else render();
+</script>
+</body>
+</html>

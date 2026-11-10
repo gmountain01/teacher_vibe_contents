@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>정렬 알고리즘 실험실</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f1f5fb;color:#17243b;font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif}main{max-width:1000px;margin:40px auto;padding:28px;background:white;border:1px solid #dce4ef;border-radius:22px;box-shadow:0 12px 36px #2439560b}h1{margin:0 0 8px;font-size:30px}.intro{margin:0;color:#526178;line-height:1.7}.stats{display:flex;gap:14px;margin:26px 0;flex-wrap:wrap}.stat{background:#f0f5fc;border-radius:12px;padding:14px 22px;flex:1;min-width:140px}.stat strong{font-size:28px;display:block;margin-top:3px;color:#254f99}.legend{display:flex;flex-wrap:wrap;gap:18px;font-size:14px;color:#47566d}.legend span{display:flex;align-items:center;gap:7px}.dot{width:14px;height:14px;border-radius:4px;display:inline-block}.normal{background:#638ee2}.compare{background:#f7d34b}.swap{background:#fb963e}.sorted{background:#55bc88}.chart{height:340px;display:flex;align-items:stretch;gap:clamp(5px,2vw,20px);padding:40px 12px 0;border-bottom:2px solid #cad4e3;margin:18px 0 0}.column{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative;padding-bottom:32px}.bar{width:100%;max-width:78px;border-radius:8px 8px 0 0;position:relative;min-height:12px}.value{position:absolute;top:-29px;width:100%;text-align:center;font-size:20px;font-weight:750}.index{position:absolute;bottom:5px;color:#64748b;font-size:15px}.axis{font-size:13px;color:#64748b;text-align:center;margin:8px 0 22px}.message{background:#f3f6fb;border-left:4px solid #638ee2;border-radius:8px;padding:18px;font-size:18px;line-height:1.6;min-height:66px}.controls{display:flex;justify-content:center;gap:12px;margin-top:22px}button{border:1px solid #cbd5e1;border-radius:10px;padding:12px 27px;font:inherit;font-weight:700;cursor:pointer;background:white;color:#243650}button.primary{background:#285fc4;color:white;border-color:#285fc4}button:disabled{opacity:.4;cursor:default}button:focus-visible{outline:3px solid #9ebfff;outline-offset:3px}.hint{text-align:center;font-size:13px;color:#64748b;margin:16px 0 0}@media(max-width:600px){main{margin:12px;padding:18px}h1{font-size:25px}.chart{height:290px;padding-left:0;padding-right:0}.value{font-size:17px}.stat{padding:12px}.message{font-size:16px}button{padding:12px 20px}}
+main{max-width:1250px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:28px}.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0}.tabs button[aria-selected="true"]{background:#285fc4;color:white}.candidate{background:#a579e1}.prefix{background:#b9dcfa}.bar.candidate.compare{box-shadow:inset 0 0 0 4px #f7d34b}.card{background:#f3f6fb;border:1px solid #dce4ef;border-radius:16px;padding:22px;margin-top:26px;align-self:start}.card h2{font-size:22px;margin-top:0}.card h3{font-size:16px;margin-top:24px}.card p,.card li{line-height:1.8}.card ol{padding-left:22px}.card li{margin-bottom:12px}[hidden]{display:none!important}@media(max-width:900px){.layout{grid-template-columns:1fr}.card{margin-top:0}}
+.input-panel{margin-top:24px;padding:18px;background:#f3f6fb;border-radius:12px}.input-panel label{display:block;font-weight:700;margin-bottom:8px}.input-row{display:flex;gap:8px;flex-wrap:wrap}.input-row input{flex:1;min-width:180px;padding:12px;border:1px solid #bac8da;border-radius:8px;font:inherit}.examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.examples button{padding:8px 14px;font-size:14px}.error{color:#b42318;margin:10px 0 0}.comparison-section{margin-top:30px;border-top:1px solid #dce4ef;padding-top:12px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;text-align:center}th,td{padding:14px;border-bottom:1px solid #dce4ef}thead{background:#f0f5fc}tbody th{text-align:left}.array-caption{color:#526178;overflow-wrap:anywhere}.chart{gap:clamp(3px,1vw,14px);min-width:400px}.column{min-width:24px}.chart-scroll{overflow-x:auto}.value{font-size:17px}
+.controls{flex-wrap:wrap}.lesson-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px}.lesson-tools button{padding:10px 16px}.lesson-tools label{display:flex;gap:8px;align-items:center}.prediction{padding:18px;margin-top:18px;border:2px solid #b9cbed;border-radius:12px;background:#f4f8ff}.prediction .answers{display:flex;flex-wrap:wrap;gap:8px}.prediction button{padding:10px 14px}.prediction p{line-height:1.7}.record-item{border:1px solid #dce4ef;border-radius:12px;margin-top:16px;padding:18px}.record-item p{overflow-wrap:anywhere;line-height:1.7}.record-item label{display:block;font-weight:700;margin:12px 0 8px}.record-item textarea{width:100%;min-height:90px;padding:12px;font:inherit;border:1px solid #bac8da;border-radius:8px}.large-text{font-size:21px}.large-text .intro,.large-text .legend,.large-text .hint,.large-text .axis,.large-text .examples button,.large-text .card h3{font-size:19px}.large-text .message,.large-text .value,.large-text .index{font-size:23px}.large-text .value{top:-36px}.large-text .chart{height:370px}.large-text .card h2{font-size:27px}.large-text h1{font-size:36px}
+</style>
+</head>
+<body>
+<main>
+<h1>정렬 알고리즘 실험실</h1>
+<p class="intro">같은 숫자를 세 가지 방법으로 비교하며 작은 수부터 큰 수 순서로 정렬해 보세요.<br>‘다음’을 누르면 비교 한 번 또는 교환 한 번이 진행됩니다.</p>
+<form id="arrayForm" class="input-panel" novalidate><label for="numbers">실험할 숫자</label><div class="input-row"><input id="numbers" type="text" value="42, 18, 65, 30, 8, 54, 23, 76" aria-describedby="inputHelp inputError" autocomplete="off"><button type="submit" class="primary">적용</button></div><p id="inputHelp" class="intro">1~99 정수 2~15개를 쉼표나 공백으로 구분해 입력하세요.</p><p id="inputError" class="error" role="alert" hidden></p><div class="examples"><button type="button" data-example="sorted">이미 정렬됨</button><button type="button" data-example="reversed">거꾸로</button><button type="button" data-example="almost">거의 정렬됨</button><button type="button" data-example="duplicates">같은 값 포함</button><button type="button" id="randomNumbers">새 숫자</button></div></form>
+<div class="tabs" role="tablist" aria-label="정렬 방법"><button id="tab-bubble" role="tab" aria-controls="experiment" data-method="bubble">버블 정렬</button><button id="tab-selection" role="tab" aria-controls="experiment" data-method="selection">선택 정렬</button><button id="tab-insertion" role="tab" aria-controls="experiment" data-method="insertion">삽입 정렬</button></div><div class="layout"><section id="experiment" role="tabpanel" aria-labelledby="tab-bubble"><div class="stats"><div class="stat">비교 횟수<strong id="comparisons">0</strong></div><div class="stat">교환 횟수<strong id="swaps">0</strong></div></div>
+<div class="legend"><span><i class="dot normal"></i>정렬 중</span><span><i class="dot compare"></i>비교</span><span><i class="dot swap"></i>교환</span><span><i class="dot sorted"></i>위치 확정</span><span id="candidateLegend" hidden><i class="dot candidate"></i>최솟값 후보 (노란 테두리: 비교 중)</span><span id="prefixLegend" hidden><i class="dot prefix"></i>순서가 맞춰진 앞부분</span></div>
+<div class="chart-scroll"><div id="chart" class="chart" role="img" aria-label="정렬할 숫자 막대"></div></div>
+<p class="axis">위치 번호 (0부터 시작)</p>
+<div id="message" class="message" role="status" aria-live="polite"></div>
+<div class="controls"><button id="previous" type="button">이전</button><button id="next" class="primary" type="button">다음</button><button id="reset" type="button">처음으로</button></div>
+<p class="hint" id="progress"></p>
+<div class="lesson-tools"><button type="button" id="predict">예측 시작</button><button type="button" id="play" aria-pressed="false">자동 재생</button><label for="speed">속도 <input type="range" id="speed" min="1" max="5" step="1" value="3"><output id="speedValue" for="speed">3 / 5</output></label><button type="button" id="roundEnd">회전 끝까지</button><button type="button" id="enlarge">크게 보기</button><button type="button" id="largeText" aria-pressed="false">큰 글씨</button></div>
+<p class="hint">회전: 버블은 남은 구간 한 번 훑기, 선택은 최솟값 하나 확정, 삽입은 새 수 하나 넣기입니다.</p>
+<section id="prediction" class="prediction" aria-label="다음 비교 예측" hidden><p id="predictionQuestion"></p><div class="answers"><button type="button" data-answer="first">첫 번째 값이 작다</button><button type="button" data-answer="second">두 번째 값이 작다</button><button type="button" data-answer="equal">두 값이 같다</button><button type="button" id="cancelPrediction">예측 취소</button></div></section><p id="predictionFeedback" role="status" aria-live="polite"></p>
+</section><aside class="card" id="explanation" aria-live="polite"></aside></div><section class="comparison-section" aria-labelledby="comparisonTitle"><h2 id="comparisonTitle">같은 배열로 비교하기</h2><p class="array-caption" id="comparisonArray"></p><div class="table-wrap"><table><caption>현재 입력 배열을 끝까지 정렬했을 때의 전체 횟수</caption><thead><tr><th scope="col">정렬 방법</th><th scope="col">비교 횟수</th><th scope="col">교환 횟수</th></tr></thead><tbody id="comparisonBody"></tbody></table></div><p class="hint">숫자끼리의 비교와 서로 다른 두 위치의 실제 교환을 셉니다. 버블 정렬은 교환 없는 회전에서 일찍 종료합니다.</p></section><section class="comparison-section" aria-labelledby="recordTitle"><h2 id="recordTitle">실험 기록</h2><div class="lesson-tools"><button type="button" id="saveRecord">현재 조건 기록</button><button type="button" id="downloadRecords" disabled>기록 내려받기</button></div><p class="hint">적용된 입력 숫자와 세 방법의 전체 횟수를 기록합니다. 기록은 이 페이지를 닫기 전에 내려받으세요.</p><p id="recordStatus" role="status" aria-live="polite"></p><div id="records"></div></section></main>
+<script>
+'use strict';
+let initial = [42,18,65,30,8,54,23,76];
+const descriptions={
+bubble:{name:'버블 정렬',summary:'이웃한 두 수를 비교하여 큰 수를 오른쪽으로 보냅니다.',analogy:'옆 친구와 키를 비교하며 자리를 바꾸면 가장 큰 친구가 맨 뒤로 이동해요.',steps:['왼쪽부터 이웃한 두 수를 비교합니다.','왼쪽 수가 더 크면 두 수를 교환합니다.','오른쪽 위치를 확정하고 반복하되, 한 회전 동안 교환이 없으면 종료합니다.']},
+selection:{name:'선택 정렬',summary:'남은 구간에서 최솟값을 찾아 맨 앞에 놓습니다.',analogy:'숫자 카드를 끝까지 살펴 가장 작은 카드를 고른 뒤, 정리할 자리의 맨 앞에 놓는다고 생각해 보세요.',steps:['남은 구간의 맨 앞 수를 최솟값 후보로 정합니다.','뒤의 수를 하나씩 비교하며 더 작은 수로 후보를 바꿉니다.','끝까지 살펴본 뒤 후보와 맨 앞 수를 교환하고 위치를 확정합니다.']},
+insertion:{name:'삽입 정렬',summary:'새 수를 정돈된 앞부분의 알맞은 자리로 옮깁니다.',analogy:'손에 든 카드를 정리하듯 새 카드를 왼쪽 카드와 비교하며 알맞은 자리에 끼워 넣어요.',steps:['순서가 맞춰진 앞부분 바로 다음 수를 고릅니다.','왼쪽 수와 비교하고 왼쪽이 더 크면 이웃끼리 교환합니다.','알맞은 자리까지 반복하고 정돈된 앞부분을 한 칸 늘립니다.']}
+};
+function buildFrames(method){
+ const frames=[],values=[...initial];let comparisons=0,swaps=0,round=0;
+ const range=(a,b)=>Array.from({length:Math.max(0,b-a)},(_,i)=>a+i);
+ function record(kind,pair,message,fixed=[],candidate=-1,prefix=0){frames.push({values:[...values],comparisons,swaps,kind,pair:[...pair],message,fixed:[...fixed],candidate,prefix,round});}
+ record('normal',[],'‘다음’을 눌러 정렬을 시작하세요.',[],method==='selection'?0:-1,method==='insertion'?1:0);
+ if(method==='bubble'){
+  for(let end=values.length-1;end>0;end--){
+   round++;let exchanged=false;
+   for(let j=0;j<end;j++){
+    const left=values[j],right=values[j+1],exchange=left>right,last=j===end-1;
+    let fixed=range(last&&!exchange?end:end+1,values.length);
+    if(end===1&&last&&!exchange)fixed.unshift(0);
+    comparisons++;
+    record('compare',[j,j+1],`${left}와 ${right} 비교: ${exchange?'왼쪽이 더 크므로 다음 단계에서 교환합니다.':'순서가 맞으므로 교환하지 않습니다.'}`,fixed);
+    if(exchange){
+     [values[j],values[j+1]]=[values[j+1],values[j]];swaps++;exchanged=true;
+     fixed=range(last?end:end+1,values.length);if(end===1&&last)fixed.unshift(0);
+     record('swap',[j,j+1],`${left}와 ${right}의 위치를 교환했습니다.`,fixed);
+    }
+   }
+   if(!exchanged){
+    const final=frames[frames.length-1];
+    final.fixed=range(0,values.length);
+    final.message+=' 이번 회전에서 교환이 한 번도 없으므로 남은 부분도 정렬되어 일찍 종료합니다.';
+    break;
+   }
+  }
+ }else if(method==='selection'){
+  for(let start=0;start<values.length-1;start++){
+   round++;let min=start;
+   for(let j=start+1;j<values.length;j++){
+    const oldIndex=min,old=values[min],v=values[j];comparisons++;
+    if(v<old)min=j;
+    const last=j===values.length-1,noSwap=last&&min===start;
+    const fixed=range(0,noSwap?start+1:start);
+    if(noSwap&&start===values.length-2)fixed.push(values.length-1);
+    record('compare',[oldIndex,j],`${old}와 ${v} 비교: ${v<old?`${v}을(를) 새 최솟값 후보로 정합니다.`:`최솟값 후보 ${old}을(를) 유지합니다.`}${last?(noSwap?' 이미 맨 앞에 있어 교환하지 않습니다.':' 끝까지 살폈으므로 다음 단계에서 맨 앞 수와 교환합니다.'):''}`,fixed,min);
+   }
+   if(min!==start){
+    const left=values[start],small=values[min];[values[start],values[min]]=[values[min],values[start]];swaps++;
+    record('swap',[start,min],`남은 구간을 모두 살펴본 뒤 최솟값 ${small}와 맨 앞 수 ${left}의 위치를 교환했습니다.`,range(0,start===values.length-2?values.length:start+1));
+   }
+   if(start<values.length-2)frames[frames.length-1].candidate=start+1;
+  }
+ }else{
+  for(let i=1;i<values.length;i++){
+   round++;let j=i;
+   while(j>0){
+    const left=values[j-1],right=values[j],exchange=left>right;comparisons++;
+    record('compare',[j-1,j],`${left}와 ${right} 비교: ${exchange?'왼쪽이 더 크므로 다음 단계에서 이웃끼리 교환합니다.':'알맞은 위치이므로 앞부분의 정리를 마칩니다.'}`,[],-1,exchange?i:i+1);
+    if(!exchange)break;
+    [values[j-1],values[j]]=[values[j],values[j-1]];swaps++;j--;
+    record('swap',[j,j+1],`${right}와 ${left}를 이웃끼리 교환하여 ${right}을(를) 왼쪽으로 한 칸 옮겼습니다.`,[],-1,j===0?i+1:i);
+   }
+  }
+ }
+ frames[frames.length-1].message+=' 오름차순 정렬이 완료되었습니다.';
+ frames[frames.length-1].fixed=range(0,values.length);frames[frames.length-1].candidate=-1;
+ return frames;
+}
+let method='bubble',frames=buildFrames(method);
+let current=0;
+let playback=null,predictionTarget=null,bigWindow=null;
+const records=[];
+function stopPlayback(){if(playback!==null){clearInterval(playback);playback=null;}document.getElementById('play').textContent='자동 재생';document.getElementById('play').setAttribute('aria-pressed','false');}
+function cancelPrediction(clear=true){predictionTarget=null;document.getElementById('prediction').hidden=true;if(clear)document.getElementById('predictionFeedback').textContent='';}
+function syncBigWindow(){
+ if(!bigWindow||bigWindow.closed)return;
+ const target=bigWindow.document.getElementById('bigChart');
+ if(target){target.innerHTML=chart.innerHTML;target.setAttribute('aria-label',chart.getAttribute('aria-label'));bigWindow.document.body.classList.toggle('large-text',document.body.classList.contains('large-text'));}
+}
+const chart=document.getElementById('chart');
+function render(){
+  const frame=frames[current];
+  chart.replaceChildren();
+  frame.values.forEach((value,index)=>{
+    const column=document.createElement('div');column.className='column';
+    const bar=document.createElement('div');
+    // 확정된 위치는 같은 단계의 비교·교환 강조보다 우선합니다.
+    const active=frame.pair.includes(index);
+    const color=active&&frame.kind==='swap'?'swap':index===frame.candidate?'candidate'+(active&&frame.kind==='compare'?' compare':''):active?frame.kind:frame.fixed.includes(index)?'sorted':index<frame.prefix?'prefix':'normal';
+    bar.className=`bar ${color}`;bar.style.height=`${value/99*220}px`;bar.style.setProperty('--ratio',value/99);
+    const label=document.createElement('span');label.className='value';label.textContent=value;
+    const position=document.createElement('span');position.className='index';position.textContent=index;
+    bar.append(label);column.append(bar,position);chart.append(column);
+  });
+  chart.setAttribute('aria-label',frame.values.map((v,i)=>`위치 ${i}: ${v}`).join(', '));
+  document.getElementById('comparisons').textContent=frame.comparisons;
+  document.getElementById('swaps').textContent=frame.swaps;
+  document.getElementById('message').textContent=frame.message;
+  document.getElementById('previous').disabled=current===0;
+  document.getElementById('next').disabled=current===frames.length-1;
+  if(current===frames.length-1)stopPlayback();
+  const busy=predictionTarget!==null;
+  document.getElementById('previous').disabled=busy||current===0;
+  document.getElementById('next').disabled=busy||current===frames.length-1;
+  document.getElementById('roundEnd').disabled=busy||current===frames.length-1;
+  document.getElementById('play').disabled=busy||current===frames.length-1;
+  document.getElementById('predict').disabled=busy||!frames.slice(current+1).some(f=>f.kind==='compare');
+  syncBigWindow();
+  document.getElementById('progress').textContent=`${current} / ${frames.length-1} 단계`;
+}
+document.getElementById('previous').addEventListener('click',()=>{stopPlayback();cancelPrediction();if(current>0){current--;render();}});
+document.getElementById('next').addEventListener('click',()=>{stopPlayback();cancelPrediction();if(current<frames.length-1){current++;render();}});
+document.getElementById('reset').addEventListener('click',()=>{stopPlayback();cancelPrediction();current=0;render();});
+function selectMethod(next){
+ stopPlayback();cancelPrediction();
+ method=next;frames=buildFrames(method);current=0;
+ document.querySelectorAll('[role="tab"]').forEach(tab=>{const selected=tab.dataset.method===method;tab.setAttribute('aria-selected',selected);tab.tabIndex=selected?0:-1;});
+ document.getElementById('experiment').setAttribute('aria-labelledby','tab-'+method);
+ document.getElementById('candidateLegend').hidden=method!=='selection';
+ document.getElementById('prefixLegend').hidden=method!=='insertion';
+ const info=descriptions[method];
+ document.getElementById('explanation').innerHTML=`<h2>${info.name}</h2><p>${info.summary}</p><h3>이렇게 생각해 보세요</h3><p>${info.analogy}</p><h3>움직이는 순서 3단계</h3><ol>${info.steps.map(step=>`<li>${step}</li>`).join('')}</ol>`;
+ render();
+}
+const tabs=[...document.querySelectorAll('[role="tab"]')];
+tabs.forEach((tab,index)=>{
+ tab.addEventListener('click',()=>selectMethod(tab.dataset.method));
+ tab.addEventListener('keydown',event=>{let next=index;if(event.key==='ArrowRight')next=(index+1)%tabs.length;else if(event.key==='ArrowLeft')next=(index+tabs.length-1)%tabs.length;else if(event.key==='Home')next=0;else if(event.key==='End')next=tabs.length-1;else return;event.preventDefault();selectMethod(tabs[next].dataset.method);tabs[next].focus();});
+});
+function updateComparison(){
+ document.getElementById('comparisonArray').textContent='현재 배열: '+initial.join(', ');
+ const body=document.getElementById('comparisonBody');body.replaceChildren();
+ for(const key of ['bubble','selection','insertion']){
+  const history=buildFrames(key),final=history[history.length-1];
+  const row=document.createElement('tr');
+  const title=document.createElement('th');title.scope='row';title.textContent=descriptions[key].name;row.append(title);
+  for(const value of [final.comparisons,final.swaps]){const cell=document.createElement('td');cell.textContent=value;row.append(cell);}
+  body.append(row);
+ }
+}
+function applyNumbers(values){
+ initial=[...values];document.getElementById('numbers').value=initial.join(', ');
+ document.getElementById('inputError').hidden=true;document.getElementById('numbers').removeAttribute('aria-invalid');
+ selectMethod(method);updateComparison();
+}
+document.getElementById('arrayForm').addEventListener('submit',event=>{
+ event.preventDefault();
+ const text=document.getElementById('numbers').value.trim();
+ const tokens=text?text.split(/[,\s]+/):[];
+ const values=tokens.map(Number);
+ if(tokens.length<2||tokens.length>15||tokens.some(token=>!/^\d+$/.test(token))||values.some(value=>!Number.isInteger(value)||value<1||value>99)){
+  const error=document.getElementById('inputError');error.textContent='1~99의 정수를 2~15개 입력하세요';error.hidden=false;
+  document.getElementById('numbers').setAttribute('aria-invalid','true');return;
+ }
+ applyNumbers(values);
+});
+const examples={sorted:[8,18,23,30,42,54,65,76],reversed:[76,65,54,42,30,23,18,8],almost:[8,18,23,42,30,54,65,76],duplicates:[42,18,42,30,18,54,23,23]};
+document.querySelectorAll('[data-example]').forEach(button=>button.addEventListener('click',()=>applyNumbers(examples[button.dataset.example])));
+document.getElementById('randomNumbers').addEventListener('click',()=>applyNumbers(Array.from({length:initial.length},()=>1+Math.floor(Math.random()*99))));
+function startPlayback(){
+ stopPlayback();cancelPrediction();if(current===frames.length-1)return;
+ document.getElementById('play').textContent='일시 정지';document.getElementById('play').setAttribute('aria-pressed','true');
+ playback=setInterval(()=>{if(current<frames.length-1){current++;render();}else stopPlayback();},[2000,1300,800,450,200][Number(document.getElementById('speed').value)-1]);
+}
+document.getElementById('play').addEventListener('click',()=>{if(playback!==null)stopPlayback();else startPlayback();});
+document.getElementById('speed').addEventListener('input',()=>{document.getElementById('speedValue').textContent=document.getElementById('speed').value+' / 5';if(playback!==null)startPlayback();});
+document.getElementById('roundEnd').addEventListener('click',()=>{
+ stopPlayback();cancelPrediction();if(current>=frames.length-1)return;
+ const targetRound=frames[current+1].round;
+ do{current++;}while(current<frames.length-1&&frames[current+1].round===targetRound);
+ render();
+});
+document.getElementById('predict').addEventListener('click',()=>{
+ stopPlayback();cancelPrediction();
+ const offset=frames.slice(current+1).findIndex(frame=>frame.kind==='compare');if(offset<0)return;
+ predictionTarget=current+1+offset;
+ const frame=frames[predictionTarget],[first,second]=frame.pair;
+ document.getElementById('predictionQuestion').textContent=`다음에 비교할 두 수: 첫 번째 값 ${frame.values[first]}, 두 번째 값 ${frame.values[second]} (위치 ${first}, ${second}) — 어느 값이 더 작을까요?`;
+ document.getElementById('prediction').hidden=false;render();
+ document.querySelector('[data-answer]').focus();
+});
+document.querySelectorAll('[data-answer]').forEach(button=>button.addEventListener('click',()=>{
+ if(predictionTarget===null)return;
+ const frame=frames[predictionTarget],a=frame.values[frame.pair[0]],b=frame.values[frame.pair[1]];
+ const correct=a<b?'first':a>b?'second':'equal';
+ if(button.dataset.answer!==correct){document.getElementById('predictionFeedback').textContent='다시 생각해 보세요. 첫 번째 값과 두 번째 값의 크기를 비교하세요.';return;}
+ current=predictionTarget;cancelPrediction();document.getElementById('predictionFeedback').textContent='맞았습니다! 예측한 비교 단계로 이동했습니다.';render();document.getElementById('predict').focus();
+}));
+document.getElementById('cancelPrediction').addEventListener('click',()=>{cancelPrediction();render();document.getElementById('predict').focus();});
+document.getElementById('largeText').addEventListener('click',()=>{const enabled=document.body.classList.toggle('large-text');document.getElementById('largeText').setAttribute('aria-pressed',String(enabled));syncBigWindow();});
+document.getElementById('enlarge').addEventListener('click',()=>{
+ if(bigWindow&&!bigWindow.closed){bigWindow.focus();syncBigWindow();return;}
+ bigWindow=window.open('','sortingBars','popup,width=1400,height=850,resizable=yes,scrollbars=yes');
+ if(!bigWindow){document.getElementById('predictionFeedback').textContent='크게 보기 창을 열려면 크롬에서 이 파일의 팝업을 허용해 주세요.';return;}
+ bigWindow.document.open();bigWindow.document.write('<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>정렬 막대 크게 보기</title><style>'+document.querySelector('style').textContent+' body{margin:0;padding:30px;background:white}.chart{height:calc(100vh - 80px);min-height:400px}.bar{height:calc(var(--ratio) * (100vh - 190px))!important;max-width:110px}.value{font-size:30px;top:-45px}.index{font-size:24px}.large-text .value{font-size:38px;top:-55px}.large-text .index{font-size:30px}</style></head><body><div class="chart-scroll"><div id="bigChart" class="chart" role="img"></div></div></body></html>');bigWindow.document.close();syncBigWindow();
+});
+document.getElementById('saveRecord').addEventListener('click',()=>{
+ const record={numbers:[...initial],results:Object.keys(descriptions).map(key=>{const all=buildFrames(key),final=all[all.length-1];return {name:descriptions[key].name,comparisons:final.comparisons,swaps:final.swaps};}),reason:''};
+ records.push(record);const number=records.length;
+ const article=document.createElement('article');article.className='record-item';
+ const heading=document.createElement('h3');heading.textContent=`기록 ${number}`;
+ const numbers=document.createElement('p');numbers.textContent='입력 숫자: '+record.numbers.join(', ');
+ const counts=document.createElement('p');counts.textContent=record.results.map(result=>`${result.name}: 비교 ${result.comparisons}회 / 교환 ${result.swaps}회`).join(' · ');
+ const label=document.createElement('label');label.htmlFor='reason-'+number;label.textContent='이런 결과가 나온 이유는 무엇일까요?';
+ const reason=document.createElement('textarea');reason.id=label.htmlFor;reason.placeholder='배열의 순서와 각 정렬 방법의 특징을 연결해 적어 보세요.';reason.addEventListener('input',()=>{record.reason=reason.value;});
+ article.append(heading,numbers,counts,label,reason);document.getElementById('records').append(article);
+ document.getElementById('downloadRecords').disabled=false;document.getElementById('recordStatus').textContent=`현재 조건을 기록 ${number}에 저장했습니다.`;
+});
+document.getElementById('downloadRecords').addEventListener('click',()=>{
+ if(!records.length)return;
+ const text='정렬 알고리즘 실험 기록\n\n'+records.map((record,index)=>`기록 ${index+1}\n입력 숫자: ${record.numbers.join(', ')}\n${record.results.map(result=>`${result.name}: 비교 ${result.comparisons}회 / 교환 ${result.swaps}회`).join('\n')}\n이유: ${record.reason||'(작성하지 않음)'}`).join('\n\n--------------------\n\n');
+ const url=URL.createObjectURL(new Blob(['\ufeff'+text],{type:'text/plain;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download='정렬_실험_기록.txt';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+window.addEventListener('pagehide',()=>{stopPlayback();if(bigWindow&&!bigWindow.closed)bigWindow.close();});
+selectMethod('bubble');updateComparison();
+</script>
+</body>
+</html>

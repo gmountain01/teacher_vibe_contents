@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>기체 법칙 탐구 실험실</title>
+<style>
+:root{font-family:system-ui,'맑은 고딕',sans-serif;color:#193047;background:#eef3f8}*{box-sizing:border-box}body{margin:0}header{background:#142d47;color:white;padding:36px max(24px,calc((100vw - 1120px)/2))}header small{color:#7cddd3;letter-spacing:2px}h1{margin:10px 0;font-size:32px}header p{color:#c5d5e5;margin-bottom:0}main{max-width:1168px;margin:auto;padding:24px}nav{display:flex;gap:10px;margin-bottom:22px}button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:14px 22px;background:white;color:#34516c}button[aria-selected=true]{background:#167d89;color:white}button:focus-visible,input:focus-visible{outline:3px solid #efa82e;outline-offset:3px}.intro,.card{background:white;border:1px solid #dce5ee;border-radius:18px;padding:24px}.intro{margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;gap:18px}.intro h2{margin:0 0 8px}.intro p{margin:0;color:#52697e;line-height:1.7}.formula{font-size:24px;color:#147784;white-space:nowrap;font-weight:700}.layout{display:grid;grid-template-columns:340px 1fr;gap:20px}h3{margin:0 0 20px;font-size:18px}.control{margin:22px 0}.label{display:flex;justify-content:space-between;align-items:center;gap:8px}label{font-weight:650}input[type=number]{width:108px;padding:9px;border:1px solid #bdcdda;border-radius:8px;font:inherit}input[type=range]{width:100%;margin-top:16px;accent-color:#168590}.hint{color:#6a7d8e;font-size:13px;line-height:1.6}.fixed{background:#edf6f7;padding:14px;border-radius:10px;font-size:14px;color:#24636b}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}.metric{background:#f0f5f9;padding:16px;border-radius:12px}.metric span{font-size:13px;color:#60758a}.metric strong{display:block;margin-top:6px;font-size:24px}.metric em{font-size:13px;font-style:normal;font-weight:400}.graph{width:100%;display:block;background:#fcfdff;border-radius:10px}.graphnote{font-size:13px;color:#61778b;line-height:1.7;margin-bottom:0}.bottom{margin-top:20px;line-height:1.8;color:#536b80;font-size:14px}.error{color:#b33434;min-height:22px;font-size:13px}#reset{padding:10px 18px;background:#e9eff4;width:100%}@media(max-width:780px){.layout{grid-template-columns:1fr}.intro{align-items:flex-start;flex-direction:column}nav button{flex:1;padding:12px 5px;font-size:14px}main{padding:16px}.metric{padding:12px}.metric strong{font-size:20px}h1{font-size:27px}}
+</style>
+</head>
+<body>
+<header><small>SCIENCE · INTERACTIVE LAB</small><h1>기체 법칙 탐구 실험실</h1><p>조건을 바꾸고, 기체의 압력·부피·온도가 만드는 관계를 발견해 보세요.</p></header>
+<main>
+<nav role="tablist" aria-label="기체 법칙 선택"><button role="tab" id="tab-boyle" aria-controls="panel" aria-selected="true" data-law="boyle">보일 법칙</button><button role="tab" id="tab-charles" aria-controls="panel" aria-selected="false" data-law="charles">샤를 법칙</button><button role="tab" id="tab-combined" aria-controls="panel" aria-selected="false" data-law="combined">보일-샤를 법칙</button></nav>
+<section id="panel" role="tabpanel" aria-labelledby="tab-boyle">
+<div class="intro"><div><h2 id="lawTitle"></h2><p id="description"></p></div><div class="formula" id="formula"></div></div>
+<div class="layout"><section class="card"><h3>실험 조건 조절</h3><div class="fixed" id="fixed"></div><div id="controls"></div><div class="error" id="error" role="status"></div><button id="reset">초기 조건으로 되돌리기</button><p class="hint">온도는 절대온도(K)로 계산합니다. 0 K 이하의 값은 적용할 수 없습니다. 모든 실험에서 기체의 양은 일정합니다.</p></section>
+<section class="card"><h3>현재 기체 상태</h3><div class="metrics" aria-live="polite"><div class="metric"><span>압력 P</span><strong id="p"></strong></div><div class="metric"><span>부피 V</span><strong id="v"></strong></div><div class="metric"><span>절대온도 T</span><strong id="t"></strong></div></div><h3>실린더 속 기체 · 학습용 모형</h3><canvas id="cylinder" width="700" height="390" style="width:100%;display:block;background:#f7fafc;border-radius:12px" role="img" aria-label="고정된 바닥과 움직이는 피스톤"></canvas><p class="hint">학습용 모형: 단면적은 일정하고 기체 높이는 부피에 비례합니다. 분자 수는 일정합니다. 분자의 속도와 꼬리 길이는 √T에 비례하며, 크기·시간·충돌은 실제 축척이 아닙니다. 압력은 기체 법칙으로 계산합니다. 아주 작은 부피에서는 분자가 겹치거나 보이지 않을 수 있습니다.</p><h3 id="graphTitle"></h3><svg id="graph" class="graph" viewBox="0 0 700 370" role="img" aria-label="기체 법칙 관계 그래프"></svg><p class="graphnote" id="graphnote"></p></section></div>
+<div class="card bottom"><strong>탐구의 기준</strong><br>처음 상태는 P₁ = 1 atm, V₁ = 10 L, T₁ = 300 K입니다. 같은 양의 이상 기체를 가정하므로 PV/T = 1/30 atm·L/K가 유지됩니다. 0 K는 그래프의 이론적 한계이며 실제 입력과 실험 범위에는 포함하지 않습니다.</div>
+</section></main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+let law='boyle',state={V:10,T:300};
+const defs={boyle:{title:'보일 법칙',description:'온도와 기체의 양을 고정하고 부피를 바꿉니다. 부피가 줄어들면 압력이 커집니다.',formula:'P₁V₁ = P₂V₂',fixed:'고정: 온도 300 K · 기체의 양',controls:['V']},charles:{title:'샤를 법칙',description:'압력과 기체의 양을 고정하고 절대온도를 바꿉니다. 절대온도가 높아지면 부피가 커집니다.',formula:'V₁/T₁ = V₂/T₂',fixed:'고정: 압력 1 atm · 기체의 양',controls:['T']},combined:{title:'보일-샤를 법칙',description:'기체의 양을 고정하고 부피와 절대온도를 바꿉니다. 두 조건에 따라 압력이 함께 달라집니다.',formula:'P₁V₁/T₁ = P₂V₂/T₂',fixed:'고정: 기체의 양 · 조절: 부피와 절대온도',controls:['V','T']}};
+const specs={V:{label:'부피 V (L)',min:1,max:30,step:0.1},T:{label:'절대온도 T (K)',min:1,max:900,step:1}};
+function setup(){state={V:10,T:300};const d=defs[law];$('panel').setAttribute('aria-labelledby','tab-'+law);$('lawTitle').textContent=d.title;$('description').textContent=d.description;$('formula').textContent=d.formula;$('fixed').textContent=d.fixed;$('error').textContent='';$('controls').innerHTML=d.controls.map(k=>{const s=specs[k];return `<div class="control"><div class="label"><label for="number${k}">${s.label}</label><input id="number${k}" type="number" min="${s.min}" max="${s.max}" step="${s.step}" value="${state[k]}" required></div><input id="range${k}" aria-label="${s.label} 슬라이더" type="range" min="${s.min}" max="${s.max}" step="${s.step}" value="${state[k]}"><div class="hint">조절 범위: ${s.min}–${s.max} ${k==='V'?'L':'K'}</div></div>`}).join('');d.controls.forEach(k=>{const s=specs[k],n=$('number'+k),r=$('range'+k);function change(input){const value=Number(input.value);if(input.value===''||!Number.isFinite(value)||value<s.min||value>s.max){$('error').textContent=k==='T'?'온도는 1~900 K 범위로 입력해 주세요. 0 K 이하는 사용할 수 없습니다.':'부피는 1~30 L 범위로 입력해 주세요.';input.setAttribute('aria-invalid','true');return}input.removeAttribute('aria-invalid');$('error').textContent='';state[k]=value;n.value=value;r.value=value;update()}n.addEventListener('input',()=>change(n));n.addEventListener('blur',()=>{n.value=state[k];n.removeAttribute('aria-invalid');$('error').textContent=''});r.addEventListener('input',()=>{n.removeAttribute('aria-invalid');change(r)})});update()}
+function update(){const T=law==='boyle'?300:state.T,V=law==='charles'?T/30:state.V,P=T/(30*V);$('p').innerHTML=P.toFixed(3)+' <em>atm</em>';$('v').innerHTML=V.toFixed(2)+' <em>L</em>';$('t').innerHTML=T.toFixed(1)+' <em>K</em>';draw(P,V,T);modelState={P,V,T};}
+function draw(P,V,T){const isC=law==='charles',xmax=isC?900:30,ymax=isC?30:Math.max(10,T/30),left=72,top=30,w=594,h=280;const X=x=>left+x/xmax*w,Y=y=>top+h-y/ymax*h;let svg='';for(let i=0;i<=5;i++){let x=left+i*w/5,y=top+h-i*h/5;svg+=`<path d="M ${x} ${top} V ${top+h} M ${left} ${y} H ${left+w}" stroke="#e2eaf1" fill="none"/><text x="${x}" y="${top+h+23}" text-anchor="middle" font-size="12" fill="#64788a">${(xmax*i/5).toFixed(0)}</text><text x="${left-10}" y="${y+4}" text-anchor="end" font-size="12" fill="#64788a">${(ymax*i/5).toFixed(ymax>10?0:1)}</text>`}svg+=`<path d="M ${left} ${top} V ${top+h} H ${left+w}" fill="none" stroke="#8094a7"/><text x="${left+w/2}" y="362" text-anchor="middle" font-size="14" fill="#34516c">${isC?'절대온도 T (K)':'부피 V (L)'}</text><text x="18" y="170" transform="rotate(-90 18 170)" text-anchor="middle" font-size="14" fill="#34516c">${isC?'부피 V (L)':'압력 P (atm)'}</text>`;let path='';for(let i=0;i<=300;i++){let x=isC?i*3:1+i*29/300,y=isC?x/30:T/(30*x);path+=(i?'L':'M')+X(x).toFixed(2)+' '+Y(y).toFixed(2)+' '}let cx=X(isC?T:V),cy=Y(isC?V:P);svg+=`<path d="${path}" fill="none" stroke="#168590" stroke-width="3"/><path d="M ${left} ${cy} H ${cx} V ${top+h}" fill="none" stroke="#e4a23a" stroke-dasharray="5 5"/><circle cx="${cx}" cy="${cy}" r="7" fill="#e7a032" stroke="white" stroke-width="2"/>`;$('graph').innerHTML=svg;$('graphTitle').textContent=isC?'절대온도와 부피의 관계':'부피와 압력의 관계';$('graphnote').textContent=isC?'주황색 점은 현재 상태입니다. 일정한 압력에서 부피는 절대온도에 비례합니다. 원점은 이론적 연장점입니다.':law==='boyle'?'주황색 점은 현재 상태입니다. 온도 300 K에서 부피와 압력은 반비례하며 PV = 10 atm·L를 유지합니다.':'주황색 점은 현재 상태입니다. 곡선은 현재 선택한 온도 '+T.toFixed(1)+' K에서의 압력–부피 관계입니다. 온도를 바꾸면 곡선도 이동하며 세로축 눈금은 자동으로 조정됩니다.'}
+let modelState={P:1,V:10,T:300};
+const particles=Array.from({length:32},()=>({x:Math.random(),y:Math.random(),angle:Math.random()*Math.PI*2}));
+let lastFrame=0;
+function animateModel(time){
+ const dt=lastFrame?Math.min((time-lastFrame)/1000,.04):0;lastFrame=time;
+ const {P,V,T}=modelState,c=$('cylinder'),ctx=c.getContext('2d');
+ const left=100,right=350,bottom=330,height=280*V/30,top=bottom-height,speed=65*Math.sqrt(T/300),tail=12*Math.sqrt(T/300);
+ ctx.clearRect(0,0,700,390);ctx.font='14px system-ui';ctx.fillStyle='#52697e';ctx.fillText('부피 눈금 (L)',22,24);
+ for(let v=0;v<=30;v+=5){let y=bottom-280*v/30;ctx.strokeStyle='#ccdbe6';ctx.beginPath();ctx.moveTo(80,y);ctx.lineTo(350,y);ctx.stroke();ctx.fillStyle='#52697e';ctx.fillText(String(v),48,y+5)}
+ ctx.fillStyle='#def2f4';ctx.fillRect(left,top,right-left,height);
+ ctx.save();ctx.beginPath();ctx.rect(left,top,right-left,height);ctx.clip();
+ for(const p of particles){
+  let x=p.x*(right-left)+Math.cos(p.angle)*speed*dt,y=p.y*height+Math.sin(p.angle)*speed*dt;
+  if(x<0){x=-x;p.angle=Math.PI-p.angle}if(x>right-left){x=2*(right-left)-x;p.angle=Math.PI-p.angle}
+  const segment=Math.floor(y/height);y=((y%(2*height))+2*height)%(2*height);if(y>height)y=2*height-y;if(Math.abs(segment%2)===1)p.angle=-p.angle;
+  p.x=Math.max(0,Math.min(1,x/(right-left)));p.y=y/height;
+  const px=left+x,py=top+y;
+  ctx.strokeStyle='#74bfc9';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px-Math.cos(p.angle)*tail,py-Math.sin(p.angle)*tail);ctx.stroke();ctx.fillStyle='#147e91';ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);ctx.fill();
+ }
+ ctx.restore();ctx.strokeStyle='#58758a';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(left,42);ctx.lineTo(left,bottom);ctx.lineTo(right,bottom);ctx.lineTo(right,42);ctx.stroke();
+ ctx.fillStyle='#596e83';ctx.fillRect(left-7,top-9,right-left+14,9);ctx.fillRect(217,top-39,16,30);ctx.fillStyle='#314b62';ctx.fillRect(85,bottom+4,280,10);ctx.fillText('바닥 고정',185,366);
+ ctx.fillStyle='#167d89';ctx.fillText('피스톤 · V = '+V.toFixed(2)+' L',380,68);
+ ctx.strokeStyle='#91a6b5';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(right+8,top-4);ctx.lineTo(370,top-4);ctx.lineTo(380,80);ctx.stroke();
+ ctx.fillStyle='#314b62';ctx.font='bold 20px system-ui';ctx.fillText('P = '+P.toFixed(3)+' atm',400,136);ctx.font='14px system-ui';ctx.fillText('압력 눈금 (0–30 atm)',400,165);
+ ctx.fillStyle='#e1e9f0';ctx.fillRect(400,180,230,18);ctx.fillStyle='#e5a036';ctx.fillRect(400,180,230*P/30,18);ctx.fillStyle='#52697e';ctx.fillText('0',400,218);ctx.fillText('30',615,218);
+ ctx.fillText('T = '+T.toFixed(1)+' K',400,263);ctx.fillText('분자 속도: '+Math.sqrt(T/300).toFixed(2)+' 배',400,292);ctx.fillText('(300 K 기준)',400,314);
+ c.setAttribute('aria-label',`학습용 모형. 바닥 고정, 부피 ${V.toFixed(2)} L, 압력 ${P.toFixed(3)} atm, 온도 ${T.toFixed(1)} K`);
+ requestAnimationFrame(animateModel);
+}
+requestAnimationFrame(animateModel);
+document.querySelectorAll('[role=tab]').forEach(b=>{b.addEventListener('click',()=>{law=b.dataset.law;document.querySelectorAll('[role=tab]').forEach(t=>t.setAttribute('aria-selected',String(t===b)));setup()});b.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){const tabs=[...document.querySelectorAll('[role=tab]')],i=tabs.indexOf(b),next=tabs[(i+(e.key==='ArrowRight'?1:2))%3];next.focus();next.click();e.preventDefault()}})});$('reset').addEventListener('click',setup);setup();
+</script>
+</body>
+</html>

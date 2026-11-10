@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학교생활기록부 문장 점검기</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f6fb; color: #20304a; font-family: "Malgun Gothic", system-ui, sans-serif; line-height: 1.6; }
+    main { max-width: 900px; margin: 64px auto; padding: 0 24px; }
+    .tag { color: #4266b0; font-size: 14px; font-weight: 700; }
+    h1 { margin: 8px 0; font-size: clamp(25px, 4vw, 34px); letter-spacing: -1px; }
+    .intro { margin: 0 0 28px; color: #65738a; }
+    .panel { background: #fff; border: 1px solid #e0e6ef; border-radius: 20px; padding: 28px; box-shadow: 0 8px 30px #243c6510; }
+    label { display: block; font-weight: 700; margin-bottom: 12px; }
+    textarea { display: block; width: 100%; min-height: 280px; padding: 18px; border: 1px solid #cbd5e3; border-radius: 12px; resize: vertical; font: inherit; color: inherit; background: #fcfdff; }
+    textarea:focus { outline: 3px solid #dce7ff; border-color: #5278c7; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 22px; }
+    .stat { background: #f1f5fc; border-radius: 12px; padding: 20px 16px; }
+    .stat span { display: block; color: #596b87; font-size: 14px; }
+    .stat strong { font-size: 32px; color: #315cab; overflow-wrap: anywhere; }
+    .stat small { margin-left: 5px; color: #596b87; }
+    .note { font-size: 13px; color: #728097; margin: 18px 0 0; }
+    @media (max-width: 560px) { main { margin: 30px auto; padding: 0 16px; } .panel { padding: 20px; } .stats { grid-template-columns: 1fr; gap: 10px; } .stat { padding: 12px 16px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="tag">교사를 위한 기록 도구</div>
+    <h1>학교생활기록부 문장 점검기</h1>
+    <p class="intro">문장을 붙여 넣고 글자 수와 UTF-8 바이트 수를 바로 확인하세요.</p>
+    <section class="panel" aria-label="문장 글자 수 점검">
+      <label for="text">점검할 문장</label>
+      <textarea id="text" placeholder="학교생활기록부 문장을 입력하거나 붙여 넣으세요." spellcheck="false" aria-describedby="count-note"></textarea>
+      <div class="stats" role="status" aria-live="polite" aria-atomic="true">
+        <div class="stat"><span>공백 포함 글자 수</span><strong id="with-spaces">0</strong><small>자</small></div>
+        <div class="stat"><span>공백 제외 글자 수</span><strong id="without-spaces">0</strong><small>자</small></div>
+        <div class="stat"><span>UTF-8 바이트 수</span><strong id="bytes">0</strong><small>바이트</small></div>
+      </div>
+      <p class="note" id="count-note">공백 포함은 줄바꿈과 탭을 포함하며, 공백 제외는 모든 공백 문자를 제외합니다. 글자 수는 유니코드 코드 포인트 기준입니다.</p>
+      <p class="note">입력한 문장은 서버로 전송하거나 저장하지 않습니다.</p>
+    </section>
+  </main>
+  <script>
+    const input = document.getElementById('text');
+    const encoder = new TextEncoder();
+    const number = new Intl.NumberFormat('ko-KR');
+    function updateCounts() {
+      const value = input.value;
+      document.getElementById('with-spaces').textContent = number.format(Array.from(value).length);
+      document.getElementById('without-spaces').textContent = number.format(Array.from(value.replace(/\s/gu, '')).length);
+      document.getElementById('bytes').textContent = number.format(encoder.encode(value).length);
+    }
+    input.addEventListener('input', updateCounts);
+    updateCounts();
+  </script>
+</body>
+</html>

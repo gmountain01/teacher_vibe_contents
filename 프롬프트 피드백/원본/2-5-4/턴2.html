@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학교생활기록부 문장 점검기</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f6fb; color: #20304a; font-family: "Malgun Gothic", system-ui, sans-serif; line-height: 1.6; }
+    main { max-width: 900px; margin: 64px auto; padding: 0 24px; }
+    .tag { color: #4266b0; font-size: 14px; font-weight: 700; }
+    h1 { margin: 8px 0; font-size: clamp(25px, 4vw, 34px); letter-spacing: -1px; }
+    .intro { margin: 0 0 28px; color: #65738a; }
+    .panel { background: #fff; border: 1px solid #e0e6ef; border-radius: 20px; padding: 28px; box-shadow: 0 8px 30px #243c6510; }
+    label { display: block; font-weight: 700; margin-bottom: 12px; }
+    textarea { display: block; width: 100%; min-height: 280px; padding: 18px; border: 1px solid #cbd5e3; border-radius: 12px; resize: vertical; font: inherit; color: inherit; background: #fcfdff; }
+    textarea:focus { outline: 3px solid #dce7ff; border-color: #5278c7; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 22px; }
+    .stat { background: #f1f5fc; border-radius: 12px; padding: 20px 16px; }
+    .stat span { display: block; color: #596b87; font-size: 14px; }
+    .stat strong { font-size: 32px; color: #315cab; overflow-wrap: anywhere; }
+    .stat small { margin-left: 5px; color: #596b87; }
+    .note { font-size: 13px; color: #728097; margin: 18px 0 0; }
+    .section { margin-top: 28px; padding-top: 24px; border-top: 1px solid #e0e6ef; }
+    h2 { font-size: 18px; margin: 0 0 12px; }
+    #expressions { min-height: 110px; }
+    .toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+    button { border: 0; border-radius: 9px; padding: 10px 18px; background: #315cab; color: white; font: inherit; cursor: pointer; }
+    button:focus-visible { outline: 3px solid #a9c4fb; outline-offset: 3px; }
+    #copy-status { font-size: 14px; color: #596b87; }
+    .preview { min-height: 100px; border: 1px solid #e0e6ef; border-radius: 12px; padding: 18px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    mark { background: #ffe398; color: #684500; border-radius: 3px; }
+    #check-list { padding-left: 24px; overflow-wrap: anywhere; }
+    @media (max-width: 560px) { main { margin: 30px auto; padding: 0 16px; } .panel { padding: 20px; } .stats { grid-template-columns: 1fr; gap: 10px; } .stat { padding: 12px 16px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="tag">교사를 위한 기록 도구</div>
+    <h1>학교생활기록부 문장 점검기</h1>
+    <p class="intro">문장을 붙여 넣고 글자 수와 UTF-8 바이트 수를 바로 확인하세요.</p>
+    <section class="panel" aria-label="문장 글자 수 점검">
+      <label for="text">점검·수정할 문장</label>
+      <textarea id="text" placeholder="학교생활기록부 문장을 입력하거나 붙여 넣으세요." spellcheck="false" aria-describedby="count-note"></textarea>
+      <div class="toolbar"><button id="copy" type="button">수정한 문장 복사</button><span id="copy-status" role="status"></span></div>
+      <div class="stats" role="status" aria-live="polite" aria-atomic="true">
+        <div class="stat"><span>공백 포함 글자 수</span><strong id="with-spaces">0</strong><small>자</small></div>
+        <div class="stat"><span>공백 제외 글자 수</span><strong id="without-spaces">0</strong><small>자</small></div>
+        <div class="stat"><span>UTF-8 바이트 수</span><strong id="bytes">0</strong><small>바이트</small></div>
+      </div>
+      <p class="note" id="count-note">공백 포함은 줄바꿈과 탭을 포함하며, 공백 제외는 모든 공백 문자를 제외합니다. 글자 수는 유니코드 코드 포인트 기준입니다.</p>
+      <div class="section">
+        <label for="expressions">주의 표현 등록</label>
+        <textarea id="expressions" placeholder="주의해서 확인할 표현을 한 줄에 하나씩 입력하세요." aria-describedby="expression-note"></textarea>
+        <p class="note" id="expression-note">입력 즉시 적용됩니다. 중복된 표현과 빈 줄은 제외하며, 등록한 표현이 정확히 포함된 부분을 찾습니다.</p>
+      </div>
+      <div class="section">
+        <h2>주의 표현 강조 보기</h2>
+        <div id="preview" class="preview"></div>
+      </div>
+      <div class="section" aria-live="polite">
+        <h2>표현 점검 목록</h2>
+        <p id="check-summary"></p>
+        <ul id="check-list"></ul>
+      </div>
+      <p class="note">입력한 문장은 서버로 전송하거나 저장하지 않습니다.</p>
+    </section>
+  </main>
+  <script>
+    const input = document.getElementById('text');
+    const encoder = new TextEncoder();
+    const number = new Intl.NumberFormat('ko-KR');
+    const expressions = document.getElementById('expressions');
+    const preview = document.getElementById('preview');
+    const checkList = document.getElementById('check-list');
+    function updateExpressions() {
+      const value = input.value;
+      const terms = [...new Set(expressions.value.split(/\r?\n/).map(term => term.trim()).filter(Boolean))];
+      const ranges = [];
+      checkList.replaceChildren();
+      let found = 0;
+      for (const term of terms) {
+        let count = 0;
+        let start = value.indexOf(term);
+        while (start !== -1) {
+          ranges.push([start, start + term.length]);
+          count++;
+          start = value.indexOf(term, start + 1);
+        }
+        if (count) {
+          found++;
+          const item = document.createElement('li');
+          item.textContent = `${term} — ${number.format(count)}회 발견`;
+          checkList.append(item);
+        }
+      }
+      document.getElementById('check-summary').textContent = !terms.length
+        ? '주의 표현을 등록하면 발견된 표현이 여기에 표시됩니다.'
+        : found ? `등록한 ${terms.length}개 표현 중 ${found}개가 발견되었습니다. 문맥을 확인해 주세요.`
+        : '등록한 주의 표현이 발견되지 않았습니다.';
+      ranges.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
+      const merged = [];
+      for (const range of ranges) {
+        const previous = merged[merged.length - 1];
+        if (previous && range[0] < previous[1]) previous[1] = Math.max(previous[1], range[1]);
+        else merged.push([...range]);
+      }
+      preview.replaceChildren();
+      let cursor = 0;
+      for (const [start, end] of merged) {
+        preview.append(document.createTextNode(value.slice(cursor, start)));
+        const mark = document.createElement('mark');
+        mark.textContent = value.slice(start, end);
+        preview.append(mark);
+        cursor = end;
+      }
+      preview.append(document.createTextNode(value.slice(cursor)));
+      if (!value) preview.textContent = '문장을 입력하면 주의 표현이 강조되어 표시됩니다.';
+    }
+    function updateCounts() {
+      const value = input.value;
+      document.getElementById('with-spaces').textContent = number.format(Array.from(value).length);
+      document.getElementById('without-spaces').textContent = number.format(Array.from(value.replace(/\s/gu, '')).length);
+      document.getElementById('bytes').textContent = number.format(encoder.encode(value).length);
+      document.getElementById('copy-status').textContent = '';
+      updateExpressions();
+    }
+    expressions.addEventListener('input', updateExpressions);
+    document.getElementById('copy').addEventListener('click', async () => {
+      const status = document.getElementById('copy-status');
+      if (!input.value) { status.textContent = '복사할 문장을 입력해 주세요.'; return; }
+      try {
+        if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+        await navigator.clipboard.writeText(input.value);
+        status.textContent = '문장을 복사했습니다.';
+      } catch {
+        input.focus();
+        input.select();
+        let copied = false;
+        try { copied = document.execCommand('copy'); } catch {}
+        status.textContent = copied ? '문장을 복사했습니다.' : '자동 복사가 제한되었습니다. 선택된 문장을 Ctrl+C 또는 ⌘C로 복사해 주세요.';
+      }
+    });
+    input.addEventListener('input', updateCounts);
+    updateCounts();
+  </script>
+</body>
+</html>

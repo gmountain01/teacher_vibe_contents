@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 반 규칙 투표판</title>
+<style>
+:root{font-family:system-ui,-apple-system,'맑은 고딕',sans-serif;color:#22334b;background:#f3f6fc}*{box-sizing:border-box}body{margin:0}main{max-width:1040px;margin:auto;padding:36px 24px}header{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:28px}h1{font-size:30px;margin:6px 0}h2{margin-top:0;font-size:23px}p{line-height:1.6;color:#5d6b80}.eyebrow{color:#5267ce;font-weight:800;font-size:14px}.switch{display:flex;padding:5px;background:#e5eaf5;border-radius:14px;gap:4px}button,input{font:inherit}button{cursor:pointer;border:0;border-radius:11px;padding:13px 20px;background:#e9edf6;color:#293c58;font-weight:700}button.active,button.primary{background:#5264d9;color:white}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:3px solid #f6b84c;outline-offset:3px}.panel{background:white;border:1px solid #e0e6f0;border-radius:22px;padding:28px;box-shadow:0 8px 30px #26366b06}.topline,.actions{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.count{background:#eef1ff;color:#4659bf;padding:8px 13px;border-radius:30px;font-weight:700}.fields{display:grid;grid-template-columns:1fr 1fr;gap:13px 20px;margin:24px 0}.field{display:flex;align-items:center;gap:10px}.num{min-width:27px;color:#7a87a0;font-size:14px;font-weight:700}input{width:100%;padding:13px;border:1px solid #d6deeb;border-radius:10px;background:#fcfdff;color:#22334b}label{font-weight:700}.students{display:flex;align-items:center;gap:14px;margin:22px 0}.students input{width:110px}.note{font-size:14px}.choices{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:25px 0}.choice{text-align:left;background:#f6f8fd;border:2px solid #e1e7f2;min-height:90px;display:flex;align-items:center;gap:14px;overflow-wrap:anywhere}.choice.selected{border-color:#5264d9;background:#eef1ff;color:#3447b4}.choice span{background:white;border-radius:50%;padding:7px 11px;color:#5264d9}.muted{color:#77849a}.status{margin:18px 0;color:#4055b7;min-height:24px;font-weight:700}.progress{height:8px;background:#e9edf5;border-radius:8px;overflow:hidden;margin:18px 0}.progress div{height:100%;background:#6878e1;transition:width .3s}.result{margin:18px 0}.result-title{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px;overflow-wrap:anywhere}.bar{height:12px;border-radius:8px;background:#edf0f8;overflow:hidden}.bar div{height:100%;background:#7c8be9;border-radius:8px}.empty{text-align:center;padding:45px 15px}.danger{background:#fff0ee;color:#ad4540}footer{text-align:center;font-size:13px;color:#7c879b;margin-top:24px}[hidden]{display:none!important}@media(max-width:650px){main{padding:22px 15px}header{align-items:flex-start;flex-direction:column}.fields,.choices{grid-template-columns:1fr}.panel{padding:21px}h1{font-size:26px}.switch{width:100%}.switch button{flex:1}}
+.decision-card{display:block;width:100%;text-align:left;background:#f8faff;border:2px solid #e0e6f0;padding:22px;font-weight:400}.decision-card.confirmed{border-color:#5264d9;background:#eef1ff}.decision-card .result-title{font-weight:700}.decision-card ul{margin:10px 0 0;padding-left:22px;color:#526078;line-height:1.8}.decision-card li{overflow-wrap:anywhere}.decision-card .note{margin-bottom:4px}</style>
+</head>
+<body>
+<main>
+<header><div><div class="eyebrow">함께 정하고, 함께 지켜요</div><h1>우리 반 규칙 투표판</h1></div><nav class="switch" aria-label="화면 전환"><button id="teacherTab" class="active">교사 화면</button><button id="studentTab">학생 화면</button></nav></header>
+<section id="teacher" class="panel">
+<div class="topline"><h2>투표 준비</h2><span id="phase" class="count">준비 중</span></div>
+<p>규칙 후보를 3~12개 적어 주세요. 학생은 번호를 누른 뒤 <strong>규칙 3개</strong>를 고르고, 각각 필요한 이유를 30자 이내로 적습니다.</p>
+<div id="fields" class="fields"></div>
+<div class="students"><label for="studentCount">우리 반 학생 수</label><input id="studentCount" type="number" min="1" max="1000" value="25" inputmode="numeric"><span>명</span></div>
+<p class="note">빈 후보는 제외됩니다. 투표를 열면 후보와 학생 수가 잠깁니다.</p>
+<div class="actions"><button id="open" class="primary">투표 열기</button><button id="close">투표 마감</button><button id="reset" class="danger">새 투표 준비</button></div>
+<div id="teacherMessage" class="status" role="status"></div>
+<div id="results" hidden><div class="topline"><h2 id="resultHeading">투표 현황</h2><strong id="tally"></strong></div><p id="decisionHelp" hidden>카드를 눌러 우리 반 규칙을 최대 5개까지 확정해 주세요. 다시 누르면 확정이 해제됩니다.</p><div id="decisionStatus" class="status" role="status"></div><div id="resultRows"></div></div>
+</section>
+<section id="student" class="panel" hidden></section>
+<footer>입력과 투표 기록은 이 기기의 브라우저에 자동 저장됩니다.</footer>
+</main>
+<script>
+(()=>{
+'use strict';
+const KEY='class-rule-vote-v1';
+const fresh=()=>({version:2,rules:Array(12).fill(''),students:25,phase:'draft',votes:[],ballots:{},confirmed:[],total:0});
+let state=fresh(),selected=[],studentNumber=null,reasons={},screen='teacher',receipt=false,storageFailed=false;
+try{const saved=JSON.parse(localStorage.getItem(KEY));if(saved&&Array.isArray(saved.rules)&&Array.isArray(saved.votes)&&['draft','open','closed'].includes(saved.phase)){state={...fresh(),...saved};state.rules=state.rules.slice(0,12).map(String);while(state.rules.length<12)state.rules.push('');}}catch(e){}
+const $=id=>document.getElementById(id);
+if(state.version!==2){state.version=2;state.phase='draft';state.votes=[];state.ballots={};state.total=0;}
+state.confirmed=Array.isArray(state.confirmed)?[...new Set(state.confirmed)].filter(i=>Number.isInteger(i)&&i>=0&&i<state.rules.filter(Boolean).length).slice(0,5):[];
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));storageFailed=false;}catch(e){storageFailed=true;} }
+function message(text){$('teacherMessage').textContent=text;}
+for(let i=0;i<12;i++){const wrap=document.createElement('label');wrap.className='field';const n=document.createElement('span');n.className='num';n.textContent=String(i+1).padStart(2,'0');const input=document.createElement('input');input.placeholder='규칙 후보를 적어 주세요';input.maxLength=160;input.setAttribute('aria-label',`규칙 후보 ${i+1}`);input.value=state.rules[i];input.addEventListener('input',()=>{state.rules[i]=input.value;save();message(storageFailed?'저장 공간을 사용할 수 없습니다. 브라우저 설정을 확인해 주세요.':'자동 저장되었습니다.');});wrap.append(n,input);$('fields').append(wrap);}
+$('studentCount').value=state.students;
+$('studentCount').addEventListener('input',e=>{state.students=e.target.value;save();});
+function clearSelection(){selected=[];studentNumber=null;reasons={};receipt=false;}
+function changeScreen(next){screen=next;clearSelection();render();}
+$('teacherTab').onclick=()=>changeScreen('teacher');$('studentTab').onclick=()=>changeScreen('student');
+$('open').onclick=()=>{const rules=state.rules.map(x=>x.trim()).filter(Boolean);const count=Number(state.students);if(rules.length<3)return message('규칙 후보를 3개 이상 적어 주세요.');if(new Set(rules).size!==rules.length)return message('같은 내용의 후보가 있습니다. 서로 다르게 적어 주세요.');if(!Number.isInteger(count)||count<1||count>1000)return message('학생 수를 1~1000 사이의 정수로 적어 주세요.');state.rules=[...rules,...Array(12-rules.length).fill('')];state.students=count;state.votes=Array(rules.length).fill(0);state.ballots={};state.confirmed=[];state.total=0;state.phase='open';clearSelection();save();message('투표를 열었습니다. 학생 화면으로 전환해 주세요.');render();};
+$('close').onclick=()=>{if(confirm('지금 투표를 마감할까요?')){state.phase='closed';save();message('투표가 마감되었습니다.');render();}};
+$('reset').onclick=()=>{if(!confirm('투표 기록을 지우고 새 투표를 준비할까요? 규칙 후보와 학생 수는 유지됩니다.'))return;state.phase='draft';state.votes=[];state.ballots={};state.confirmed=[];state.total=0;clearSelection();save();message('후보를 수정한 뒤 투표를 열어 주세요.');render();};
+function render(){
+$('teacher').hidden=screen!=='teacher';$('student').hidden=screen!=='student';$('teacherTab').classList.toggle('active',screen==='teacher');$('studentTab').classList.toggle('active',screen==='student');$('teacherTab').setAttribute('aria-pressed',screen==='teacher');$('studentTab').setAttribute('aria-pressed',screen==='student');
+document.querySelectorAll('#fields input').forEach((input,i)=>{input.value=state.rules[i];input.disabled=state.phase!=='draft';});$('studentCount').disabled=state.phase!=='draft';$('open').disabled=state.phase!=='draft';$('close').disabled=state.phase!=='open';$('phase').textContent={draft:'준비 중',open:'투표 진행 중',closed:'투표 마감'}[state.phase];
+$('results').hidden=state.phase==='draft';$('tally').textContent=`${state.total} / ${state.students}명 참여`;$('resultRows').replaceChildren();
+$('resultHeading').textContent=state.phase==='closed'?'함께 정하기':'투표 현황';$('decisionHelp').hidden=state.phase!=='closed';$('decisionStatus').textContent=state.phase==='closed'?`확정 ${state.confirmed.length} / 5개`:'';
+if(state.phase==='open'){$('resultRows').textContent='득표수는 투표 마감 후 공개됩니다.';}
+state.rules.filter(Boolean).map((rule,i)=>({rule,i})).sort((a,b)=>Number(state.confirmed.includes(b.i))-Number(state.confirmed.includes(a.i))||(state.votes[b.i]||0)-(state.votes[a.i]||0)||a.i-b.i).forEach(({rule,i})=>{if(state.phase!=='closed')return;const confirmed=state.confirmed.includes(i);const row=document.createElement('button');row.type='button';row.className='result decision-card'+(confirmed?' confirmed':'');row.setAttribute('aria-pressed',String(confirmed));const title=document.createElement('div');title.className='result-title';const name=document.createElement('span');name.textContent=(confirmed?'✓ 확정 · ':'')+rule;const count=document.createElement('strong');count.textContent=`${state.votes[i]||0}표`;title.append(name,count);const bar=document.createElement('div');bar.className='bar';const fill=document.createElement('div');fill.style.width=`${state.total?Math.min(100,(state.votes[i]||0)/state.total*100):0}%`;bar.append(fill);row.append(title,bar);const heading=document.createElement('p');heading.className='note';heading.textContent='이 규칙이 필요한 이유';row.append(heading);const reasonsList=document.createElement('ul');Object.values(state.ballots).forEach(ballot=>{ballot.filter(item=>item.ruleIndex===i).forEach(item=>{const reason=document.createElement('li');reason.textContent=item.reason;reasonsList.append(reason);});});if(reasonsList.children.length){row.append(reasonsList);}else{const empty=document.createElement('p');empty.className='note muted';empty.textContent='아직 제출된 이유가 없습니다.';row.append(empty);}row.onclick=()=>{if(state.phase!=='closed')return;if(state.confirmed.includes(i)){state.confirmed=state.confirmed.filter(index=>index!==i);}else{if(state.confirmed.length>=5){$('decisionStatus').textContent='최대 5개까지 확정할 수 있습니다. 다른 규칙의 확정을 먼저 해제해 주세요.';return;}state.confirmed.push(i);}save();render();const target=$('resultRows').querySelector(`[data-rule="${i}"]`);if(target)target.focus();};row.dataset.rule=i;$('resultRows').append(row);});
+renderStudent();}
+function renderStudent(){const panel=$('student');panel.replaceChildren();const add=(tag,text,cls)=>{const el=document.createElement(tag);el.textContent=text;if(cls)el.className=cls;panel.append(el);return el;};
+if(receipt){add('h2','투표가 완료되었어요!');add('p','다음 친구에게 차례를 넘겨 주세요.');const next=add('button',state.phase==='closed'?'투표 종료 안내':'다음 학생 투표하기','primary');next.onclick=()=>{clearSelection();render();};return;}
+if(state.phase==='draft'){add('h2','곧 투표를 시작해요');add('p','선생님이 규칙 후보를 준비하고 있어요.','empty');return;}
+if(state.phase==='closed'){add('h2','투표가 끝났어요');add('p','우리의 선택이 모였어요. 선생님과 함께 결과를 확인해 보세요.','empty');return;}
+add('div',`${state.total} / ${state.students}명 참여`,'count');
+if(studentNumber===null){add('h2','내 번호를 눌러 주세요');add('p','제출한 번호는 다시 선택할 수 없어요.');const numbers=add('div');numbers.style.cssText='display:flex;flex-wrap:wrap;gap:10px;margin:24px 0';for(let n=1;n<=Number(state.students);n++){const button=document.createElement('button');const done=Object.prototype.hasOwnProperty.call(state.ballots,n);button.textContent=`${n}번${done?' · 제출 완료':''}`;button.disabled=done;button.onclick=()=>{studentNumber=n;selected=[];reasons={};renderStudent();};numbers.append(button);}return;}
+add('h2',`${studentNumber}번 학생의 투표`);add('p','규칙을 정확히 3개 고르고, 각 규칙이 필요한 이유를 1~30자로 적어 주세요. 다시 누르면 선택이 해제됩니다.');const back=add('button','번호 다시 선택');back.onclick=()=>{clearSelection();renderStudent();};
+const chosen=add('p',`${selected.length} / 3개 선택`,'status');
+const choices=add('div','','choices');state.rules.filter(Boolean).forEach((rule,i)=>{const button=document.createElement('button');const picked=selected.includes(i);button.className='choice'+(picked?' selected':'');button.setAttribute('aria-pressed',picked);button.disabled=!picked&&selected.length===3;const num=document.createElement('span');num.textContent=i+1;const text=document.createElement('b');text.textContent=rule;button.append(num,text);button.onclick=()=>{if(picked){selected=selected.filter(x=>x!==i);delete reasons[i];}else if(selected.length<3)selected.push(i);renderStudent();};choices.append(button);});
+const reasonFields=add('div');selected.forEach(i=>{const wrap=document.createElement('div');wrap.style.margin='20px 0';const label=document.createElement('label');label.htmlFor=`reason-${i}`;label.textContent=state.rules[i]+' — 이 규칙이 필요한 이유';const input=document.createElement('input');input.id=`reason-${i}`;input.maxLength=30;input.required=true;input.value=reasons[i]||'';input.placeholder='이 규칙이 필요한 이유 (30자 이내)';const counter=document.createElement('p');counter.className='note';counter.textContent=`${input.value.length} / 30자`;input.addEventListener('input',()=>{reasons[i]=input.value;counter.textContent=`${input.value.length} / 30자`;updateSubmit();});wrap.append(label,input,counter);reasonFields.append(wrap);});
+const valid=()=>selected.length===3&&selected.every(i=>typeof reasons[i]==='string'&&reasons[i].trim().length>0&&reasons[i].length<=30);
+const submit=add('button','규칙 3개와 이유 제출하기','primary');function updateSubmit(){submit.disabled=!valid();}updateSubmit();
+submit.onclick=()=>{if(!valid()||state.phase!=='open'||studentNumber===null||Object.prototype.hasOwnProperty.call(state.ballots,studentNumber)||state.total>=Number(state.students))return;submit.disabled=true;state.ballots[studentNumber]=selected.map(i=>({ruleIndex:i,reason:reasons[i].trim()}));selected.forEach(i=>{state.votes[i]=(state.votes[i]||0)+1;});state.total=Object.keys(state.ballots).length;if(state.total>=Number(state.students))state.phase='closed';clearSelection();receipt=true;save();render();};
+add('p','내 번호로 한 번만 제출해 주세요. 득표수는 투표 마감 후 공개됩니다.','note');if(storageFailed)add('p','이 브라우저에서 저장할 수 없습니다. 창을 닫으면 기록이 사라질 수 있습니다.','status');}
+render();
+})();
+</script>
+</body>
+</html>

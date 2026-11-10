@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>한 권 읽기 독서일지</title>
+  <style>
+    :root { color-scheme: light; font-family: "맑은 고딕", "Apple SD Gothic Neo", sans-serif; color: #293a32; background: #f5f3ed; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 52px 20px 70px; }
+    main { max-width: 800px; margin: auto; }
+    header { margin-bottom: 28px; }
+    .eyebrow { margin: 0 0 10px; color: #66786b; font-size: 14px; letter-spacing: .1em; }
+    h1 { margin: 0 0 12px; font-size: clamp(28px, 5vw, 38px); letter-spacing: -.06em; }
+    header > p:last-child { margin: 0; color: #6c746e; line-height: 1.7; }
+    .paper { padding: 30px; border: 1px solid #e0e4da; border-radius: 18px; background: #fffefb; box-shadow: 0 8px 30px #26392b06; }
+    label { display: block; margin-bottom: 9px; font-size: 14px; font-weight: 700; }
+    input, textarea, button { font: inherit; }
+    input, textarea { width: 100%; border: 1px solid #d7ddd4; border-radius: 9px; background: #fff; padding: 12px 14px; color: #293a32; line-height: 1.6; }
+    input:focus, textarea:focus { outline: 3px solid #dbe8dc; border-color: #648369; }
+    textarea { min-height: 106px; resize: vertical; }
+    input::placeholder, textarea::placeholder { color: #969c95; }
+    .book { margin-bottom: 25px; padding-bottom: 25px; border-bottom: 1px solid #e7e9e1; }
+    #book-title { font-size: 19px; font-weight: 600; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .field { margin-bottom: 22px; }
+    button { display: block; margin-left: auto; border: 0; border-radius: 9px; padding: 13px 27px; background: #3e644f; color: white; font-weight: 700; cursor: pointer; }
+    button:hover { background: #31533f; }
+    button:focus-visible { outline: 3px solid #8eac91; outline-offset: 3px; }
+    .records { margin-top: 38px; }
+    h2 { margin: 0 0 17px; font-size: 21px; letter-spacing: -.04em; }
+    #empty { margin: 0; padding: 30px 18px; text-align: center; color: #7d867d; border: 1px dashed #cfd7ca; border-radius: 12px; line-height: 1.8; }
+    #record-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; }
+    .record { background: #fffefb; border: 1px solid #e0e4da; border-radius: 14px; padding: 25px; overflow-wrap: anywhere; }
+    .record-meta { display: flex; flex-wrap: wrap; gap: 8px 18px; color: #657568; font-size: 14px; padding-bottom: 15px; border-bottom: 1px solid #e9ece4; }
+    .record h3 { margin: 19px 0 8px; font-size: 14px; }
+    .record p { margin: 0; white-space: pre-wrap; line-height: 1.85; }
+    .record .quote { padding-left: 14px; border-left: 3px solid #b9ccb5; }
+    @media (max-width: 520px) { body { padding: 30px 16px 45px; } .paper { padding: 22px 18px; } .row { grid-template-columns: 1fr; gap: 0; } button { width: 100%; } .record { padding: 21px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">읽고, 남기고, 생각하기</p>
+      <h1>한 권 읽기 독서일지</h1>
+      <p>오늘 읽은 책 속 문장과 나의 생각을 차곡차곡 남겨 보세요.</p>
+    </header>
+    <form id="reading-form" class="paper">
+      <div class="book">
+        <label for="book-title">책 제목</label>
+        <input id="book-title" type="text" placeholder="읽고 있는 책 제목을 적어 주세요" required>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="reading-date">날짜</label>
+          <input id="reading-date" type="date" lang="ko" required>
+        </div>
+        <div class="field">
+          <label for="pages">읽은 쪽</label>
+          <input id="pages" type="text" placeholder="예: 1~25쪽" required>
+        </div>
+      </div>
+      <div class="field">
+        <label for="sentence">기억에 남는 문장</label>
+        <textarea id="sentence" placeholder="마음에 남은 문장을 옮겨 적어 보세요" required></textarea>
+      </div>
+      <div class="field">
+        <label for="thoughts">내 생각</label>
+        <textarea id="thoughts" placeholder="책을 읽으며 어떤 생각이 들었나요?" required></textarea>
+      </div>
+      <button type="submit">기록 추가</button>
+    </form>
+    <section class="records" aria-labelledby="records-heading">
+      <h2 id="records-heading">쌓이는 독서 기록</h2>
+      <p id="empty">아직 기록이 없어요.<br>첫 번째 독서 기록을 남겨 보세요.</p>
+      <ol id="record-list" aria-live="polite" aria-relevant="additions"></ol>
+    </section>
+  </main>
+  <script>
+    const form = document.getElementById('reading-form');
+    const book = document.getElementById('book-title');
+    const date = document.getElementById('reading-date');
+    const pages = document.getElementById('pages');
+    const sentence = document.getElementById('sentence');
+    const thoughts = document.getElementById('thoughts');
+    const today = new Date();
+    date.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      for (const field of [book, pages, sentence, thoughts]) {
+        if (!field.value.trim()) {
+          field.setCustomValidity('내용을 적어 주세요.');
+          field.reportValidity();
+          return;
+        }
+      }
+      const item = document.createElement('li');
+      item.className = 'record';
+      const meta = document.createElement('div');
+      meta.className = 'record-meta';
+      const [year, month, day] = date.value.split('-');
+      for (const text of [book.value.trim(), `${year}년 ${Number(month)}월 ${Number(day)}일`, pages.value.trim()]) {
+        const span = document.createElement('span');
+        span.textContent = text;
+        meta.append(span);
+      }
+      item.append(meta);
+      for (const [title, content, className] of [
+        ['기억에 남는 문장', sentence.value.trim(), 'quote'],
+        ['내 생각', thoughts.value.trim(), 'thought']
+      ]) {
+        const heading = document.createElement('h3');
+        heading.textContent = title;
+        const paragraph = document.createElement('p');
+        paragraph.className = className;
+        paragraph.textContent = content;
+        item.append(heading, paragraph);
+      }
+      document.getElementById('record-list').append(item);
+      document.getElementById('empty').hidden = true;
+      pages.value = '';
+      sentence.value = '';
+      thoughts.value = '';
+      pages.focus();
+    });
+    form.addEventListener('input', (event) => event.target.setCustomValidity(''));
+  </script>
+</body>
+</html>

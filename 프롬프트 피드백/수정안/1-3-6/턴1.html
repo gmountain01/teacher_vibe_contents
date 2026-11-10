@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>고쳐쓰기 비교판</title>
+<style>
+:root{font-family:"Malgun Gothic",system-ui,sans-serif;color:#243047;background:#f3f6fa}*{box-sizing:border-box}body{margin:0;padding:48px 22px}main{max-width:1100px;margin:auto}header{margin-bottom:30px}.eyebrow{color:#5267a8;font-weight:700;font-size:13px;letter-spacing:2px}h1{font-size:32px;letter-spacing:-1px;margin:10px 0}p{color:#607087;line-height:1.7}.inputs{display:grid;grid-template-columns:1fr 1fr;gap:20px}.card{background:white;border:1px solid #dce3ed;border-radius:16px;padding:24px;box-shadow:0 4px 18px #25375906}label{display:block;font-size:17px;font-weight:700;margin-bottom:14px}textarea{width:100%;min-height:290px;resize:vertical;border:1px solid #cbd5e3;border-radius:9px;padding:16px;font:16px/1.85 "Malgun Gothic",sans-serif;color:#243047;background:#fcfdff}textarea:focus{outline:3px solid #dce6ff;border-color:#546dc1}.actions{display:flex;align-items:center;gap:18px;margin:24px 0}button{border:0;border-radius:10px;padding:14px 30px;font:700 16px "Malgun Gothic",sans-serif;background:#405ac0;color:white;cursor:pointer}button:hover{background:#30489f}button:focus-visible{outline:3px solid #8198ed;outline-offset:3px}.hint{font-size:13px;color:#66758b}.result-head{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}h2{font-size:20px;margin:0}.legend{display:flex;gap:18px;font-size:14px}del{color:#b42332;background:#fff0f1;text-decoration:line-through;text-decoration-color:#ce3344;text-decoration-thickness:2px}ins{color:#157447;background:#eaf8ef;text-decoration:underline;text-decoration-color:#198752;text-decoration-thickness:2px;text-underline-offset:4px}.output{white-space:pre-wrap;overflow-wrap:anywhere;tab-size:4;font-size:17px;line-height:2;min-height:140px;margin-top:20px;border-top:1px solid #e8edf4;padding-top:20px}.empty{color:#8390a3;font-size:15px}#status{font-size:14px;color:#607087;margin-top:12px}@media(max-width:650px){body{padding:28px 16px}.inputs{grid-template-columns:1fr}.card{padding:20px}textarea{min-height:220px}.actions{align-items:flex-start;flex-direction:column;gap:10px}h1{font-size:28px}}
+</style>
+</head>
+<body>
+<main>
+<header><span class="eyebrow">글의 변화를 한눈에</span><h1>고쳐쓰기 비교판</h1><p>처음 쓴 글과 고쳐 쓴 글을 붙여 넣고, 어떻게 달라졌는지 살펴보세요.</p></header>
+<div class="inputs">
+<section class="card"><label for="before">처음 쓴 글</label><textarea id="before" placeholder="처음 쓴 글을 여기에 붙여 넣으세요." spellcheck="false"></textarea></section>
+<section class="card"><label for="after">고쳐 쓴 글</label><textarea id="after" placeholder="고쳐 쓴 글을 여기에 붙여 넣으세요." spellcheck="false"></textarea></section>
+</div>
+<div class="actions"><button id="compare" type="button">비교하기</button><span class="hint">입력한 글은 그대로 두고, 아래에 비교 결과를 보여 줍니다.</span></div>
+<section class="card" aria-labelledby="result-title"><div class="result-head"><h2 id="result-title">비교 결과</h2><div class="legend"><span><del>지운 글자</del></span><span><ins>더한 글자</ins></span></div></div><div id="status" role="status" aria-live="polite"></div><div id="output" class="output"><span class="empty">비교하기를 누르면 여기에 결과가 나타납니다.</span></div></section>
+</main>
+<script>
+'use strict';
+const before=document.getElementById('before'),after=document.getElementById('after'),output=document.getElementById('output'),status=document.getElementById('status');
+// 공통 부분 수열을 선형 메모리로 찾아 글자 단위의 수정 내용을 구성합니다.
+function lengths(a,b){let prev=new Uint32Array(b.length+1);for(const x of a){const row=new Uint32Array(b.length+1);for(let j=1;j<=b.length;j++)row[j]=x===b[j-1]?prev[j-1]+1:Math.max(prev[j],row[j-1]);prev=row;}return prev;}
+function compareText(a,b,emit){
+ let start=0;while(start<a.length&&start<b.length&&a[start]===b[start])start++;
+ if(start){emit('same',a.slice(0,start).join(''));a=a.slice(start);b=b.slice(start);}
+ let end=0;while(end<a.length&&end<b.length&&a[a.length-1-end]===b[b.length-1-end])end++;
+ const tail=end?a.slice(a.length-end).join(''):'';
+ if(end){a=a.slice(0,a.length-end);b=b.slice(0,b.length-end);}
+ if(!a.length)emit('add',b.join(''));
+ else if(!b.length)emit('delete',a.join(''));
+ else if(a.length===1){const index=b.indexOf(a[0]);if(index<0){emit('delete',a[0]);emit('add',b.join(''));}else{emit('add',b.slice(0,index).join(''));emit('same',a[0]);emit('add',b.slice(index+1).join(''));}}
+ else{const mid=Math.floor(a.length/2),left=lengths(a.slice(0,mid),b),right=lengths(a.slice(mid).reverse(),b.slice().reverse());let split=0,best=-1;for(let j=0;j<=b.length;j++){const value=left[j]+right[b.length-j];if(value>best){best=value;split=j;}}compareText(a.slice(0,mid),b.slice(0,split),emit);compareText(a.slice(mid),b.slice(split),emit);}
+ if(tail)emit('same',tail);
+}
+const segmenter=typeof Intl.Segmenter==='function'?new Intl.Segmenter('ko',{granularity:'grapheme'}):null;
+function characters(text){return segmenter?Array.from(segmenter.segment(text),part=>part.segment):Array.from(text);}
+document.getElementById('compare').addEventListener('click',()=>{
+ const a=characters(before.value),b=characters(after.value);
+ output.replaceChildren();
+ if(!a.length&&!b.length){status.textContent='비교할 글을 입력해 주세요.';return;}
+ const parts=[];let deleted=0,added=0;
+ compareText(a,b,(type,text)=>{if(!text)return;const last=parts[parts.length-1];if(last&&last.type===type)last.text+=text;else parts.push({type,text});});
+ const fragment=document.createDocumentFragment();
+ for(const part of parts){if(part.type==='same')fragment.append(document.createTextNode(part.text));else{const node=document.createElement(part.type==='delete'?'del':'ins');node.textContent=part.text;fragment.append(node);if(part.type==='delete')deleted+=characters(part.text).length;else added+=characters(part.text).length;}}
+ output.append(fragment);
+ status.textContent=deleted||added?`지운 글자 ${deleted}자 · 더한 글자 ${added}자 (공백·줄바꿈 포함)`:'두 글이 같습니다. 바뀐 글자가 없습니다.';
+});
+</script>
+</body>
+</html>

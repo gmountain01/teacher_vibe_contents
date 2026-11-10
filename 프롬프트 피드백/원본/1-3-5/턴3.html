@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>모둠 토의 진행판</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #f1f5f9; color: #14263c; font-family: "맑은 고딕", sans-serif; }
+    main { max-width: 1100px; margin: auto; padding: 36px 28px; }
+    h1 { margin: 0 0 24px; font-size: 26px; }
+    label { display: block; margin-bottom: 10px; font-size: 19px; font-weight: 700; }
+    input { width: 100%; padding: 17px 20px; border: 2px solid #a8b8ca; border-radius: 12px; background: white; color: inherit; font: inherit; font-size: 24px; }
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 24px 0; padding: 0; list-style: none; }
+    .steps li { padding: 15px 8px; border: 2px solid transparent; border-radius: 12px; text-align: center; background: #e0e7ef; font-size: 18px; line-height: 1.6; }
+    .steps li[aria-current="step"] { background: #174ca0; color: white; border-color: #174ca0; font-weight: 700; }
+    .steps span { display: block; }
+    .agreement { margin-top: 28px; text-align: left; }
+    .agreement textarea { display: block; width: 100%; min-height: 160px; padding: 17px 20px; border: 2px solid #a8b8ca; border-radius: 12px; background: white; color: inherit; font: inherit; font-size: 24px; line-height: 1.6; resize: vertical; }
+    .members { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
+    .members input { font-size: 20px; padding: 12px; }
+    .speaker { margin-top: 28px; padding-top: 24px; border-top: 2px solid #e0e7ef; }
+    .speaker p { margin: 0; font-size: 20px; color: #52657b; }
+    #speaker-name { margin: 8px 0 20px; font-size: clamp(36px, 7vw, 76px); font-weight: 800; overflow-wrap: anywhere; }
+    @media (max-width: 600px) { .members { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .board { padding: 36px 16px; border-radius: 22px; background: white; text-align: center; box-shadow: 0 8px 32px #14263c0a; }
+    #stage { margin: 0; font-size: clamp(36px, 7vw, 76px); line-height: 1.35; }
+    #time { margin: 8px 0; font-size: clamp(86px, 17vw, 180px); line-height: 1.2; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -4px; }
+    #status { min-height: 30px; margin: 8px 0 24px; font-size: 21px; color: #52657b; }
+    .controls { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+    button { min-width: 140px; padding: 17px 26px; border: 2px solid #a8b8ca; border-radius: 12px; background: white; color: #14263c; font: inherit; font-size: 23px; font-weight: 700; cursor: pointer; }
+    #start { color: white; background: #174ca0; border-color: #174ca0; }
+    button:disabled { opacity: .4; cursor: default; }
+    :focus-visible { outline: 4px solid #e79415; outline-offset: 4px; }
+    @media (max-width: 600px) { main { padding: 24px 14px; } .steps { gap: 5px; } .steps li { font-size: 14px; padding: 12px 3px; } button { min-width: 95px; padding: 15px; font-size: 20px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>모둠 토의 진행판</h1>
+    <label for="topic">토의 주제</label>
+    <input id="topic" type="text" placeholder="토의할 주제를 적어 주세요" autocomplete="off">
+    <div class="members" aria-label="모둠원 이름">
+      <div><label for="member-1">모둠원 1</label><input id="member-1" type="text" placeholder="이름" autocomplete="off"></div>
+      <div><label for="member-2">모둠원 2</label><input id="member-2" type="text" placeholder="이름" autocomplete="off"></div>
+      <div><label for="member-3">모둠원 3</label><input id="member-3" type="text" placeholder="이름" autocomplete="off"></div>
+      <div><label for="member-4">모둠원 4</label><input id="member-4" type="text" placeholder="이름" autocomplete="off"></div>
+    </div>
+    <ol class="steps" aria-label="토의 순서">
+      <li aria-current="step">문제 확인<span>3분</span></li>
+      <li>의견 나누기<span>8분</span></li>
+      <li>대안 비교<span>5분</span></li>
+      <li>합의하기<span>4분</span></li>
+    </ol>
+    <section class="board" aria-label="현재 토의 단계와 남은 시간">
+      <h2 id="stage">문제 확인</h2>
+      <div id="time" role="timer" aria-label="남은 시간 3분 0초">03:00</div>
+      <p id="status" role="status">시작을 눌러 주세요</p>
+      <div class="controls">
+        <button id="start" type="button">시작</button>
+        <button id="pause" type="button" disabled>멈춤</button>
+        <button id="next" type="button">다음 단계</button>
+      </div>
+      <div id="agreement" class="agreement" hidden>
+        <label for="agreement-text">합의한 내용</label>
+        <textarea id="agreement-text" placeholder="모둠에서 합의한 내용을 적어 주세요"></textarea>
+      </div>
+      <div class="speaker">
+        <p>지금 말할 사람</p>
+        <div id="speaker-name" role="status" aria-live="polite">이름을 적어 주세요</div>
+        <button id="next-speaker" type="button" disabled>다음 사람</button>
+      </div>
+    </section>
+  </main>
+  <script>
+    const members = Array.from(document.querySelectorAll('.members input'));
+    const speakerName = document.getElementById('speaker-name');
+    const nextSpeaker = document.getElementById('next-speaker');
+    let speakerIndex = -1;
+    function updateSpeaker() {
+      const filled = members.map((input, i) => input.value.trim() ? i : -1).filter(i => i >= 0);
+      if (!filled.includes(speakerIndex)) speakerIndex = filled.length ? filled[0] : -1;
+      speakerName.textContent = speakerIndex >= 0 ? members[speakerIndex].value.trim() : '이름을 적어 주세요';
+      nextSpeaker.disabled = filled.length === 0;
+    }
+    members.forEach(input => input.addEventListener('input', updateSpeaker));
+    nextSpeaker.addEventListener('click', () => {
+      for (let offset = 1; offset <= members.length; offset++) {
+        const candidate = (speakerIndex + offset) % members.length;
+        if (members[candidate].value.trim()) {
+          speakerIndex = candidate;
+          break;
+        }
+      }
+      updateSpeaker();
+    });
+    const stages = [
+      { name: '문제 확인', seconds: 180 },
+      { name: '의견 나누기', seconds: 480 },
+      { name: '대안 비교', seconds: 300 },
+      { name: '합의하기', seconds: 240 }
+    ];
+    const stage = document.getElementById('stage');
+    const time = document.getElementById('time');
+    const status = document.getElementById('status');
+    const start = document.getElementById('start');
+    const pause = document.getElementById('pause');
+    const next = document.getElementById('next');
+    const steps = document.querySelectorAll('.steps li');
+    let index = 0;
+    let remaining = stages[0].seconds * 1000;
+    let deadline = 0;
+    let interval = null;
+    function draw() {
+      const seconds = Math.ceil(remaining / 1000);
+      const minutes = Math.floor(seconds / 60);
+      time.textContent = String(minutes).padStart(2, '0') + ':' + String(seconds % 60).padStart(2, '0');
+      time.setAttribute('aria-label', `남은 시간 ${minutes}분 ${seconds % 60}초`);
+      start.disabled = interval !== null || remaining <= 0;
+      pause.disabled = interval === null;
+      next.disabled = index === stages.length - 1;
+      document.getElementById('agreement').hidden = index !== stages.length - 1;
+    }
+    function stopClock() {
+      clearInterval(interval);
+      interval = null;
+    }
+    function tick() {
+      remaining = Math.max(0, deadline - performance.now());
+      if (remaining === 0) {
+        stopClock();
+        status.textContent = index === stages.length - 1 ? '모든 토의 단계가 끝났습니다' : '시간이 끝났습니다. 다음 단계를 눌러 주세요';
+      }
+      draw();
+    }
+    start.addEventListener('click', () => {
+      if (interval !== null || remaining <= 0) return;
+      deadline = performance.now() + remaining;
+      interval = setInterval(tick, 100);
+      status.textContent = '토의 진행 중';
+      draw();
+    });
+    pause.addEventListener('click', () => {
+      if (interval === null) return;
+      tick();
+      stopClock();
+      if (remaining > 0) status.textContent = '잠시 멈췄습니다';
+      draw();
+    });
+    next.addEventListener('click', () => {
+      if (index >= stages.length - 1) return;
+      stopClock();
+      index += 1;
+      remaining = stages[index].seconds * 1000;
+      stage.textContent = stages[index].name;
+      steps.forEach((item, i) => {
+        if (i === index) item.setAttribute('aria-current', 'step');
+        else item.removeAttribute('aria-current');
+      });
+      status.textContent = '시작을 눌러 주세요';
+      draw();
+    });
+    draw();
+  </script>
+</body>
+</html>

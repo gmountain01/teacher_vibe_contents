@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>화학 결합 실험실 · 이온 결합</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f2f5fa;color:#172b45;font-family:system-ui,'Malgun Gothic',sans-serif}main{max-width:1100px;margin:auto;padding:38px 24px}.eyebrow{color:#526d90;font-size:13px;font-weight:800;letter-spacing:2px}header{display:flex;justify-content:space-between;align-items:center;gap:20px}h1{font-size:34px;margin:10px 0}header p{color:#53677e;line-height:1.7;margin:0}.badge{white-space:nowrap;background:#fff3d8;color:#875a10;border:1px solid #ecd49c;border-radius:24px;padding:10px 16px;font-weight:700}.panel{background:white;border:1px solid #dce4ef;border-radius:24px;margin-top:26px;overflow:hidden;box-shadow:0 12px 35px #1c3a6010}.steps{display:flex;padding:20px 26px;gap:10px;border-bottom:1px solid #e8edf5}.step{flex:1;font-size:14px;color:#7a899c;padding:10px;border-radius:10px;text-align:center}.step.active{background:#e9f0ff;color:#275cc7;font-weight:800}svg{display:block;width:100%;height:auto;background:radial-gradient(ellipse at center,#f9fbff,white)}.shell{fill:none;stroke:#cbd8e8;stroke-width:1.5}.electron{fill:#356beb;stroke:white;stroke-width:2}.nucleusNa{fill:#e78336}.nucleusCl{fill:#199786}.symbol{fill:white;font-size:26px;font-weight:800;text-anchor:middle;dominant-baseline:middle}.atomLabel{font-size:20px;font-weight:800;text-anchor:middle;fill:#263c57}.configuration{font-size:15px;text-anchor:middle;fill:#63768e}.caption{padding:0 24px 22px;text-align:center;min-height:80px}.caption h2{font-size:21px;margin:0 0 8px}.caption p{margin:0;color:#53677e;line-height:1.6}.controls{display:flex;align-items:center;justify-content:center;gap:12px;padding:22px;background:#f8faff;border-top:1px solid #e6edf6}button{font:inherit;font-weight:750;border:1px solid #cdd8e8;background:white;color:#263d5c;padding:12px 24px;border-radius:12px;cursor:pointer}button.primary{background:#285fd2;border-color:#285fd2;color:white}button:disabled{opacity:.4;cursor:default}button:focus-visible{outline:3px solid #e69d35;outline-offset:3px}.notes{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}.note{padding:20px 23px;background:#e7edf6;border-radius:16px;line-height:1.7;font-size:14px}.note strong{display:block;font-size:16px;margin-bottom:5px}.legend{font-size:13px;color:#657890;text-align:right;padding:15px 24px 0}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#356beb;margin-right:6px}.progress{height:4px;background:#e8eef8}.progress div{height:100%;background:#346de1;width:0} @media(max-width:650px){main{padding:24px 12px}header{display:block}h1{font-size:28px}.badge{display:inline-block;margin-top:14px}.steps{padding:12px 8px;gap:2px}.step{padding:8px 2px;font-size:12px}.notes{grid-template-columns:1fr}.controls{gap:8px;padding:16px}button{padding:11px 18px}}
+</style>
+</head>
+<body><main>
+<header><div><div class="eyebrow">CHEMISTRY LAB / 01</div><h1>화학 결합 실험실</h1><p>전자 하나의 이동에서 시작되는 <b>이온 결합</b></p></div><span class="badge">학습용 모형</span></header>
+<section class="panel" aria-label="이온 결합 애니메이션">
+<div class="steps"><div class="step active">01 · 두 원자</div><div class="step">02 · 전자 이동</div><div class="step">03 · 이온 생성</div><div class="step">04 · 정전기적 인력</div></div>
+<div class="legend"><span class="dot"></span>전자 · 원은 전자 껍질을 나타냅니다</div>
+<svg viewBox="0 0 1000 410" role="img" aria-labelledby="svgTitle svgDesc"><title id="svgTitle">나트륨과 염소의 이온 결합 모형</title><desc id="svgDesc">나트륨의 최외각 전자 하나가 염소로 이동해 나트륨 양이온과 염화 음이온이 되고, 두 이온이 서로 끌어당깁니다.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10" fill="none" stroke="#8663bb" stroke-width="2"/></marker></defs>
+<g id="na"></g><g id="cl"></g><g id="attraction" opacity="0"><path d="M425 195H475 M575 195H525" stroke="#8663bb" stroke-width="3" marker-end="url(#arrow)"/><text x="500" y="150" text-anchor="middle" fill="#7654a5" font-size="16">서로 끌어당김</text></g>
+<path id="transferPath" d="M350 195 Q500 50 650 195" fill="none" stroke="#91ade5" stroke-width="2" stroke-dasharray="6 7" opacity="0"/>
+<circle id="movingElectron" class="electron" r="7" cx="350" cy="195"/>
+</svg>
+<div class="caption" aria-live="polite"><h2 id="heading"></h2><p id="description"></p></div>
+<div class="progress"><div id="bar"></div></div>
+<div class="controls"><button id="start" class="primary">▶ 시작</button><button id="pause" disabled>Ⅱ 멈춤</button><button id="reset">↺ 처음으로</button></div>
+</section>
+<div class="notes"><div class="note"><strong>전자 이동과 전하</strong>Na → Na⁺ + e⁻<br>Cl + e⁻ → Cl⁻<br>전자를 잃은 나트륨은 양이온, 전자를 얻은 염소는 음이온이 됩니다.</div><div class="note"><strong>이온 결합이란?</strong>양이온과 음이온 사이의 정전기적 인력으로 형성되는 결합입니다. 실제 염화 나트륨 결정에서는 많은 이온이 규칙적으로 배열됩니다. 전자 위치·크기·이동 경로와 시간은 이해를 돕기 위한 모형입니다.</div></div>
+</main>
+<script>
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){let e=document.createElementNS(NS,tag);for(const [k,v]of Object.entries(attrs))e.setAttribute(k,v);parent.appendChild(e);return e}
+function atom(id,symbol,counts,color){let g=$(id);[40,73,110].forEach(r=>el('circle',{r,cx:0,cy:0,class:'shell'},g));el('circle',{r:29,class:color},g);el('text',{x:0,y:1,class:'symbol'},g).textContent=symbol;let dots=[];counts.forEach((n,i)=>{for(let j=0;j<n;j++){let a=(j/n)*Math.PI*2;dots.push(el('circle',{cx:Math.cos(a)*[40,73,110][i],cy:Math.sin(a)*[40,73,110][i],r:6,class:'electron'},g))}});let charge=el('text',{x:125,y:-90,fill:color==='nucleusNa'?'#c66b26':'#168774','font-size':34,'font-weight':800},g);let label=el('text',{x:0,y:157,class:'atomLabel'},g);let config=el('text',{x:0,y:184,class:'configuration'},g);return {g,dots,charge,label,config}}
+const na=atom('na','Na',[2,8,0],'nucleusNa'),cl=atom('cl','Cl',[2,8,7],'nucleusCl');
+// 염소의 최외각 전자 7개를 8개 자리 중 하나를 비워 배치합니다.
+cl.dots.slice(10).forEach((e,j)=>{let a=(j+1)*Math.PI/4;e.setAttribute('cx',110*Math.cos(a));e.setAttribute('cy',110*Math.sin(a))});
+const copy=[['두 원자가 만났어요','나트륨의 전자 배치는 2, 8, 1이고 염소는 2, 8, 7입니다.'],['나트륨의 전자 하나가 염소로 이동해요','나트륨의 가장 바깥 전자 껍질에 있는 전자 하나를 따라가 보세요.'],['양이온과 음이온이 생겼어요','Na⁺의 전자 배치는 2, 8이고 Cl⁻는 2, 8, 8입니다. 두 이온의 전하 부호는 반대입니다.'],['반대 전하를 띤 이온이 서로 끌어당겨요','Na⁺와 Cl⁻ 사이에 작용하는 정전기적 인력이 이온 결합을 형성합니다.']];
+let elapsed=0,running=false,last=0,stage=-1;const duration=14000;
+const ease=x=>x*x*(3-2*x),clamp=x=>Math.max(0,Math.min(1,x));
+function draw(){let t=elapsed/1000,s=t<2?0:t<6?1:t<8?2:3;let move=ease(clamp((t-8)/4)),nx=240+135*move,cx=760-135*move;na.g.setAttribute('transform',`translate(${nx},195)`);cl.g.setAttribute('transform',`translate(${cx},195)`);let ion=t>=6;na.charge.textContent=ion?'+':'';cl.charge.textContent=ion?'−':'';na.label.textContent=ion?'나트륨 이온 Na⁺':'나트륨 원자 Na';cl.label.textContent=ion?'염화 이온 Cl⁻':'염소 원자 Cl';na.config.textContent=ion?'전자 10개 · 2, 8':'전자 11개 · 2, 8, 1';cl.config.textContent=ion?'전자 18개 · 2, 8, 8':'전자 17개 · 2, 8, 7';na.g.firstChild.nextSibling.nextSibling.setAttribute('opacity',ion?'.15':'1');let u=ease(clamp((t-2)/4));let x=t<6?350+(870-350)*u:cx+110;let y=t<6?195-115*Math.sin(Math.PI*u):195;$('movingElectron').setAttribute('cx',x);$('movingElectron').setAttribute('cy',y);$('transferPath').setAttribute('d','M350 195 Q610 -35 870 195');$('transferPath').setAttribute('opacity',s===1?'.7':'0');$('attraction').setAttribute('opacity',s===3?'1':'0');$('bar').style.width=(elapsed/duration*100)+'%';if(s!==stage){stage=s;$('heading').textContent=copy[s][0];$('description').textContent=copy[s][1];document.querySelectorAll('.step').forEach((e,i)=>e.classList.toggle('active',i===s))}}
+function buttons(){$('start').disabled=running;$('pause').disabled=!running;$('start').textContent=elapsed>=duration?'↻ 다시 시작':elapsed>0?'▶ 이어서':'▶ 시작'}
+function tick(now){if(!running)return;if(last)elapsed=Math.min(duration,elapsed+now-last);last=now;draw();if(elapsed>=duration){running=false;last=0;buttons()}else requestAnimationFrame(tick)}
+$('start').onclick=()=>{if(running)return;if(elapsed>=duration)elapsed=0;running=true;last=0;buttons();requestAnimationFrame(tick)};
+$('pause').onclick=()=>{running=false;last=0;buttons()};
+$('reset').onclick=()=>{running=false;last=0;elapsed=0;draw();buttons()};draw();buttons();
+</script></body></html>

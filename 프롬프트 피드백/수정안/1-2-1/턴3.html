@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>읽기 목적과 글의 특성을 고려한 요약 | 지도안과 학습지</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f6fa; color: #213047; font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; line-height: 1.7; }
+    main { max-width: 1100px; margin: 44px auto; padding: 40px; background: white; border-radius: 20px; box-shadow: 0 10px 35px #2130470d; }
+    .label { color: #3263aa; font-size: 14px; font-weight: bold; letter-spacing: .08em; }
+    h1 { margin: 8px 0 22px; font-size: 30px; line-height: 1.4; }
+    h2 { font-size: 20px; margin-top: 30px; }
+    .standard { padding: 18px 22px; border-left: 5px solid #426fbc; background: #edf3fd; border-radius: 6px; }
+    .meta { display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0; }
+    .meta span { background: #f0f3f7; border-radius: 30px; padding: 5px 15px; font-size: 14px; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 15px; }
+    caption { text-align: left; font-weight: bold; font-size: 20px; margin-bottom: 12px; }
+    th, td { border: 1px solid #d9e1ec; padding: 17px; vertical-align: top; text-align: left; }
+    thead th { color: white; background: #294b7a; }
+    tbody th { background: #f0f5fc; white-space: nowrap; }
+    td.time { white-space: nowrap; font-weight: bold; }
+    ul { margin: 0; padding-left: 19px; }
+    li + li { margin-top: 7px; }
+    tfoot th, tfoot td { background: #edf3fd; font-weight: bold; }
+    .note { padding: 18px 22px; background: #f7f8fa; border-radius: 10px; }
+    [hidden] { display: none !important; }
+    .mode-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+    button { padding: 10px 20px; border: 1px solid #426fbc; border-radius: 8px; background: white; color: #294b7a; font: inherit; cursor: pointer; }
+    button[aria-pressed="true"] { color: white; background: #294b7a; }
+    button:focus-visible, textarea:focus-visible { outline: 3px solid #c48119; outline-offset: 3px; }
+    #mode-status { font-size: 14px; color: #52637b; }
+    .worksheet { border-top: 3px solid #294b7a; margin-top: 40px; padding-top: 16px; }
+    .passage { background: #f7f8fa; border-radius: 12px; padding: 20px 24px; }
+    h3 { font-size: 18px; margin-bottom: 10px; }
+    .question { margin-top: 26px; break-inside: avoid; }
+    textarea { display: block; width: 100%; min-height: 130px; padding: 14px; border: 1px solid #b6c5d9; border-radius: 8px; font: inherit; color: inherit; background: white; resize: vertical; }
+    .answer { margin-top: 12px; padding: 16px 20px; border-left: 4px solid #35836b; background: #eef8f3; }
+    .answer p { margin: 6px 0; }
+    .identity { color: #52637b; word-spacing: 8px; }
+    @media print {
+      button, .mode-bar, textarea { display: none !important; }
+      body[data-mode="student"] main > :not(.worksheet) { display: none !important; }
+      body[data-mode="student"] .worksheet { margin-top: 0; padding-top: 0; border-top: 0; break-before: auto; }
+      body[data-mode="teacher"] .worksheet { break-before: page; }
+    }
+    @media (max-width: 700px) { main { margin: 16px; padding: 24px 18px; } h1 { font-size: 25px; } }
+    @media print { body { background: white; } main { margin: 0; padding: 0; box-shadow: none; } table { min-width: 0; font-size: 11pt; } th, td { padding: 10px; } tr { break-inside: avoid; } }
+  </style>
+</head>
+<body data-mode="student">
+<main>
+  <div class="mode-bar" role="group" aria-label="자료 보기 모드">
+    <button type="button" id="student-mode" aria-pressed="true">학생용</button>
+    <button type="button" id="teacher-mode" aria-pressed="false">교사용</button>
+    <button type="button" id="print-button">인쇄</button>
+    <span id="mode-status" role="status">학생용 · 예시 답 숨김</span>
+  </div>
+  <div class="label">중학교 국어 · 읽기</div>
+  <h1>목적에 맞게 읽고, 글의 특성을 살려 요약하기</h1>
+  <div class="standard"><strong>성취기준</strong><br>[9국02-04] 읽기 목적이나 글의 특성을 고려하여 글을 요약한다.</div>
+  <div class="meta"><span>수업 시간 45분</span><span>개별 활동 → 짝 활동 → 전체 공유</span></div>
+  <h2>학습 목표</h2>
+  <p>읽기 목적과 글의 구조를 고려하여 필요한 중심 내용을 고르고, 자기 말로 요약할 수 있다.</p>
+  <p><strong>준비물</strong> 원인과 해결 방안 구조의 설명문 1편(예: 학교 음식물 쓰레기 문제), 요약 활동지, 필기도구</p>
+  <div class="table-wrap">
+    <table>
+      <caption>45분 수업 지도안</caption>
+      <colgroup><col style="width: 9%"><col style="width: 13%"><col style="width: 39%"><col style="width: 39%"></colgroup>
+      <thead><tr><th scope="col">단계</th><th scope="col">시간</th><th scope="col">교사 활동</th><th scope="col">학생 활동</th></tr></thead>
+      <tbody>
+        <tr>
+          <th scope="row">도입</th><td class="time">7분<br>(0~7분)</td>
+          <td><ul><li>“친구에게 글 전체를 소개할 때와 해결 방안을 찾을 때, 요약에 담을 내용은 같을까?”라고 질문한다.</li><li>학생의 답을 바탕으로 읽기 목적에 따라 선택할 정보가 달라짐을 안내한다.</li><li>성취기준과 학습 목표를 제시한다.</li></ul></td>
+          <td><ul><li>요약을 활용했던 경험을 떠올려 말한다.</li><li>두 읽기 목적에서 필요한 정보가 어떻게 다를지 예상한다.</li><li>학습 목표를 확인한다.</li></ul></td>
+        </tr>
+        <tr>
+          <th scope="row">전개</th><td class="time">10분<br>(7~17분)</td>
+          <td><ul><li>설명문을 나누어 주고 제목, 문단의 중심 내용, 글의 구조를 파악하도록 안내한다.</li><li>첫 문단을 예로 들어 중심 내용과 세부 사례를 구별하는 과정을 시범 보인다.</li><li>원인과 해결 방안의 관계가 요약에서도 드러나야 함을 설명한다.</li></ul></td>
+          <td><ul><li>글을 읽고 문단별 중심 내용에 밑줄을 긋는다.</li><li>세부 사례와 반복되는 정보를 구별한다.</li><li>‘문제–원인–해결 방안’으로 글의 구조를 정리한다.</li></ul></td>
+        </tr>
+        <tr>
+          <th scope="row">전개</th><td class="time">12분<br>(17~29분)</td>
+          <td><ul><li>읽기 목적을 두 가지로 제시한다. A: 글 전체의 내용을 친구에게 소개하기. B: 우리 학교에서 실천할 해결 방안 찾기.</li><li>학생이 한 가지 목적을 선택하고 필요한 정보를 고르게 한다.</li><li>선택한 목적에 맞춰 자기 말로 3~4문장으로 요약하도록 돕는다. B도 문제와 원인을 필요한 만큼 담도록 안내한다.</li></ul></td>
+          <td><ul><li>자신의 읽기 목적을 활동지에 적는다.</li><li>목적에 필요한 중심 내용을 선택하고 불필요한 사례나 반복을 덜어 낸다.</li><li>글의 구조와 내용 간 관계를 살려 3~4문장으로 요약한다.</li></ul></td>
+        </tr>
+        <tr>
+          <th scope="row">전개</th><td class="time">9분<br>(29~38분)</td>
+          <td><ul><li>짝과 요약문을 교환하게 하고 아래 점검 기준으로 의견을 나누도록 안내한다.</li><li>서로 다른 읽기 목적의 요약문을 공유하여 선택한 정보의 차이를 비교한다.</li><li>원문의 의미를 바꾼 부분이나 빠진 핵심 내용에 피드백한다.</li></ul></td>
+          <td><ul><li>짝의 읽기 목적을 확인하고 요약문을 점검한다.</li><li>잘된 점과 보완할 점을 각각 한 가지 말한다.</li><li>의견을 반영하여 자신의 요약문을 고친다.</li></ul></td>
+        </tr>
+        <tr>
+          <th scope="row">정리</th><td class="time">7분<br>(38~45분)</td>
+          <td><ul><li>읽기 목적에 따른 정보 선택과 글의 특성에 따른 내용 조직을 정리한다.</li><li>퇴실표에 ‘나의 읽기 목적, 요약에 남긴 핵심 정보, 그 정보를 남긴 이유’를 쓰도록 한다.</li><li>요약문과 퇴실표를 수합하여 학습 목표 도달 여부를 확인한다.</li></ul></td>
+          <td><ul><li>요약할 때 고려할 점을 자기 말로 설명한다.</li><li>퇴실표를 작성하고 수정한 요약문과 함께 제출한다.</li><li>자신의 요약이 목적과 글의 특성을 반영했는지 돌아본다.</li></ul></td>
+        </tr>
+      </tbody>
+      <tfoot><tr><th scope="row">합계</th><td>45분</td><td colspan="2">도입 7분 + 전개 31분(10분 + 12분 + 9분) + 정리 7분 = 45분</td></tr></tfoot>
+    </table>
+  </div>
+  <h2>요약문 점검 기준</h2>
+  <div class="note"><ul><li>읽기 목적에 필요한 핵심 정보를 담았는가?</li><li>글의 구조와 내용 간 관계가 드러나는가?</li><li>불필요한 사례나 반복은 줄이고 자기 말로 표현했는가?</li><li>원문의 의미를 바꾸거나 원문에 없는 내용을 덧붙이지 않았는가?</li></ul></div>
+  <section class="worksheet" aria-labelledby="worksheet-title">
+    <div class="label">학생 활동지</div>
+    <h2 id="worksheet-title">읽기 목적에 맞게 요약해 보자</h2>
+    <p class="identity">학년/반: __________ 번호: ______ 이름: __________</p>
+    <p>글을 읽고 중심 내용을 찾아보세요. 목적에 필요한 정보를 골라 자기 말로 요약하세요.</p>
+    <article class="passage" aria-labelledby="passage-title">
+      <h3 id="passage-title">급식 시간의 작은 변화</h3>
+      <p>① 가상의 새봄중학교에서는 점심시간마다 먹지 않고 버리는 음식이 많아 문제가 되었다. 남은 음식은 처리하는 데 비용이 들고, 음식을 만드는 데 쓰인 자원도 낭비하게 된다.</p>
+      <p>② 학생회는 학생들이 음식을 남기는 까닭을 물었다. 학생들은 먹을 수 있는 양보다 많이 받거나, 익숙하지 않은 반찬을 처음부터 많이 받아 남긴다고 답했다.</p>
+      <p>③ 학생회는 먼저 먹을 만큼 받고 부족하면 더 받자는 캠페인을 제안했다. 낯선 반찬은 조금씩 맛본 뒤 양을 정하자는 안내도 덧붙였다. 급식실은 배식할 때 학생들이 원하는 양을 말할 수 있도록 했다.</p>
+      <p>④ 학생회는 실천 전후의 잔반량을 비교해 변화를 살피기로 했다. 학생과 급식실이 함께 참여하고 결과를 확인하며 방법을 고쳐 나가면 음식물 쓰레기를 줄이는 데 도움이 될 것이다.</p>
+    </article>
+    <div class="question">
+      <h3><label for="response-1">1. 글의 구조를 살려 짧게 요약하기</label></h3>
+      <p>글에서 ‘문제–원인–해결 방안’에 해당하는 중심 내용을 찾아 각각 한 문장으로 요약하세요.</p>
+      <textarea id="response-1" aria-label="1번 답안" placeholder="문제:&#10;원인:&#10;해결 방안:"></textarea>
+      <div class="answer" hidden><strong>예시 답</strong><p>문제: 학교에서 음식이 많이 버려져 처리 비용이 들고 자원이 낭비된다.<br>원인: 학생들이 먹을 양보다 많이 받거나 익숙하지 않은 반찬을 많이 받는다.<br>해결 방안: 먹을 양을 조절해 받고 낯선 반찬은 조금씩 맛보며, 실천 전후의 잔반량을 비교해 방법을 개선한다.</p><p><strong>지도 포인트:</strong> 세부 사례를 나열하기보다 문제와 원인, 해결 방안의 관계를 담았는지 확인합니다.</p></div>
+    </div>
+    <div class="question">
+      <h3><label for="response-2">2. 글 전체를 소개하는 목적으로 요약하기</label></h3>
+      <p>이 글을 읽지 않은 친구에게 전체 내용을 소개하려고 합니다. 문제, 원인, 해결 방안과 결과 확인 계획이 드러나도록 3~4문장으로 요약하세요.</p>
+      <textarea id="response-2" aria-label="2번 답안" placeholder="글 전체의 흐름이 드러나게 써 보세요."></textarea>
+      <div class="answer" hidden><strong>예시 답</strong><p>새봄중학교에서는 음식이 많이 버려져 비용과 자원이 낭비되는 문제가 있었다. 학생들이 먹을 양보다 많이 받거나 낯선 반찬을 많이 받는 것이 원인이었다. 학생회와 급식실은 먹을 만큼 받고 낯선 반찬은 조금씩 맛보도록 안내하며 배식량을 조절하게 했다. 앞으로 잔반량을 비교해 효과를 살피고 방법을 개선할 계획이다.</p><p><strong>지도 포인트:</strong> 아직 확인되지 않은 효과를 이미 나타난 결과처럼 쓰지 않았는지 살펴봅니다.</p></div>
+    </div>
+    <div class="question">
+      <h3><label for="response-3">3. 실천할 방법을 찾는 목적으로 요약하기</label></h3>
+      <p>우리 학교에서 음식물 쓰레기를 줄일 방법을 찾으려고 합니다. 문제와 원인을 간단히 담고 실천 방법을 중심으로 3~4문장으로 요약하세요. 이어서 2번과 비교해 더 강조한 정보와 그 이유를 한 문장으로 쓰세요.</p>
+      <textarea id="response-3" aria-label="3번 답안" placeholder="실천 방법 중심 요약:&#10;&#10;더 강조한 정보와 그 이유:"></textarea>
+      <div class="answer" hidden><strong>예시 답</strong><p>먹을 수 있는 양보다 많이 받은 음식이 버려져 자원이 낭비된다. 이를 줄이려면 처음에는 먹을 만큼 받고 부족하면 더 받으며, 낯선 반찬은 조금씩 맛본다. 배식할 때 원하는 양을 말할 수 있도록 하고 실천 전후의 잔반량을 비교해 방법을 개선한다.</p><p><strong>더 강조한 정보와 그 이유:</strong> 우리 학교에서 직접 실천할 방법을 찾는 것이 목적이므로 배식량 조절과 잔반량 확인 방법을 더 강조했다.</p><p><strong>지도 포인트:</strong> 읽기 목적에 따라 정보의 비중을 달리했는지 확인합니다. 예시와 표현이 달라도 원문의 의미와 목적에 맞으면 인정합니다.</p></div>
+    </div>
+    <p class="note">짝과 점검하기: 목적에 필요한 정보를 담았나요? 내용 간 관계가 드러나나요? 원문의 뜻을 지키며 자기 말로 썼나요?</p>
+  </section>
+</main>
+<script>
+  const studentButton = document.getElementById('student-mode');
+  const teacherButton = document.getElementById('teacher-mode');
+  function setMode(isTeacher) {
+    document.body.dataset.mode = isTeacher ? 'teacher' : 'student';
+    document.querySelectorAll('.answer').forEach(answer => { answer.hidden = !isTeacher; });
+    studentButton.setAttribute('aria-pressed', String(!isTeacher));
+    teacherButton.setAttribute('aria-pressed', String(isTeacher));
+    document.getElementById('mode-status').textContent = isTeacher
+      ? '교사용 · 예시 답 표시' : '학생용 · 예시 답 숨김';
+  }
+  studentButton.addEventListener('click', () => setMode(false));
+  teacherButton.addEventListener('click', () => setMode(true));
+  document.getElementById('print-button').addEventListener('click', () => window.print());
+</script>
+</body>
+</html>

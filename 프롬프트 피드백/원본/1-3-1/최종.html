@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>낚시 제목 감별 카드</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #eef2ee; color: #172c29; font-family: "맑은 고딕", "Apple SD Gothic Neo", sans-serif; }
+    main { width: min(880px, 100%); margin: 0 auto; padding: 48px 24px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 12px; font-size: clamp(26px, 4vw, 36px); letter-spacing: -1px; }
+    header p { margin: 0; color: #52645f; line-height: 1.7; }
+    .card { padding: clamp(24px, 5vw, 48px); border: 1px solid #d8e1da; border-radius: 24px; background: #fffef9; box-shadow: 0 12px 40px #172c2909; }
+    .progress { margin: 0; color: #53665f; font-size: 16px; font-weight: 700; }
+    h2 { margin: 32px 0; min-height: 150px; display: flex; align-items: center; font-size: clamp(27px, 4.6vw, 42px); line-height: 1.5; letter-spacing: -1px; word-break: keep-all; overflow-wrap: anywhere; }
+    .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .reason-choices { grid-template-columns: 1fr; }
+    h3 { margin: 28px 0 14px; font-size: 21px; }
+    button { padding: 19px 16px; border: 2px solid #b8c9bf; border-radius: 12px; background: #fff; color: #173b30; font: inherit; font-size: 19px; font-weight: 700; cursor: pointer; }
+    button:hover:not(:disabled) { background: #edf5ee; border-color: #267151; }
+    button:focus-visible { outline: 3px solid #aa641b; outline-offset: 4px; }
+    button:disabled { cursor: default; opacity: .6; }
+    button.selected { border-color: #236647; background: #e3f0e6; opacity: 1; }
+    .feedback { margin: 24px 0 0; line-height: 1.8; font-size: 17px; }
+    .next { display: block; margin: 22px 0 0 auto; background: #205c43; border-color: #205c43; color: #fff; }
+    .next:hover:not(:disabled) { background: #174631; color: #fff; }
+    [hidden] { display: none !important; }
+    .result h2 { min-height: auto; margin: 28px 0 16px; }
+    .result p:last-child { font-size: 22px; line-height: 1.7; margin-bottom: 0; }
+    .teacher { margin-top: 28px; padding: 24px; border: 1px solid #cbd8ce; border-radius: 16px; background: #fffef9; }
+    summary { cursor: pointer; font-size: 19px; font-weight: 700; }
+    .teacher p { line-height: 1.8; }
+    .teacher label { display: block; margin-bottom: 10px; font-weight: 700; }
+    textarea { width: 100%; min-height: 190px; padding: 14px; border: 1px solid #8a9f92; border-radius: 8px; font: inherit; line-height: 1.7; resize: vertical; }
+    textarea:focus-visible { outline: 3px solid #aa641b; outline-offset: 3px; }
+    .teacher button { margin-top: 12px; }
+    @media (max-width: 520px) { main { padding: 28px 16px; } .choices { grid-template-columns: 1fr; } h2 { min-height: 180px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>낚시 제목 감별 카드</h1>
+      <p>제목의 종류를 고른 뒤, 왜 그렇게 생각했는지도 골라 보세요.<br>모든 제목은 연습용으로 만든 가짜 기사 제목입니다.</p>
+    </header>
+    <section class="card" id="quiz" aria-label="제목 감별 문제">
+      <p class="progress" id="progress"></p>
+      <h2 id="headline" tabindex="-1"></h2>
+      <div class="choices">
+        <button type="button" id="informative">정보를 주는 제목</button>
+        <button type="button" id="clickbait">낚시 제목</button>
+      </div>
+      <section id="reason-section" aria-labelledby="reason-question" hidden>
+        <h3 id="reason-question" tabindex="-1">왜 그렇게 생각했나요?</h3>
+        <div class="choices reason-choices">
+          <button type="button" id="curiosity">궁금하게만 만든다</button>
+          <button type="button" id="exaggeration">말을 부풀렸다</button>
+          <button type="button" id="clarity">내용이 분명하다</button>
+        </div>
+      </section>
+      <p class="feedback" id="feedback" role="status" hidden></p>
+      <button type="button" class="next" id="next" hidden>다음 제목</button>
+    </section>
+    <section class="card result" id="result" aria-label="최종 결과" hidden>
+      <p class="progress">감별 완료</p>
+      <h2 id="score" tabindex="-1"></h2>
+      <p>수고했어요! 제목이 구체적인 정보를 주는지, 궁금증이나 감정만 자극하는지 살펴보세요.</p>
+    </section>
+    <details class="teacher">
+      <summary>선생님용 제목 바꾸기</summary>
+      <p id="input-help">한 줄에 카드 하나씩, 제목 / 정답 / 이유 순서로 입력하세요.<br>정답: 정보를 주는 제목, 낚시 제목<br>이유: 궁금하게만 만든다, 말을 부풀렸다, 내용이 분명하다<br>‘바꾸기’를 누르면 점수가 초기화되고 첫 카드부터 시작해요. 새로고침하면 기본 카드로 돌아와요.</p>
+      <label for="card-input">새 카드 목록</label>
+      <textarea id="card-input" aria-describedby="input-help" placeholder="도서관, 토요일 오후 2시 독서 모임 개최 / 정보를 주는 제목 / 내용이 분명하다&#10;이것만 알면 누구나 시험 만점! / 낚시 제목 / 말을 부풀렸다"></textarea>
+      <button type="button" id="replace">바꾸기</button>
+      <p id="input-status" role="status"></p>
+    </details>
+  </main>
+  <script>
+    let cards = [
+      { title: '새봄중학교, 다음 달부터 매주 수요일 도서관 밤 8시까지 개방', type: '정보를 주는 제목', reason: '어디서, 언제, 무엇이 달라지는지 구체적으로 알려 줘요.' },
+      { title: '매일 먹던 이 간식의 비밀… 알면 깜짝 놀랍니다!', type: '낚시 제목', reason: '간식과 핵심 내용을 숨긴 채 놀라움을 강조해 클릭을 유도해요.' },
+      { title: '학생들이 교실 문을 열자 벌어진 일… 모두가 말을 잃었다', type: '낚시 제목', reason: '무슨 일이 있었는지 숨기고 사람들의 반응만 강조해요.' },
+      { title: '푸른시, 이번 토요일 중앙공원에서 청소년 벼룩시장 개최', type: '정보를 주는 제목', reason: '행사의 대상, 날짜, 장소를 구체적으로 알려 줘요.' },
+      { title: '하늘중학교 학생회, 전교생 설문 거쳐 급식 의견함 설치', type: '정보를 주는 제목', reason: '누가 어떤 과정을 거쳐 무엇을 했는지 알려 줘요.' },
+      { title: '이 방법 하나면 누구나 시험 만점! 공부 잘하는 학생의 충격 비법', type: '낚시 제목', reason: '누구나 만점을 받는다고 과장하고 비법의 내용은 숨겨요.' },
+      { title: '달빛도서관, 중학생 대상 무료 만화 그리기 수업 20명 모집', type: '정보를 주는 제목', reason: '수업의 대상, 비용, 내용, 모집 인원을 알려 줘요.' },
+      { title: '요즘 중학생은 다 안다는데… 나만 모르면 큰일 나는 이것!', type: '낚시 제목', reason: '핵심 대상을 숨기고 뒤처질지 모른다는 불안감을 자극해요.' },
+      { title: '푸른시 청소년센터, 토요일 농구 교실 시작 시간 오후 2시로 변경', type: '정보를 주는 제목', reason: '어떤 프로그램의 시간이 어떻게 바뀌는지 명확히 알려 줘요.' },
+      { title: '휴대전화에서 당장 이것을 지우세요! 늦으면 후회합니다', type: '낚시 제목', reason: '무엇을 왜 지워야 하는지 숨긴 채 다급함과 불안감을 자극해요.' }
+    ];
+    const headline = document.getElementById('headline');
+    const progress = document.getElementById('progress');
+    const feedback = document.getElementById('feedback');
+    const next = document.getElementById('next');
+    const choices = [document.getElementById('informative'), document.getElementById('clickbait')];
+    const reasonSection = document.getElementById('reason-section');
+    const reasonChoices = ['curiosity', 'exaggeration', 'clarity'].map(id => document.getElementById(id));
+    let acceptedReasons = [
+      ['내용이 분명하다'], ['궁금하게만 만든다'], ['궁금하게만 만든다', '말을 부풀렸다'],
+      ['내용이 분명하다'], ['내용이 분명하다'], ['말을 부풀렸다', '궁금하게만 만든다'],
+      ['내용이 분명하다'], ['궁금하게만 만든다', '말을 부풀렸다'], ['내용이 분명하다'],
+      ['궁금하게만 만든다', '말을 부풀렸다']
+    ];
+    let index = 0;
+    let correct = 0;
+    let answered = false;
+    let selectedType = null;
+
+    function showCard(moveFocus = false) {
+      answered = false;
+      selectedType = null;
+      reasonSection.hidden = true;
+      progress.textContent = `${index + 1} / ${cards.length}번째 제목`;
+      headline.textContent = cards[index].title;
+      feedback.hidden = true;
+      feedback.textContent = '';
+      next.hidden = true;
+      [...choices, ...reasonChoices].forEach(button => { button.disabled = false; button.classList.remove('selected'); });
+      if (moveFocus) headline.focus();
+    }
+
+    choices.forEach(button => button.addEventListener('click', () => {
+      if (answered || selectedType !== null) return;
+      selectedType = button.textContent;
+      choices.forEach(choice => { choice.disabled = true; });
+      button.classList.add('selected');
+      reasonSection.hidden = false;
+      document.getElementById('reason-question').focus();
+    }));
+
+    reasonChoices.forEach(button => button.addEventListener('click', () => {
+      if (answered || selectedType === null) return;
+      answered = true;
+      const card = cards[index];
+      const isCorrect = selectedType === card.type && acceptedReasons[index].includes(button.textContent);
+      if (isCorrect) correct++;
+      reasonChoices.forEach(choice => { choice.disabled = true; });
+      button.classList.add('selected');
+      feedback.hidden = false;
+      feedback.textContent = `${isCorrect ? '정답이에요!' : '아쉬워요!'} 정답: ${card.type} / ${acceptedReasons[index].join(' 또는 ')} — ${card.reason}`;
+      next.textContent = index === cards.length - 1 ? '결과 보기' : '다음 제목';
+      next.hidden = false;
+      next.focus();
+    }));
+
+    next.addEventListener('click', () => {
+      if (!answered) return;
+      index++;
+      if (index < cards.length) {
+        showCard(true);
+      } else {
+        document.getElementById('quiz').hidden = true;
+        document.getElementById('result').hidden = false;
+        const score = document.getElementById('score');
+        score.textContent = `총 ${cards.length}개 중 제목과 이유를 모두 맞힌 카드는 ${correct}개예요!`;
+        score.focus();
+      }
+    });
+    document.getElementById('replace').addEventListener('click', () => {
+      const lines = document.getElementById('card-input').value.split(/\r?\n/);
+      const newCards = [];
+      const newReasons = [];
+      const status = document.getElementById('input-status');
+      const validTypes = choices.map(button => button.textContent);
+      const validReasons = reasonChoices.map(button => button.textContent);
+      for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
+        if (!lines[lineNumber].trim()) continue;
+        const parts = lines[lineNumber].split('/').map(part => part.trim());
+        if (parts.length !== 3 || parts.some(part => !part)) {
+          status.textContent = `${lineNumber + 1}번째 줄을 확인해 주세요. 제목 / 정답 / 이유 형식으로 빈칸 없이 입력하세요. 카드 내용 안에는 빗금을 쓰지 마세요.`;
+          return;
+        }
+        const [title, type, reason] = parts;
+        if (!validTypes.includes(type) || !validReasons.includes(reason)) {
+          status.textContent = `${lineNumber + 1}번째 줄의 정답 또는 이유를 확인해 주세요. 위에 안내된 보기와 똑같이 입력하세요.`;
+          return;
+        }
+        newCards.push({ title, type, reason });
+        newReasons.push([reason]);
+      }
+      if (!newCards.length) {
+        status.textContent = '카드를 한 줄 이상 입력해 주세요.';
+        return;
+      }
+      cards = newCards;
+      acceptedReasons = newReasons;
+      index = 0;
+      correct = 0;
+      document.getElementById('quiz').hidden = false;
+      document.getElementById('result').hidden = true;
+      showCard(true);
+      status.textContent = `${cards.length}개의 카드로 바꿨어요. 첫 카드부터 시작하세요.`;
+    });
+    showCard();
+  </script>
+</body>
+</html>

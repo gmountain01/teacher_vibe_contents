@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시간탐사대: 선사시대</title>
+<script>
+// 수업 자료: 화면을 만드는 코드와 분리하여 이곳에서 수정합니다.
+const age = [
+  { id:'paleolithic', name:'구석기', icon:'🪨', intro:'자연 속을 이동하며 먹을거리를 구하던 시대', keywords:['뗀석기','사냥','채집','이동 생활'] },
+  { id:'neolithic', name:'신석기', icon:'🌾', intro:'농사를 시작하고 마을에 모여 살던 시대', keywords:['간석기','농경','정착 생활','빗살무늬 토기'] },
+  { id:'bronze', name:'청동기', icon:'☀️', intro:'농경이 발달하고 사회의 모습이 달라진 시대', keywords:['청동기','벼농사','계급','고인돌'] }
+];
+const stages = {
+  // 설계표 미첨부: 아래 구석기 9개 조사는 임시 초안입니다.
+  paleolithic:[
+  {
+    "title": "식량을 찾아서",
+    "goal": "도구와 식량 확보 방법을 증거로 설명한다.",
+    "investigations": [
+      {
+        "title": "뗀석기의 흔적",
+        "situation": "고기를 자를 도구가 필요하다.",
+        "actions": [
+          {
+            "text": "돌을 깨뜨려 도구를 만든다.",
+            "type": "가능한 선택",
+            "explanation": "구석기 사람들은 뗀석기를 사용했다."
+          },
+          {
+            "text": "청동검을 사용한다.",
+            "type": "시대착오",
+            "explanation": "이 선택은 구석기 시대의 기술이나 생활 모습에 맞지 않습니다."
+          },
+          {
+            "text": "돌 하나로 모든 사람이 사냥꾼이었다고 단정한다.",
+            "type": "근거 부족",
+            "explanation": "주어진 증거만으로 그렇게 단정할 수 없습니다."
+          }
+        ],
+        "reasons": [
+          {
+            "text": "하나의 유물만 있으면 모든 사람의 생활을 확정할 수 있기 때문이다.",
+            "correct": false,
+            "explanation": "하나의 사례를 모든 사람에게 일반화할 수 없습니다."
+          },
+          {
+            "text": "돌을 깨뜨린 제작 흔적이 남아 있다.",
+            "correct": true,
+            "explanation": "구석기 사람들은 뗀석기를 사용했다."
+          },
+          {
+            "text": "후대의 생활 모습이 구석기 시대에도 그대로 있었기 때문이다.",
+            "correct": false,
+            "explanation": "각 시대의 기술과 생활을 구분해야 합니다."
+          }
+        ],
+        "point": "구석기 사람들은 뗀석기를 사용했다."
+      },
+      {
+        "title": "오늘의 먹을거리",
+        "situation": "숲에서 열매와 동물 발자국을 발견했다.",
+        "actions": [
+          {
+            "text": "논에서 벼를 재배한다.",
+            "type": "시대착오",
+            "explanation": "이 선택은 구석기 시대의 기술이나 생활 모습에 맞지 않습니다."
+          },
+          {
+            "text": "사냥과 채집으로 식량을 구한다.",
+            "type": "가능한 선택",
+            "explanation": "구석기 사람들은 사냥과 채집으로 식량을 구했다."
+          },
+          {
+            "text": "발자국만 보고 반드시 사냥에 성공한다고 말한다.",
+            "type": "근거 부족",
+            "explanation": "주어진 증거만으로 그렇게 단정할 수 없습니다."
+          }
+        ],
+        "reasons": [
+          {
+            "text": "하나의 유물만 있으면 모든 사람의 생활을 확정할 수 있기 때문이다.",
+            "correct": false,
+            "explanation": "하나의 사례를 모든 사람에게 일반화할 수 없습니다."
+          },
+          {
+            "text": "후대의 생활 모습이 구석기 시대에도 그대로 있었기 때문이다.",
+            "correct": false,
+            "explanation": "각 시대의 기술과 생활을 구분해야 합니다."
+          },
+          {
+            "text": "동물 뼈와 석기는 사냥 생활의 단서다.",
+            "correct": true,
+            "explanation": "구석기 사람들은 사냥과 채집으로 식량을 구했다."
+          }
+        ],
+        "point": "구석기 사람들은 사냥과 채집으로 식량을 구했다."
+      },
+      {
+        "title": "다음 머무를 곳",
+        "situation": "주변의 먹을거리가 줄어들었다.",
+        "actions": [
+          {
+            "text": "벼농사를 지을 논을 만든다.",
+            "type": "시대착오",
+            "explanation": "이 선택은 구석기 시대의 기술이나 생활 모습에 맞지 않습니다."
+          },
+          {
+            "text": "이곳에는 앞으로 동물이 절대 오지 않는다고 단정한다.",
+            "type": "근거 부족",
+            "explanation": "주어진 증거만으로 그렇게 단정할 수 없습니다."
+          },
+          {
+            "text": "식량과 물을 구할 수 있는 곳으로 이동한다.",
+            "type": "가능한 선택",
+            "explanation": "구석기 사람들은 먹을거리를 찾아 이동하며 살았다."
+          }
+        ],
+        "reasons": [
+          {
+            "text": "먹을거리의 분포는 계절과 환경에 따라 달라진다.",
+            "correct": true,
+            "explanation": "구석기 사람들은 먹을거리를 찾아 이동하며 살았다."
+          },
+          {
+            "text": "하나의 유물만 있으면 모든 사람의 생활을 확정할 수 있기 때문이다.",
+            "correct": false,
+            "explanation": "하나의 사례를 모든 사람에게 일반화할 수 없습니다."
+          },
+          {
+            "text": "후대의 생활 모습이 구석기 시대에도 그대로 있었기 때문이다.",
+            "correct": false,
+            "explanation": "각 시대의 기술과 생활을 구분해야 합니다."
+          }
+        ],
+        "point": "구석기 사람들은 먹을거리를 찾아 이동하며 살았다."
+      }
+    ]
+  },
+  {
+    "title": "동굴과 막집",
+    "goal": "주거와 불 이용을 통해 생활 모습을 설명한다.",
+    "investigations": [
+      {
+        "title": "동굴 속 보금자리",
+        "situation": "동굴 입구에서 석기와 동물 뼈를 발견했다.",
+        "actions": [
+          {
+            "text": "주변 안전을 살피고 동굴에 머무른다.",
+            "type": "가능한 선택",
+            "explanation": "구석기 사람들은 동굴을 주거로 이용하기도 했다."
+          },
+          {
+            "text": "기와집을 짓는다.",
+            "type": "시대착오",
+            "explanation": "이 선택은 구석기 시대의 기술이나 생활 모습에 맞지 않습니다."
+          },
+          {
+            "text": "모든 구석기 사람이 동굴에서만 살았다고 말한다.",
+            "type": "근거 부족",
+            "explanation": "주어진 증거만으로 그렇게 단정할 수 없습니다."
+          }
+        ],
+        "reasons": [
+          {
+            "text": "하나의 유물만 있으면 모든 사람의 생활을 확정할 수 있기 때문이다.",
+            "correct": false,
+            "explanation": "하나의 사례를 모든 사람에게 일반화할 수 없습니다."
+          },
+          {
+            "text": "석기와 생활 흔적은 사람들이 머물렀다는 단서다.",
+            "correct": true,
+            "explanation": "구석기 사람들은 동굴을 주거로 이용하기도 했다."
+          },
+          {
+            "text": "후대의 생활 모습이 구석기 시대에도 그대로 있었기 때문이다.",
+            "correct": false,
+            "explanation": "각 시대의 기술과 생활을 구분해야 합니다."
+          }
+        ],
+        "point": "구석기 사람들은 동굴을 주거로 이용하기도 했다."
+      },
+      {
+        "title": "막집을 세우다",
+        "situation": "동굴이 없는 곳에서 비바람을 피해야 한다.",
+        "actions": [
+          {
+            "text": "벽돌 아파트를 짓는다.",
+            "type": "시대착오",
+            "explanation": "이 선택은 구석기 시대의 기술이나 생활 모습에 맞지 않습니다."
+          },
+          {
+            "text": "나뭇가지와 가죽 등으로 막집을 만든다.",
+            "type": "가능한 선택",
+            "explanation": "구석기 사람들은 막집에서도 생활했다."
+          },
+          {
+            "text": "기둥 자리 하나로 집의 정확한 높이를 단정한다.",
+            "type": "근거 부족",
+            "explanation": "주어진 증거만으로 그렇게 단정할 수 없습니다."
+          }
+        ],
+        "reasons": [
+          {
+            "text": "하나의 유물만 있으면 모든 사람의 생활을 확정할 수 있기 때문이다.",
+            "correct": false,
+            "explanation": "하나의 사례를 모든 사람에게 일반화할 수 없습니다."
+          },
+          {
+            "text": "후대의 생활 모습이 구석기 시대에도 그대로 있었기 때문이다.",
+            "correct": false,
+            "explanation": "각 시대의 기술과 생활을 구분해야 합니다."
+          },
+          {
+            "text": "막집 터와 기둥 자리는 지상 주거의 단서다.",
+            "correct": true,
+            "explanation": "구석기 사람들은 막집에서도 생활했다."
+          }
+        ],
+        "point": "구석기 사람들은 막집에서도 생활했다."
+      },
+      {
+        "title": "불을 이용한 생활",
+        "situation": "추운 밤이다. 머물던 자리에는 재와 숯이 남아 있다.",
+        "actions": [
+          {
+            "text": "전기난로를 켠다.",
+            "type": "시대착오",
+            "explanation": "이 선택은 구석기 시대의 기술이나 생활 모습에 맞지 않습니다."
+          },
+          {
+            "text": "숯 하나로 불을 처음 이용한 사람의 이름을 정한다.",
+            "type": "근거 부족",
+            "explanation": "주어진 증거만으로 그렇게 단정할 수 없습니다."
+          },
+          {
+            "text": "불을 이용해 몸을 따뜻하게 하고 음식을 익힌다.",
+            "type": "가능한 선택",
+            "explanation": "불은 보온과 조리 등 생활에 도움을 주었다."
+          }
+        ],
+        "reasons": [
+          {
+            "text": "재와 숯 등은 불 이용을 추론할 수 있는 흔적이다.",
+            "correct": true,
+            "explanation": "불은 보온과 조리 등 생활에 도움을 주었다."
+          },
+          {
+            "text": "하나의 유물만 있으면 모든 사람의 생활을 확정할 수 있기 때문이다.",
+            "correct": false,
+            "explanation": "하나의 사례를 모든 사람에게 일반화할 수 없습니다."
+          },
+          {
+            "text": "후대의 생활 모습이 구석기 시대에도 그대로 있었기 때문이다.",
+            "correct": false,
+            "explanation": "각 시대의 기술과 생활을 구분해야 합니다."
+          }
+        ],
+        "point": "불은 보온과 조리 등 생활에 도움을 주었다."
+      }
+    ]
+  },
+  {
+    "title": "구석기 사람들의 마음",
+    "goal": "예술 흔적을 해석하고 증거와 추론을 구분한다.",
+    "investigations": [
+      {
+        "title": "동굴 속 그림",
+        "situation": "동굴 벽에 동물 그림이 남아 있다.",
+        "actions": [
+          {
+            "text": "동물 모습과 표현 방법을 관찰해 기록한다.",
+            "type": "가능한 선택",
+            "explanation": "동굴 벽화는 구석기 사람들의 표현 활동을 보여 준다."
+          },
+          {
+            "text": "사진기로 만든 구석기 작품이라고 설명한다.",
+            "type": "시대착오",
+            "explanation": "이 선택은 구석기 시대의 기술이나 생활 모습에 맞지 않습니다."
+          },
+          {
+            "text": "그린 사람의 이름을 추측해 확정한다.",
+            "type": "근거 부족",
+            "explanation": "주어진 증거만으로 그렇게 단정할 수 없습니다."
+          }
+        ],
+        "reasons": [
+          {
+            "text": "하나의 유물만 있으면 모든 사람의 생활을 확정할 수 있기 때문이다.",
+            "correct": false,
+            "explanation": "하나의 사례를 모든 사람에게 일반화할 수 없습니다."
+          },
+          {
+            "text": "그림은 당시의 관심과 표현 활동을 살필 자료다.",
+            "correct": true,
+            "explanation": "동굴 벽화는 구석기 사람들의 표현 활동을 보여 준다."
+          },
+          {
+            "text": "후대의 생활 모습이 구석기 시대에도 그대로 있었기 때문이다.",
+            "correct": false,
+            "explanation": "각 시대의 기술과 생활을 구분해야 합니다."
+          }
+        ],
+        "point": "동굴 벽화는 구석기 사람들의 표현 활동을 보여 준다."
+      },
+      {
+        "title": "작은 조각의 비밀",
+        "situation": "사람이나 동물을 표현한 작은 조각을 발견했다.",
+        "actions": [
+          {
+            "text": "철제 기계로 대량 생산했다고 설명한다.",
+            "type": "시대착오",
+            "explanation": "이 선택은 구석기 시대의 기술이나 생활 모습에 맞지 않습니다."
+          },
+          {
+            "text": "형태와 발견 장소를 함께 살펴 의미를 추론한다.",
+            "type": "가능한 선택",
+            "explanation": "조각의 의미는 여러 증거를 바탕으로 신중히 추론한다."
+          },
+          {
+            "text": "이 조각 하나로 모든 사람의 믿음이 같았다고 단정한다.",
+            "type": "근거 부족",
+            "explanation": "주어진 증거만으로 그렇게 단정할 수 없습니다."
+          }
+        ],
+        "reasons": [
+          {
+            "text": "하나의 유물만 있으면 모든 사람의 생활을 확정할 수 있기 때문이다.",
+            "correct": false,
+            "explanation": "하나의 사례를 모든 사람에게 일반화할 수 없습니다."
+          },
+          {
+            "text": "후대의 생활 모습이 구석기 시대에도 그대로 있었기 때문이다.",
+            "correct": false,
+            "explanation": "각 시대의 기술과 생활을 구분해야 합니다."
+          },
+          {
+            "text": "유물의 형태와 발견 맥락을 함께 살펴야 한다.",
+            "correct": true,
+            "explanation": "조각의 의미는 여러 증거를 바탕으로 신중히 추론한다."
+          }
+        ],
+        "point": "조각의 의미는 여러 증거를 바탕으로 신중히 추론한다."
+      },
+      {
+        "title": "사냥의 성공을 빌다",
+        "situation": "동물 그림이 사냥의 성공을 바란 표현이라는 의견이 나왔다.",
+        "actions": [
+          {
+            "text": "인쇄한 사냥 안내서라고 설명한다.",
+            "type": "시대착오",
+            "explanation": "이 선택은 구석기 시대의 기술이나 생활 모습에 맞지 않습니다."
+          },
+          {
+            "text": "그림을 그리면 반드시 사냥에 성공했다고 확정한다.",
+            "type": "근거 부족",
+            "explanation": "주어진 증거만으로 그렇게 단정할 수 없습니다."
+          },
+          {
+            "text": "사냥의 성공을 바랐을 가능성으로 소개한다.",
+            "type": "가능한 선택",
+            "explanation": "역사 해석에서는 확인한 증거와 추론을 구분해야 한다."
+          }
+        ],
+        "reasons": [
+          {
+            "text": "그림의 소재는 단서이지만 제작 의도를 직접 확인하기는 어렵다.",
+            "correct": true,
+            "explanation": "역사 해석에서는 확인한 증거와 추론을 구분해야 한다."
+          },
+          {
+            "text": "하나의 유물만 있으면 모든 사람의 생활을 확정할 수 있기 때문이다.",
+            "correct": false,
+            "explanation": "하나의 사례를 모든 사람에게 일반화할 수 없습니다."
+          },
+          {
+            "text": "후대의 생활 모습이 구석기 시대에도 그대로 있었기 때문이다.",
+            "correct": false,
+            "explanation": "각 시대의 기술과 생활을 구분해야 합니다."
+          }
+        ],
+        "point": "역사 해석에서는 확인한 증거와 추론을 구분해야 한다."
+      }
+    ]
+  }
+],
+  neolithic:[
+    {title:'농사의 시작', investigations:[{title:'씨앗을 심다'},{title:'간석기의 발견'},{title:'가축과 함께'}]},
+    {title:'마을의 탄생', investigations:[{title:'움집을 찾아서'},{title:'빗살무늬 토기'},{title:'옷을 만드는 도구'}]},
+    {title:'자연과 함께', investigations:[{title:'자연에 깃든 영혼'},{title:'동물과 조상'},{title:'신석기 마을의 하루'}]}
+  ],
+  bronze:[
+    {title:'발달하는 농경', investigations:[{title:'벼농사의 흔적'},{title:'반달 돌칼'},{title:'늘어난 생산물'}]},
+    {title:'달라지는 사회', investigations:[{title:'청동검의 주인'},{title:'계급의 등장'},{title:'마을을 이끄는 사람'}]},
+    {title:'고인돌의 비밀', investigations:[{title:'거대한 돌무덤'},{title:'함께 나온 유물'},{title:'선사 시대 탐사 기록'}]}
+  ]
+};
+</script>
+<style>
+:root{font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;color:#22372f;background:#f3f5ed}*{box-sizing:border-box}body{margin:0}header{background:#173e35;color:white;padding:22px max(6vw,20px);display:flex;align-items:center;justify-content:space-between;gap:16px}header strong{font-size:clamp(18px,3vw,25px)}main{max-width:1120px;margin:auto;padding:36px 22px 70px}button{font:inherit;font-weight:750;min-height:52px;padding:13px 23px;border:0;border-radius:13px;cursor:pointer;background:#24644e;color:white}button:hover:not(:disabled){background:#174a39}button:focus-visible{outline:4px solid #df9b25;outline-offset:4px}button:disabled{background:#e2e6df;color:#68756e;cursor:not-allowed}.secondary{background:#e6ede7;color:#244b3d}.eyebrow{color:#687a58;font-weight:800;letter-spacing:2px;font-size:13px}h1{font-size:clamp(32px,6vw,54px);line-height:1.15;margin:15px 0}h2{font-size:28px}p{line-height:1.8}.hero{padding:18px 0 38px;max-width:750px}.hero p{color:#58675f;font-size:18px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.card,.panel{background:white;border:1px solid #dce3d6;border-radius:22px;padding:26px;box-shadow:0 8px 24px #24372b06}.card{display:flex;flex-direction:column;gap:12px}.card h2,.card h3,.card p{margin:0}.icon{font-size:38px}.tags{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0}.tag{background:#edf2e7;border-radius:8px;padding:6px 9px;font-size:14px}.card button{margin-top:auto;width:100%}.progress{font-weight:750;color:#40614c}.muted{color:#69766d}.topline{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:28px}.badge{font-size:13px;font-weight:800;color:#64775c}.panel{max-width:760px;margin:auto}.panel h2{margin-top:12px}.choices{display:grid;gap:12px;margin:24px 0}.choices button{text-align:left;background:#edf2e8;color:#253f32}.choices button:disabled{opacity:.7}.feedback{padding:16px;background:#f0f4e9;border-radius:12px;line-height:1.7;margin:20px 0}.actions{display:flex;gap:12px;flex-wrap:wrap}.notice{padding:16px 20px;background:#e8eddf;border-radius:12px;margin:24px 0;line-height:1.7}progress{width:100%;height:10px;accent-color:#397b53}footer{text-align:center;color:#6c786a;font-size:13px;padding:24px}header button{min-height:46px;background:#ffffff18} @media(max-width:800px){.grid{grid-template-columns:1fr}.card{padding:24px}.hero{padding-top:0}.topline{align-items:flex-start}header{padding:16px}main{padding:26px 16px 48px}button{min-height:56px}.panel{padding:23px}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;background:#e5eddf;padding:20px;border-radius:18px;margin-bottom:24px;line-height:1.8}.stats strong{font-size:23px}.learning{font-size:clamp(23px,4vw,31px);font-weight:800;line-height:1.6}.report li{padding:8px 0 16px}.report p{font-size:20px}@media(max-width:650px){.stats{grid-template-columns:repeat(2,1fr)}} </style>
+</head>
+<body>
+<header><strong>🧭 시간탐사대: 선사시대</strong><button onclick="home()" aria-label="홈 화면으로">홈</button></header>
+<main id="app"></main>
+<footer>시간의 흔적을 조사하고, 선사 시대의 생활을 발견해 보세요.</footer>
+<script>
+let record={};
+try{record=JSON.parse(localStorage.getItem('prehistoric-expedition-v2'))||{};}catch(e){}
+const app=document.getElementById('app');
+let currentAge=0,currentStage=0,currentInvestigation=0;
+function done(a,s,i){return record[`${a}-${s}-${i}`]===true;}
+function stageDone(a,s){return stages[age[a].id][s].investigations.every((_,i)=>done(a,s,i));}
+function ageDone(a){return stages[age[a].id].every((_,s)=>stageDone(a,s));}
+function ageOpen(a){return a===0||ageDone(a-1);}
+function stageOpen(a,s){return ageOpen(a)&&(s===0||stageDone(a,s-1));}
+function save(){try{localStorage.setItem('prehistoric-expedition-v2',JSON.stringify(record));}catch(e){}}
+function home(){
+ app.innerHTML=`<section class="hero"><span class="eyebrow">PREHISTORY EXPEDITION</span><h1>시간탐사대: 선사시대</h1><p>돌 도구 하나에도 옛사람들의 이야기가 숨어 있어요.<br>구석기부터 청동기까지, 시간의 흔적을 따라 탐사를 떠나요.</p><button onclick="start()">탐사 시작하기 →</button></section><div class="grid">${age.map((a,n)=>`<section class="card"><span class="icon" aria-hidden="true">${a.icon}</span><span class="badge">${ageOpen(n)?'탐사 가능':'🔒 잠긴 시대'}</span><h2>${a.name}</h2><p>${a.intro}</p><div class="tags">${a.keywords.map(k=>`<span class="tag">${k}</span>`).join('')}</div><p class="progress">${stages[a.id].filter((_,s)=>stageDone(n,s)).length} / 3 스테이지 완료</p><button ${ageOpen(n)?'':'disabled'} onclick="showAge(${n})">${ageOpen(n)?'시대 탐사하기':age[n-1].name+' 완료 후 열림'}</button></section>`).join('')}</div><p class="muted">각 시대는 3개 스테이지, 각 스테이지는 3개 조사로 구성됩니다. 앞선 탐사를 마치면 다음 탐사가 열립니다.</p>`;
+}
+function start(){let a=age.findIndex((_,n)=>!ageDone(n));showAge(a<0?0:a);}
+function showAge(a){if(!ageOpen(a))return;currentAge=a;app.innerHTML=`<div class="topline"><div><span class="eyebrow">${age[a].icon} 시대 탐사</span><h1>${age[a].name}</h1><p class="muted">${age[a].intro}</p></div><button class="secondary" onclick="home()">← 홈</button></div><div class="grid">${stages[age[a].id].map((s,n)=>`<section class="card"><span class="badge">STAGE ${n+1} ${stageDone(a,n)?'✓ 완료':''}</span><h2>${s.title}</h2><p class="progress">${s.investigations.filter((_,i)=>done(a,n,i)).length} / 3 조사 완료</p><ol>${s.investigations.map(i=>`<li><p>${i.title}</p></li>`).join('')}</ol><button ${stageOpen(a,n)?'':'disabled'} onclick="openStage(${a},${n})">${stageDone(a,n)?'다시 탐사':stageOpen(a,n)?'시작':'🔒 이전 스테이지 완료 후 시작'}</button></section>`).join('')}</div>`;}
+function openStage(a,s){if(!stageOpen(a,s))return;currentAge=a;currentStage=s;let next=stages[age[a].id][s].investigations.findIndex((_,i)=>!done(a,s,i));showInvestigation(next<0?0:next);}
+
+let phase='action';
+function itemNow(){return stages[age[currentAge].id][currentStage].investigations[currentInvestigation];}
+function countDone(){return age.reduce((sum,a,n)=>sum+stages[a.id].reduce((v,s,k)=>v+s.investigations.filter((_,i)=>done(n,k,i)).length,0),0);}
+function dashboard(){let n=countDone(),v=Math.min(100,70+n);return '<div class="stats"><div>식량 <strong>'+v+'</strong><progress value="'+v+'" max="100" aria-label="식량"></progress></div><div>공동체 <strong>'+v+'</strong><progress value="'+v+'" max="100" aria-label="공동체"></progress></div><div>역사 증거 점수<br><strong>'+n*30+'</strong></div><div>조사 진행<br><strong>'+(currentInvestigation+1)+' / 3</strong></div></div>';}
+function showInvestigation(i){currentInvestigation=i;phase='action';renderInvestigation();window.scrollTo(0,0);}
+function renderInvestigation(){let a=currentAge,s=currentStage,stage=stages[age[a].id][s],item=itemNow();app.innerHTML='<div class="topline"><div><span class="eyebrow">'+age[a].name+' · STAGE '+(s+1)+'</span><h2>'+stage.title+'</h2><p>목표: '+(stage.goal||'조사 자료 준비 중')+'</p></div><button class="secondary" onclick="showAge('+a+')">← 스테이지 목록</button></div>'+dashboard()+'<section class="panel"><span class="eyebrow">조사 '+(currentInvestigation+1)+'</span><h2>'+item.title+'</h2>'+(item.situation?'<p>'+item.situation+'</p><div id="interaction" aria-live="polite"></div>':'<div class="notice">이 조사는 제목만 준비되어 있습니다.</div>')+'</section>';if(item.situation)renderChoices();}
+function renderChoices(){let item=itemNow(),r=phase==='reason';document.getElementById('interaction').innerHTML='<h3>'+(r?'왜 그 선택이 맞을까요?':'어떻게 행동할까요?')+'</h3>'+(r?'<p class="progress">✓ 가능한 선택을 찾았습니다. 근거를 골라 보세요.</p>':'')+'<div class="choices">'+(r?item.reasons:item.actions).map((c,n)=>'<button onclick="choose('+n+')"><strong>'+(r?n+1:['A','B','C'][n])+'</strong> · '+c.text+'</button>').join('')+'</div>';}
+function choose(n){if(phase==='complete')return;let item=itemNow(),r=phase==='reason',c=(r?item.reasons:item.actions)[n];if(r?c.correct:c.type==='가능한 선택'){if(r)completeInvestigation();else{phase='reason';renderChoices();}return;}document.getElementById('interaction').innerHTML='<div class="feedback" role="status"><h3>'+(r?'근거를 다시 살펴보세요':c.type==='시대착오'?'시대착오 발견':'근거가 부족합니다')+'</h3><p>'+c.explanation+'</p><button onclick="renderChoices()">다시 선택</button></div>';}
+function completeInvestigation(){let already=done(currentAge,currentStage,currentInvestigation);record[currentAge+'-'+currentStage+'-'+currentInvestigation]=true;save();phase='complete';renderInvestigation();document.getElementById('interaction').innerHTML='<div class="feedback"><span class="badge">조사 완료</span><p class="learning">'+itemNow().point+'</p><p>'+(already?'이미 완료한 조사입니다. 점수는 중복 지급되지 않습니다.':'역사 증거 +30 · 식량 +1 · 공동체 +1')+'</p></div><button onclick="'+(currentInvestigation<2?'showInvestigation('+(currentInvestigation+1)+')':'showReport()')+'">'+(currentInvestigation<2?'다음 조사 →':'조사 보고서 보기 →')+'</button>';}
+function showReport(){let a=currentAge,s=currentStage,stage=stages[age[a].id][s];if(!stageDone(a,s))return;app.innerHTML='<section class="panel"><span class="eyebrow">'+age[a].name+' · STAGE '+(s+1)+' · '+stage.title+'</span><h1>조사 보고서 완성</h1><ol class="report">'+stage.investigations.map(i=>'<li><h3>'+i.title+'</h3><p>'+i.point+'</p></li>').join('')+'</ol><p class="progress">3 / 3 조사 완료 · 역사 증거 총 '+countDone()*30+'점</p><button onclick="showAge('+a+')">스테이지 목록으로 →</button></section>';window.scrollTo(0,0);}
+home();
+</script>
+</body>
+</html>

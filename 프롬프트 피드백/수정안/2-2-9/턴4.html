@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>학급 문고 대출 기록표</title>
+<style>
+:root{font-family:system-ui,'맑은 고딕',sans-serif;color:#233b36;background:#f4f7f2}*{box-sizing:border-box}body{margin:0}header{background:#245c4e;color:white;padding:42px max(24px,calc((100% - 1100px)/2)) 32px}h1{margin:8px 0 12px;font-size:clamp(28px,5vw,42px)}header p{color:#dfede6;line-height:1.7;margin:0}.eyebrow{font-size:14px;letter-spacing:2px}main{max-width:1100px;margin:auto;padding:26px 24px 70px}.tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center}button,.upload{font:inherit;font-weight:700;border:1px solid #245c4e;border-radius:10px;padding:13px 19px;background:#245c4e;color:white;cursor:pointer}.secondary{background:white;color:#245c4e}button:hover,.upload:hover{filter:brightness(.94)}button:focus-visible,.upload:focus-within,a:focus-visible{outline:3px solid #e7ad36;outline-offset:4px}.upload input{position:absolute;width:1px;height:1px;opacity:0}.help{font-size:14px;color:#60736b;line-height:1.7}.index{position:sticky;top:0;z-index:2;display:flex;flex-wrap:wrap;gap:7px;padding:15px 0;background:#f4f7f2f5;border-bottom:1px solid #d7e1d7}.index a{display:grid;place-items:center;text-decoration:none;width:43px;height:43px;border-radius:9px;background:white;border:1px solid #d4dfd5;color:#245c4e;font-size:20px;font-weight:800}.index a:hover{background:#dfece1}.summary{margin:25px 0 18px;font-weight:700}.empty{text-align:center;padding:65px 20px;background:white;border:2px dashed #cfdbd0;border-radius:16px;color:#667c70;line-height:1.8}.empty strong{font-size:24px;display:block;color:#355b48}.group{scroll-margin-top:145px;margin:26px 0}.group h2{font-size:25px;color:#245c4e;border-bottom:2px solid #b9cebc;padding-bottom:10px}.book{background:white;border:1px solid #dce5dc;border-radius:12px;padding:23px 25px;margin:12px 0;display:flex;gap:20px;align-items:baseline}.number{color:#81968a;font-size:16px;min-width:30px}.title{font-size:clamp(24px,4vw,32px);font-weight:750;overflow-wrap:anywhere;line-height:1.4}.author{color:#687d71;font-size:18px;margin-top:7px}.notice{color:#a03d25;white-space:pre-line}footer{font-size:13px;color:#76867c;margin-top:32px}@media(max-width:600px){main{padding:18px 16px 50px}header{padding:30px 20px}.index{gap:5px}.index a{width:36px;height:38px;font-size:18px}.book{padding:18px 15px;gap:10px}.group{scroll-margin-top:180px}}
+.book{cursor:pointer}.book:focus-visible{outline:3px solid #e7ad36;outline-offset:3px}.book.loaned{background:#fff3d2;border-color:#d4af42}.book.overdue{background:#ffe0e0;border:2px solid #c53434}.status{font-size:18px;font-weight:700;margin-top:12px}.overdue .status{color:#ac2020}.dates{font-size:14px;color:#647267;margin-top:6px}.student-chip{padding:6px 10px;margin:5px 5px 0 0;background:white;color:#245c4e;font-size:15px;border-color:#a9c5b4}.review-link{padding:7px 11px;margin-top:12px;background:#edf3eb;color:#245c4e;font-size:14px;border-color:#bdd0bd}.book{touch-action:pan-y;-webkit-user-select:none;user-select:none}dialog{border:0;border-radius:18px;padding:26px;max-width:560px;width:calc(100% - 32px);max-height:85vh;color:#233b36;box-shadow:0 15px 70px #0004}dialog::backdrop{background:#152a2566}dialog h2{margin-top:0;overflow-wrap:anywhere}dialog textarea,dialog select{font:inherit;width:100%;margin:8px 0 16px;padding:12px;border:1px solid #adc3b3;border-radius:8px}dialog textarea{min-height:100px;resize:vertical}dialog label{display:block;font-weight:700}.dialog-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.review-item{padding:15px 0;border-bottom:1px solid #dbe5dc;overflow-wrap:anywhere;white-space:pre-wrap}.review-item p{margin:8px 0}.rating{color:#966600;font-weight:800}.counter{font-size:14px;color:#65776d;margin-top:-10px}.dialog-error{color:#b12424}#students{margin:10px 0 20px}
+#print-report{display:none}@page{size:A4 portrait;margin:12mm}@media print{html,body{background:white!important;color:#111!important;margin:0!important;padding:0!important}body>header,body>main,dialog{display:none!important}#print-report{display:block!important;width:186mm;height:272mm;overflow:hidden;font-family:'맑은 고딕',sans-serif}#print-report h1{font-size:19pt;margin:0 0 3mm}#print-report .print-meta{font-size:9pt;margin:0 0 4mm}#print-report .print-section-title{font-size:12pt;margin:0 0 2mm}#print-report .print-students{height:var(--student-height);display:grid;grid-template-columns:repeat(var(--columns),minmax(0,1fr));gap:3mm;margin-bottom:4mm;align-items:start}#print-report table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:var(--table-font,9pt);line-height:1.1}#print-report th,#print-report td{border:0.2mm solid #999;padding:1.1mm 1mm;text-align:center;overflow-wrap:anywhere}#print-report th{background:#eee!important;print-color-adjust:exact}#print-report .top-books{font-size:9pt}#print-report .top-books td:nth-child(2){text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#print-report .print-note{font-size:8pt;margin:2mm 0 0}#print-report tr{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header><div class="eyebrow">우리 반 작은 도서관</div><h1>학급 문고 대출 기록표</h1><p>읽고 싶은 책을 찾아보세요.<br>책 목록을 올리면 제목순으로 보기 좋게 정리해 드려요.</p></header>
+<main>
+<div class="tools"><button id="print" class="secondary">인쇄</button><button id="export" class="secondary">전체 대출 기록 CSV 내려받기</button><button id="download" class="secondary">↓ 책 목록 틀 내려받기</button><label class="upload">↑ 책 목록 CSV 올리기<input id="file" type="file" accept=".csv,text/csv" aria-label="책 목록 CSV 올리기"></label></div>
+<p class="help">CSV 틀의 ‘제목’, ‘저자’ 칸을 채운 뒤 CSV UTF-8 형식으로 저장해 올려 주세요.<br>책을 눌러 학생 번호를 입력하면 대출됩니다. 다시 누르면 별점과 한줄평을 남기거나 건너뛰고 반납할 수 있습니다.<br>책을 길게 누르면 평균 별점과 평 목록이, 학생 번호를 누르면 그 학생의 독서 기록이 열립니다. ★는 평을 쓴 학생입니다.<br>대출 기간은 7일입니다. 연체 중인 학생은 새로 빌릴 수 없습니다. 기록은 이 브라우저에 저장됩니다.</p>
+<nav class="index" id="index" aria-label="책 제목 첫 글자 색인"></nav>
+<p id="notice" class="notice" role="status"></p>
+<p class="summary" id="summary" aria-live="polite">등록된 책 0권</p>
+<div id="students" aria-label="학생별 독서 기록"></div><div id="books"><div class="empty"><strong>어떤 책들이 기다리고 있을까요?</strong>‘책 목록 틀 내려받기’로 시작해 보세요.<br>제목과 저자를 채워 올리면 이곳에 책 목록이 나타납니다.</div></div>
+<footer>ㄱ~ㅎ을 누르면 해당 첫소리의 책으로 이동합니다. 영문 제목은 ABC에서 찾을 수 있어요.</footer>
+</main><section id="print-report" aria-label="인쇄용 학급 문고 통계"></section><dialog id="modal" aria-labelledby="modal-title"></dialog>
+<script>
+const initials=['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const labels=['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ','ABC','기타'];
+const doubles={'ㄲ':'ㄱ','ㄸ':'ㄷ','ㅃ':'ㅂ','ㅆ':'ㅅ','ㅉ':'ㅈ'};
+const index=document.getElementById('index'), books=document.getElementById('books'), notice=document.getElementById('notice');
+labels.forEach((label,i)=>{const a=document.createElement('a');a.href='#group-'+i;a.textContent=label;a.style.width=label==='ABC'?'62px':'';a.addEventListener('click',e=>{if(!document.getElementById('group-'+i)){e.preventDefault();notice.textContent=label+'에 해당하는 책이 없습니다.';}else notice.textContent='';});index.append(a);});
+document.getElementById('download').onclick=()=>{const blob=new Blob(['\uFEFF제목,저자\r\n'],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='책_목록_틀.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+function parseCSV(text){const rows=[];let row=[],cell='',quoted=false;for(let i=0;i<text.length;i++){const ch=text[i];if(ch==='"'){if(quoted&&text[i+1]==='"'){cell+='"';i++;}else if(quoted){quoted=false;}else if(cell===''){quoted=true;}else throw Error('따옴표 형식을 확인해 주세요.');}else if(ch===','&&!quoted){row.push(cell);cell='';}else if((ch==='\n'||ch==='\r')&&!quoted){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(cell);rows.push(row);row=[];cell='';}else cell+=ch;}if(quoted)throw Error('닫히지 않은 따옴표가 있습니다.');if(cell!==''||row.length){row.push(cell);rows.push(row);}return rows.filter(r=>r.some(c=>c.trim()));}
+function category(title){const ch=title.trim()[0],code=ch.charCodeAt(0);if(code>=0xAC00&&code<=0xD7A3){const letter=initials[Math.floor((code-0xAC00)/588)];return doubles[letter]||letter;}if(initials.includes(ch))return doubles[ch]||ch;if(/[a-z]/i.test(ch))return 'ABC';return '기타';}
+document.getElementById('file').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{let content=await file.text();if(content.includes('\uFFFD'))content=new TextDecoder('euc-kr').decode(await file.arrayBuffer());const rows=parseCSV(content.replace(/^\uFEFF/,''));if(!rows.length)throw Error('파일이 비어 있습니다.');const header=rows.shift().map(c=>c.trim());if(header.length!==2||header[0]!=='제목'||header[1]!=='저자')throw Error('첫 줄은 제목,저자 두 칸이어야 합니다. CSV 틀을 이용해 주세요.');if(rows.some(r=>r.length!==2))throw Error('각 행은 제목, 저자 두 칸이어야 합니다. 쉼표가 든 내용은 큰따옴표로 감싸 주세요.');let skipped=0;const imported=rows.filter(r=>{if(!r[0].trim()){skipped++;return false;}return true;}).map(r=>({title:r[0].trim(),author:r[1].trim()}));const pool=[...entries];entries=imported.map(b=>{const i=pool.findIndex(old=>old.title===b.title&&old.author===b.author);return i<0?b:pool.splice(i,1)[0];});entries.push(...pool.filter(b=>b.loan||(b.history&&b.history.length)));const collator=new Intl.Collator('ko',{numeric:true,sensitivity:'base'});entries.sort((a,b)=>labels.indexOf(category(a.title))-labels.indexOf(category(b.title))||collator.compare(a.title,b.title)||collator.compare(a.author,b.author));render();save();notice.textContent=skipped?'제목이 없는 '+skipped+'개 행은 제외했습니다.':'';}catch(error){notice.textContent='파일을 불러오지 못했습니다. '+error.message;}e.target.value='';});
+const storageKey='class-library-loans-v1';
+let entries=[];
+try{const data=JSON.parse(localStorage.getItem(storageKey)||'[]');if(Array.isArray(data))entries=data.filter(b=>typeof b.title==='string'&&b.title.trim()&&typeof b.author==='string').map(b=>({...b,loan:b.loan&&/^\d+$/.test(b.loan.student)&&Number.isFinite(b.loan.at)?b.loan:null}));}catch{notice.textContent='저장된 기록을 불러오지 못했습니다.';}
+const DAY=86400000;
+function late(b){return b.loan?Math.max(0,Math.floor((Date.now()-b.loan.at)/DAY)-7):0;}
+function save(){try{localStorage.setItem(storageKey,JSON.stringify(entries));return true;}catch{alert('브라우저에 기록을 저장하지 못했습니다. 창을 닫으면 기록이 사라질 수 있습니다.');return false;}}
+function transact(b){
+ if(b.loan){returnBook(b);return;}
+ const input=prompt('「'+b.title+'」을 빌릴 학생 번호를 입력하세요.');if(input===null)return;
+ if(!/^\d+$/.test(input.trim())||!/[1-9]/.test(input.trim())){notice.textContent='학생 번호는 1 이상의 숫자로 입력해 주세요.';return;}
+ const student=input.trim().replace(/^0+/,'');
+ const overdue=entries.find(book=>book.loan&&book.loan.student===student&&late(book)>0);
+ if(overdue){notice.textContent=student+'번 학생은 「'+overdue.title+'」이 연체 중이어서 새로 빌릴 수 없습니다. 먼저 반납해 주세요.';render();return;}
+ b.loan={student,at:Date.now()};save();render();notice.textContent=student+'번 학생에게 「'+b.title+'」을 대출했습니다.';
+}
+const modal=document.getElementById('modal');
+function el(tag,text,cls){const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(cls)node.className=cls;return node;}
+function openModal(title){modal.replaceChildren(el('h2',title));modal.firstChild.id='modal-title';if(!modal.open)modal.showModal();}
+function closeButton(){const button=el('button','닫기');button.textContent='닫기';button.onclick=()=>modal.close();modal.append(button);}
+function history(b){return Array.isArray(b.history)?b.history:[];}
+function reviewed(r){return Number.isInteger(r.rating)&&r.rating>=1&&r.rating<=5;}
+function studentButton(student,star=false){const button=el('button',student+'번'+(star?' ★':''),'student-chip');button.type='button';button.setAttribute('aria-label',student+'번 학생 독서 기록'+(star?', 평 작성':''));button.onclick=e=>{e.stopPropagation();showStudent(student);};return button;}
+function returnBook(b){
+ const loan=b.loan;openModal('「'+b.title+'」 반납');
+ modal.append(el('p',loan.student+'번 학생 · 별점과 한줄평은 선택 사항입니다.'));
+ const form=el('form'),ratingLabel=el('label','별점 (1~5)'),rating=el('select');rating.required=true;rating.append(new Option('별점을 선택하세요',''));for(let i=1;i<=5;i++)rating.append(new Option('★'.repeat(i)+' · '+i+'점',i));ratingLabel.append(rating);
+ const textLabel=el('label','한줄평 (50자 이내)'),text=el('textarea');text.rows=3;text.required=true;text.placeholder='책을 읽고 느낀 점을 적어 주세요.';textLabel.append(text);
+ const count=el('p','0 / 50자','counter'),error=el('p','','dialog-error');error.setAttribute('role','alert');
+ text.oninput=()=>{text.value=Array.from(text.value.replace(/[\r\n]+/g,' ')).slice(0,50).join('');count.textContent=Array.from(text.value).length+' / 50자';};
+ const actions=el('div',undefined,'dialog-actions'),submit=el('button','평 저장하고 반납'),skip=el('button','건너뛰고 반납','secondary'),cancel=el('button','취소','secondary');submit.type='submit';skip.type=cancel.type='button';
+ function finish(ratingValue,comment){if(b.loan!==loan){modal.close();return;}if(!b.history)b.history=[];b.history.push({student:loan.student,borrowedAt:loan.at,returnedAt:Date.now(),rating:ratingValue,comment});b.loan=null;save();modal.close();render();notice.textContent=loan.student+'번 학생의 「'+b.title+'」 반납이 완료되었습니다.';}
+ form.onsubmit=e=>{e.preventDefault();const comment=text.value.trim();if(!comment||Array.from(comment).length>50||!rating.value){error.textContent='별점 1~5와 50자 이내의 한줄평을 적어 주세요. 또는 건너뛰기를 눌러 주세요.';return;}finish(Number(rating.value),comment);};skip.onclick=()=>finish(null,'');cancel.onclick=()=>modal.close();actions.append(submit,skip,cancel);form.append(ratingLabel,textLabel,count,error,actions);modal.append(form);
+}
+function showBook(b){
+ openModal('「'+b.title+'」의 독서평');const reviews=history(b).filter(reviewed);modal.append(el('p',reviews.length?'평균 ★ '+(reviews.reduce((sum,r)=>sum+r.rating,0)/reviews.length).toFixed(1)+' / 5 · '+reviews.length+'개의 평':'아직 등록된 평이 없습니다.','rating'));
+ [...reviews].reverse().forEach(r=>{const item=el('div',undefined,'review-item');item.append(studentButton(r.student,true),el('span','★'.repeat(r.rating),'rating'),el('p',r.comment),el('small',new Date(r.returnedAt).toLocaleDateString('ko-KR')));modal.append(item);});closeButton();
+}
+function showStudent(student){
+ openModal(student+'번 학생의 독서 기록');const records=entries.flatMap(b=>history(b).filter(r=>r.student===student).map(r=>({b,r}))).sort((a,b)=>b.r.returnedAt-a.r.returnedAt);
+ modal.append(el('p','읽고 반납한 책 '+records.length+'권 · 평 '+records.filter(x=>reviewed(x.r)).length+'개'));
+ if(!records.length)modal.append(el('p','아직 반납한 책이 없습니다.'));
+ records.forEach(({b,r})=>{const item=el('div',undefined,'review-item');item.append(el('strong',b.title),el('p',reviewed(r)?'★'.repeat(r.rating)+' · '+r.comment:'평 없이 반납'),el('small',new Date(r.returnedAt).toLocaleDateString('ko-KR')+' 반납'));modal.append(item);});closeButton();
+}
+function decorate(){
+ const sorted=[];labels.forEach(label=>sorted.push(...entries.filter(b=>category(b.title)===label)));
+ books.querySelectorAll('.book').forEach((card,i)=>{
+  const b=sorted[i],days=late(b);card.classList.toggle('loaned',!!b.loan);card.classList.toggle('overdue',days>0);card.tabIndex=0;card.setAttribute('aria-label',b.title+' · '+(b.loan?'대출 중, 누르면 반납':'누르면 대출')+' · 길게 누르면 독서평');
+  const detail=card.lastElementChild,status=el('div',b.loan?'대출 중 · '+(days?'연체 '+days+'일 · ':'')+'누르면 반납':'대출 가능 · 누르면 대출','status');detail.append(status);
+  if(b.loan){status.append(studentButton(b.loan.student,history(b).some(r=>r.student===b.loan.student&&reviewed(r))));detail.append(el('div','대출: '+new Date(b.loan.at).toLocaleString('ko-KR')+' / 반납 기한: '+new Date(b.loan.at+7*DAY).toLocaleString('ko-KR'),'dates'));}
+  const reviewers=[...new Set(history(b).filter(reviewed).map(r=>r.student))];if(reviewers.length){const row=el('div');row.append(el('small','평 쓴 학생: '));reviewers.forEach(student=>row.append(studentButton(student,true)));detail.append(row);}
+  const view=el('button','★ 독서평 보기','review-link');view.type='button';view.onclick=e=>{e.stopPropagation();showBook(b);};detail.append(view);
+  let timer=null,held=false,startX=0,startY=0,pointer=null;const clear=()=>{clearTimeout(timer);timer=null;};
+  card.onpointerdown=e=>{if(e.target.closest('button')||!e.isPrimary||e.button!==0)return;clear();held=false;startX=e.clientX;startY=e.clientY;pointer=e.pointerId;timer=setTimeout(()=>{held=true;timer=null;showBook(b);},600);};
+  card.onpointermove=e=>{if(e.pointerId===pointer&&Math.hypot(e.clientX-startX,e.clientY-startY)>10)clear();};card.onpointerup=clear;card.onpointercancel=clear;card.onpointerleave=clear;
+  card.oncontextmenu=e=>e.preventDefault();card.onclick=e=>{clear();if(e.target.closest('button'))return;if(held){held=false;e.preventDefault();return;}transact(b);};
+  card.onkeydown=e=>{if(e.target!==card)return;if(e.key==='Enter'||e.key===' '){e.preventDefault();transact(b);}else if(e.key==='F2'){e.preventDefault();showBook(b);}};
+ });
+ const panel=document.getElementById('students');panel.replaceChildren();const students=[...new Set(entries.flatMap(b=>[...(b.loan?[b.loan.student]:[]),...history(b).map(r=>r.student)]))].sort((a,b)=>a.length-b.length||a.localeCompare(b));
+ if(students.length){panel.append(el('strong','학생별 독서 기록: '));panel.firstChild.textContent='학생별 독서 기록: ';students.forEach(student=>panel.append(studentButton(student,entries.some(b=>history(b).some(r=>r.student===student&&reviewed(r))))));}
+ document.getElementById('summary').textContent='등록된 책 '+entries.length+'권 · 대출 중 '+entries.filter(b=>b.loan).length+'권 · 연체 '+entries.filter(b=>late(b)>0).length+'권';
+}
+function render(){books.replaceChildren();let n=0;labels.forEach((label,i)=>{const list=entries.filter(b=>category(b.title)===label);if(!list.length)return;const section=document.createElement('section');section.className='group';section.id='group-'+i;const h=document.createElement('h2');h.textContent=label+' · '+list.length+'권';section.append(h);list.forEach(b=>{const card=document.createElement('article');card.className='book';const number=document.createElement('span');number.className='number';number.textContent=String(++n).padStart(2,'0');const detail=document.createElement('div'),title=document.createElement('div'),author=document.createElement('div');title.className='title';title.textContent=b.title;author.className='author';author.textContent=b.author||'저자 미입력';detail.append(title,author);card.append(number,detail);section.append(card);});books.append(section);});if(!entries.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='등록할 책이 없습니다. 제목을 채워 다시 올려 주세요.';books.append(empty);}document.getElementById('summary').textContent='등록된 책 '+entries.length+'권 · 제목순';decorate();}
+render();setInterval(()=>{if(!modal.open)render();},60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)render();});
+function allLoans(){return entries.flatMap(b=>[...history(b).map(r=>({book:b,student:r.student,borrowedAt:r.borrowedAt,returnedAt:r.returnedAt,rating:reviewed(r)?r.rating:null,comment:r.comment||''})),...(b.loan?[{book:b,student:b.loan.student,borrowedAt:b.loan.at,returnedAt:null,rating:null,comment:''}]:[])]);}
+function makeTable(headers,rows,widths){const table=el('table'),head=el('thead'),tr=el('tr'),body=el('tbody');if(widths){const group=el('colgroup');widths.forEach(width=>{const col=el('col');col.style.width=width;group.append(col);});table.append(group);}headers.forEach(text=>{const th=el('th',text);th.scope='col';tr.append(th);});head.append(tr);rows.forEach(row=>{const line=el('tr');row.forEach(value=>line.append(el('td',String(value))));body.append(line);});table.append(head,body);return table;}
+function buildPrint(){
+ const report=document.getElementById('print-report');report.replaceChildren();
+ report.append(el('h1','학급 문고 대출 통계'),el('p',new Date().toLocaleDateString('ko-KR')+' 기준 · 대출 권수: 반납 완료 + 현재 대출(같은 책 재대출 포함)','print-meta'));
+ const records=allLoans(),students=[...new Set(records.map(r=>r.student))].sort((a,b)=>a.length-b.length||a.localeCompare(b));
+ report.append(el('h2','학생별 대출 권수와 평균 별점','print-section-title'));
+ const columns=Math.max(1,Math.ceil(students.length/26)),perColumn=Math.max(1,Math.ceil(students.length/columns));
+ const area=el('div',undefined,'print-students');report.style.setProperty('--columns',columns);report.style.setProperty('--student-height','139mm');report.style.setProperty('--table-font',columns>3?'7pt':'9pt');
+ const studentRows=students.map(student=>{const list=records.filter(r=>r.student===student),rated=list.filter(r=>r.rating!==null);return [student+'번',list.length+'권',rated.length?(rated.reduce((n,r)=>n+r.rating,0)/rated.length).toFixed(1):'—'];});
+ for(let i=0;i<columns;i++)area.append(makeTable(['학생 번호','대출 권수','평균 별점'],studentRows.slice(i*perColumn,(i+1)*perColumn)));
+ if(!students.length)area.append(el('p','대출 기록이 없습니다.'));report.append(area);
+ report.append(el('h2','별점 높은 책 10권','print-section-title'));
+ const ranked=entries.map(b=>{const ratings=history(b).filter(reviewed);return {b,count:ratings.length,average:ratings.length?ratings.reduce((n,r)=>n+r.rating,0)/ratings.length:0};}).filter(x=>x.count).sort((a,b)=>b.average-a.average||b.count-a.count||a.b.title.localeCompare(b.b.title,'ko')).slice(0,10);
+ const table=makeTable(['순위','책 제목','평균 별점','평 수'],ranked.map((x,i)=>[i+1,x.b.title,x.average.toFixed(1),x.count]),['10%','62%','16%','12%']);table.className='top-books';report.append(table);
+ if(!ranked.length)report.append(el('p','등록된 별점이 없습니다.'));
+ report.append(el('p','평균 별점은 학생이 남긴 1~5점의 평균이며, 건너뛴 평은 제외합니다. 책 순위는 평균 별점, 평 수, 제목순입니다.','print-note'));
+}
+function csvCell(value){let text=String(value??'');if(/^[\s]*[=+@-]/.test(text)||/^[\t\r\n]/.test(text))text="'"+text;return '"'+text.replace(/"/g,'""')+'"';}
+function exportLoans(){
+ const rows=[['학생 번호','책 제목','저자','대출 일시','반납 기한','반납 일시','상태','연체 일수','별점','한줄평']];
+ const format=at=>{if(!Number.isFinite(at))return '';const d=new Date(at),pad=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());};
+ allLoans().sort((a,b)=>a.borrowedAt-b.borrowedAt).forEach(r=>{const end=r.returnedAt??Date.now(),overdue=Math.max(0,Math.floor((end-r.borrowedAt)/DAY)-7);rows.push([r.student,r.book.title,r.book.author,format(r.borrowedAt),format(r.borrowedAt+7*DAY),format(r.returnedAt),r.returnedAt!==null?'반납 완료':overdue?'연체':'대출 중',overdue,r.rating??'',r.comment]);});
+ const blob=new Blob(['\uFEFF'+rows.map(row=>row.map(csvCell).join(',')).join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=el('a');a.href=url;a.download='학급_문고_전체_대출_기록_'+new Date().toLocaleDateString('sv-SE')+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+document.getElementById('print').onclick=()=>{buildPrint();window.print();};window.addEventListener('beforeprint',buildPrint);document.getElementById('export').onclick=exportLoans;
+</script>
+</body>
+</html>
+
+
+
+

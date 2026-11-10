@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 반 자리 배치</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fb;color:#17243b;font-family:"맑은 고딕",system-ui,sans-serif}header{padding:25px 32px;background:#172f50;color:white}h1{margin:0 0 6px;font-size:28px}header p{margin:0;color:#d7e4f6}main{display:grid;grid-template-columns:290px minmax(0,1fr);gap:24px;padding:24px;max-width:1800px;margin:auto}.panel{background:white;border:1px solid #dbe3ee;border-radius:16px;padding:22px;align-self:start}label{display:block;font-weight:bold;margin-bottom:9px}textarea,input,button{font:inherit}textarea{width:100%;height:260px;resize:vertical;border:1px solid #aebcd0;border-radius:8px;padding:12px;line-height:1.6}input{width:100%;padding:10px;border:1px solid #aebcd0;border-radius:8px}.dimensions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}.hint{font-size:14px;color:#596981;line-height:1.6}.primary, .secondary{border:0;border-radius:9px;padding:13px 16px;cursor:pointer;font-weight:bold}.primary{background:#245fd5;color:white;width:100%;font-size:18px}.primary:hover{background:#174aad}.secondary{background:#e5edf9;color:#203e69}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #eea821;outline-offset:3px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}.toolbar h2{margin:0;font-size:22px}.actions{display:flex;gap:8px}.board{background:#215649;color:white;border:7px solid #d2b48a;border-radius:8px;padding:14px;text-align:center;font-size:30px;font-weight:bold;letter-spacing:12px;margin-bottom:30px;box-shadow:0 3px 8px #17243b14}.seats{display:grid;grid-template-columns:repeat(var(--cols,5),minmax(0,1fr));gap:16px}.seat{background:white;border:2px solid #cad8ea;border-bottom:7px solid #aec4e3;border-radius:12px;min-height:110px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:10px;overflow-wrap:anywhere;text-align:center}.number{font-size:13px;color:#697b92;margin-bottom:5px}.name{font-size:clamp(24px,3vw,48px);font-weight:800;line-height:1.3}.empty{background:#edf1f6;border-color:#dce3ec;color:#8591a2}.empty .name{font-size:22px;font-weight:400}.placeholder{padding:65px 20px;text-align:center;border:2px dashed #c4d1e3;border-radius:16px;color:#61718b;line-height:1.8;font-size:20px}.status{min-height:24px;line-height:1.6;margin:14px 0 0;font-size:14px;color:#415571}.status.error{color:#b42318}.view-note{text-align:center;color:#65748b;margin-top:22px;font-size:14px}body.presentation header,body.presentation .panel,body.presentation .view-note{display:none}body.presentation main{display:block;padding:20px;max-width:none}body.presentation .seat{min-height:125px}body.presentation .name{font-size:clamp(28px,4vw,64px)}@media(max-width:800px){main{grid-template-columns:1fr;padding:14px}.seats{gap:8px}.seat{min-height:85px;padding:6px}.name{font-size:24px}header{padding:20px}.board{margin-bottom:20px}}@media print{@page{size:landscape;margin:12mm}body{background:white}header,.panel,.actions,.view-note{display:none!important}main{display:block;padding:0}.seat{break-inside:avoid;min-height:85px}.name{font-size:28px}.board{color:black;background:white;border:3px solid black;padding:8px;margin-bottom:18px}.toolbar{margin-bottom:10px}}
+</style>
+</head>
+<body>
+<header><h1>우리 반 자리 배치</h1><p>명단을 넣고 버튼을 누르면, 오늘의 자리가 완성됩니다.</p></header>
+<main>
+<section class="panel" aria-label="자리 배치 설정">
+<label for="students">학생 명단</label>
+<textarea id="students" placeholder="한 줄에 한 명씩 입력하세요.&#10;김하늘&#10;박바다&#10;이봄" spellcheck="false"></textarea>
+<div class="hint" id="count">학생 0명 · 빈 줄은 제외합니다.</div>
+<div class="dimensions"><div><label for="rows">줄 수 (앞→뒤)</label><input id="rows" type="number" min="1" max="20" value="5"></div><div><label for="cols">한 줄 책상 수</label><input id="cols" type="number" min="1" max="20" value="6"></div></div>
+<fieldset style="border:1px solid #dbe3ee;border-radius:8px;padding:12px;margin:0 0 18px">
+<legend>떨어뜨릴 학생 두 명 (선택)</legend>
+<label for="apart1">첫 번째 학생</label><input id="apart1" type="text" placeholder="명단과 같은 이름" style="margin-bottom:12px">
+<label for="apart2">두 번째 학생</label><input id="apart2" type="text" placeholder="명단과 같은 이름">
+<p class="hint">앞뒤·좌우로 붙지 않게 배치합니다. 대각선은 허용합니다.</p>
+</fieldset>
+<label for="front">앞자리 학생 (선택)</label>
+<textarea id="front" style="height:90px" placeholder="첫 줄에 앉을 학생을 한 줄에 한 명씩 입력" spellcheck="false"></textarea>
+<p class="hint">조건은 비워 두어도 됩니다. 최대 200번 섞어 조건에 맞는 자리를 찾습니다.</p>
+<button class="primary" id="generate" type="button">무작위 자리 배치</button>
+<p class="status" id="status" role="status" aria-live="polite">총 30자리까지 배치할 수 있습니다.</p>
+<p class="hint">남는 자리는 ‘빈자리’로 표시합니다. 같은 이름은 번호나 구별 표시를 붙여 주세요.<br>입력한 명단은 외부로 전송하거나 저장하지 않습니다.</p>
+</section>
+<section aria-label="자리표">
+<div class="toolbar"><h2 id="title">우리 반 자리표</h2><div class="actions"><button class="secondary" id="display" type="button" aria-pressed="false">크게 보기</button><button class="secondary" id="print" type="button">인쇄</button></div></div>
+<div class="board">칠판</div>
+<div id="seats" class="seats"><div class="placeholder" style="grid-column:1 / -1">왼쪽에 학생 명단을 입력한 뒤<br>‘무작위 자리 배치’를 눌러 주세요.</div></div>
+<p class="view-note">칠판을 바라보는 학생 기준입니다. 위쪽이 앞자리입니다.</p>
+</section>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const names=()=>$('students').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+function update(){const n=names().length;$('count').textContent=`학생 ${n}명 · 빈 줄은 제외합니다.`;}
+$('students').addEventListener('input',update);
+function message(text,error=false){$('status').textContent=text;$('status').classList.toggle('error',error);}
+for(const id of ['rows','cols']) $(id).addEventListener('input',()=>{const r=Number($('rows').value),c=Number($('cols').value);message(Number.isInteger(r)&&Number.isInteger(c)&&r>=1&&c>=1&&r<=20&&c<=20?`총 ${r*c}자리까지 배치할 수 있습니다. 변경한 설정은 배치 버튼을 누르면 반영됩니다.`:'줄 수와 한 줄 책상 수는 1~20의 정수로 입력하세요.');});
+function randomIndex(limit){const range=4294967296,cutoff=range-range%limit;const a=new Uint32Array(1);do{crypto.getRandomValues(a);}while(a[0]>=cutoff);return a[0]%limit;}
+$('generate').addEventListener('click',()=>{
+ const list=names(),r=Number($('rows').value),c=Number($('cols').value);
+ if(!list.length){message('학생 명단을 한 명 이상 입력해 주세요.',true);$('students').focus();return;}
+ if(!Number.isInteger(r)||!Number.isInteger(c)||r<1||c<1||r>20||c>20){message('줄 수와 한 줄 책상 수는 1~20의 정수로 입력하세요.',true);return;}
+ if(list.length>r*c){message(`학생은 ${list.length}명인데 자리는 ${r*c}개입니다. 자리를 ${list.length-r*c}개 이상 늘려 주세요.`,true);return;}
+ const apart=[$('apart1').value.trim(),$('apart2').value.trim()];
+ const front=[...new Set($('front').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean))];
+ if(new Set(list).size!==list.length){message('같은 이름이 있습니다. 명단에서 번호나 구별 표시를 붙여 주세요.',true);return;}
+ if(Boolean(apart[0])!==Boolean(apart[1])){message('떨어뜨릴 학생은 두 명을 모두 입력해 주세요.',true);return;}
+ if(apart[0]&&apart[0]===apart[1]){message('떨어뜨릴 학생은 서로 다른 두 명을 입력해 주세요.',true);return;}
+ const unknown=[...apart,...front].find(name=>name&&!list.includes(name));
+ if(unknown){message(`‘${unknown}’ 학생이 명단에 없습니다. 이름을 확인해 주세요.`,true);return;}
+ let seats=null;
+ for(let attempt=0;attempt<200;attempt++){
+  const candidate=[...list,...Array(r*c-list.length).fill(null)];
+  for(let i=candidate.length-1;i>0;i--){const j=randomIndex(i+1);[candidate[i],candidate[j]]=[candidate[j],candidate[i]];}
+  if(!front.every(name=>candidate.indexOf(name)<c))continue;
+  if(apart[0]){
+   const a=candidate.indexOf(apart[0]),b=candidate.indexOf(apart[1]);
+   const distance=Math.abs(Math.floor(a/c)-Math.floor(b/c))+Math.abs(a%c-b%c);
+   if(distance===1)continue;
+  }
+  seats=candidate;break;
+ }
+ if(!seats){message('조건이 너무 많아요',true);return;}
+ const fragment=document.createDocumentFragment();
+ seats.forEach((name,i)=>{const cell=document.createElement('div');cell.className='seat'+(name===null?' empty':'');const num=document.createElement('span');num.className='number';num.textContent=`${Math.floor(i/c)+1}줄 ${i%c+1}번`;const text=document.createElement('span');text.className='name';text.textContent=name===null?'빈자리':name;cell.append(num,text);fragment.append(cell);});
+ $('seats').style.setProperty('--cols',c);$('seats').replaceChildren(fragment);$('title').textContent=`우리 반 자리표 · ${list.length}명`;
+ message(`${r}줄 × ${c}자리 배치 완료! 빈자리 ${r*c-list.length}개. 다시 누르면 새로 섞습니다.`);
+});
+function presentation(on){document.body.classList.toggle('presentation',on);$('display').textContent=on?'설정으로 돌아가기':'크게 보기';$('display').setAttribute('aria-pressed',String(on));}
+$('display').addEventListener('click',()=>presentation(!document.body.classList.contains('presentation')));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')presentation(false);});
+$('print').addEventListener('click',()=>window.print());
+</script>
+</body>
+</html>

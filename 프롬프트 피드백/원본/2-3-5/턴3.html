@@ -1,0 +1,798 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>파일별 전체 코드</title><style>body{max-width:1120px;margin:35px auto;padding:0 22px;font:18px/1.7 system-ui;color:#24392f;background:#f5f6f4}nav{display:flex;gap:16px;flex-wrap:wrap}section{background:white;padding:20px;border:1px solid #ddd;margin:26px 0}pre{overflow:auto;padding:18px;background:#f0f3f1;font-size:15px;line-height:1.6;white-space:pre}button{font:inherit;padding:8px 15px;cursor:pointer}a{color:#276654}</style><h1>학교 파일 제출 · 전체 코드</h1><p>파일별 전체 코드가 모두 펼쳐져 있습니다. 제목으로 이동한 뒤 복사 버튼을 사용하세요.</p><p><a href="AppsScript_전체소스/처음부터_설치안내.md">초보자 설치 안내</a> · <a href="학교파일제출_전체소스.zip">전체 파일 ZIP</a></p><nav>
+<a href="#file0">appsscript.json</a>
+<a href="#file1">설정.gs</a>
+<a href="#file2">서버.gs</a>
+<a href="#file3">관리.gs</a>
+<a href="#file4">화면.html</a>
+</nav>
+<section id="file0"><h2>appsscript.json</h2><button data-copy="code0">전체 코드 복사</button><pre><code id="code0">{
+  &quot;timeZone&quot;: &quot;Asia/Seoul&quot;,
+  &quot;dependencies&quot;: {},
+  &quot;exceptionLogging&quot;: &quot;STACKDRIVER&quot;,
+  &quot;runtimeVersion&quot;: &quot;V8&quot;,
+  &quot;oauthScopes&quot;: [
+    &quot;https://www.googleapis.com/auth/spreadsheets&quot;,
+    &quot;https://www.googleapis.com/auth/drive&quot;,
+    &quot;https://www.googleapis.com/auth/script.scriptapp&quot;,
+    &quot;https://www.googleapis.com/auth/userinfo.email&quot;
+  ]
+}
+</code></pre></section>
+<section id="file1"><h2>설정.gs</h2><button data-copy="code1">전체 코드 복사</button><pre><code id="code1">/** 이 두 값을 먼저 수정한 다음, 편집기에서 초기설정을 실행하세요. */
+const 최초설정 = {
+  관리자이메일: &#39;admin@school.example.kr&#39;,
+  학교도메인: &#39;school.example.kr&#39;
+};
+
+const 표구조 = {
+  학급: [&#39;id&#39;,&#39;year&#39;,&#39;grade&#39;,&#39;classNo&#39;,&#39;active&#39;],
+  학생: [&#39;id&#39;,&#39;year&#39;,&#39;grade&#39;,&#39;classNo&#39;,&#39;number&#39;,&#39;name&#39;,&#39;active&#39;],
+  교사: [&#39;id&#39;,&#39;email&#39;,&#39;name&#39;,&#39;status&#39;,&#39;createdAt&#39;],
+  인증신청: [&#39;id&#39;,&#39;email&#39;,&#39;name&#39;,&#39;year&#39;,&#39;grade&#39;,&#39;classNo&#39;,&#39;homeroom&#39;,&#39;status&#39;,&#39;createdAt&#39;],
+  담임: [&#39;id&#39;,&#39;year&#39;,&#39;grade&#39;,&#39;classNo&#39;,&#39;teacherId&#39;],
+  제출함: [&#39;id&#39;,&#39;year&#39;,&#39;name&#39;,&#39;type&#39;,&#39;grade&#39;,&#39;classNo&#39;,&#39;active&#39;,&#39;sort&#39;,&#39;openAt&#39;,&#39;closeAt&#39;,&#39;folderId&#39;,&#39;deleteAt&#39;],
+  권한: [&#39;id&#39;,&#39;boxId&#39;,&#39;teacherId&#39;,&#39;view&#39;,&#39;download&#39;,&#39;manage&#39;],
+  접수: [&#39;id&#39;,&#39;requestId&#39;,&#39;year&#39;,&#39;grade&#39;,&#39;classNo&#39;,&#39;studentId&#39;,&#39;student&#39;,&#39;parent&#39;,&#39;phone&#39;,&#39;salt&#39;,&#39;proof&#39;,&#39;boxId&#39;,&#39;status&#39;,&#39;createdAt&#39;,&#39;updatedAt&#39;],
+  파일: [&#39;id&#39;,&#39;receiptId&#39;,&#39;clientId&#39;,&#39;boxId&#39;,&#39;originalName&#39;,&#39;name&#39;,&#39;size&#39;,&#39;mime&#39;,&#39;driveId&#39;,&#39;status&#39;,&#39;createdAt&#39;],
+  학생폴더: [&#39;id&#39;,&#39;boxId&#39;,&#39;studentKey&#39;,&#39;folderId&#39;],
+  감사: [&#39;id&#39;,&#39;actor&#39;,&#39;action&#39;,&#39;target&#39;,&#39;createdAt&#39;],
+  임시파일: [&#39;id&#39;,&#39;driveId&#39;,&#39;expireAt&#39;],
+  통계: [&#39;id&#39;,&#39;year&#39;,&#39;date&#39;,&#39;boxId&#39;,&#39;count&#39;,&#39;files&#39;]
+};
+
+/** 익명 자동 실행 금지. 최초 관리자 본인이 편집기에서 실행합니다. */
+function 초기설정() {
+  const email = Session.getActiveUser().getEmail().toLowerCase();
+  if (!email || email !== 최초설정.관리자이메일.trim().toLowerCase()) {
+    throw new Error(&#39;설정.gs의 관리자이메일을 현재 편집기 계정으로 바꿔 주세요.&#39;);
+  }
+  if (email.endsWith(&#39;@school.example.kr&#39;)) throw new Error(&#39;예시 이메일을 실제 학교 이메일로 수정하세요.&#39;);
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    const p = PropertiesService.getScriptProperties();
+    let db;
+    if (p.getProperty(&#39;DB_ID&#39;)) db = SpreadsheetApp.openById(p.getProperty(&#39;DB_ID&#39;));
+    else { db = SpreadsheetApp.create(&#39;학교 파일 제출 DB&#39;); p.setProperty(&#39;DB_ID&#39;, db.getId()); }
+    db.setSpreadsheetTimeZone(&#39;Asia/Seoul&#39;);
+    Object.keys(표구조).forEach(name =&gt; {
+      const sheet = db.getSheetByName(name) || db.insertSheet(name);
+      if (!sheet.getLastRow()) { sheet.appendRow(표구조[name]); sheet.setFrozenRows(1); }
+    });
+    if (!p.getProperty(&#39;ROOT_ID&#39;)) {
+      const root = DriveApp.createFolder(&#39;학교 제출자료&#39;);
+      p.setProperty(&#39;ROOT_ID&#39;, root.getId());
+    }
+    const root = DriveApp.getFolderById(p.getProperty(&#39;ROOT_ID&#39;));
+    if (!p.getProperty(&#39;TEMP_ID&#39;)) p.setProperty(&#39;TEMP_ID&#39;, root.createFolder(&#39;_임시파일&#39;).getId());
+    if (!p.getProperty(&#39;SECRET&#39;)) p.setProperty(&#39;SECRET&#39;, Utilities.getUuid() + Utilities.getUuid());
+    const defaults = {
+      ADMINS: email, DOMAIN: 최초설정.학교도메인.toLowerCase(),
+      FILE_MB: &#39;8&#39;, TOTAL_MB: &#39;24&#39;, FILE_COUNT: &#39;10&#39;, ZIP_MB: &#39;20&#39;, ZIP_COUNT: &#39;40&#39;,
+      RETENTION_DAYS: &#39;365&#39;, PUBLIC_URL: &#39;&#39;, STAFF_URL: &#39;&#39;
+    };
+    Object.keys(defaults).forEach(k =&gt; { if (p.getProperty(k) === null) p.setProperty(k, defaults[k]); });
+    if (!ScriptApp.getProjectTriggers().some(t =&gt; t.getHandlerFunction() === &#39;정기정리&#39;)) {
+      ScriptApp.newTrigger(&#39;정기정리&#39;).timeBased().everyDays(1).atHour(3).create();
+    }
+    console.log(&#39;초기화 완료. DB: &#39; + db.getUrl());
+    console.log(&#39;드라이브: &#39; + root.getUrl());
+  } finally { lock.releaseLock(); }
+}
+
+function 설정_() {
+  const p = PropertiesService.getScriptProperties().getProperties();
+  if (!p.DB_ID) throw new Error(&#39;운영자가 먼저 초기설정을 실행해야 합니다.&#39;);
+  return p;
+}
+function 현재학년도_() {
+  const d = Utilities.formatDate(new Date(), &#39;Asia/Seoul&#39;, &#39;yyyy-MM&#39;).split(&#39;-&#39;).map(Number);
+  return d[0] - (d[1] &lt; 3 ? 1 : 0);
+}
+function 시각_() { return new Date().toISOString(); }
+function 아이디_() { return Utilities.getUuid(); }
+function 정리_(v, max) { return String(v == null ? &#39;&#39; : v).normalize(&#39;NFC&#39;).trim().slice(0, max || 200); }
+function 숫자_(v, min, max) {
+  const n = Number(v);
+  if (!Number.isInteger(n) || n &lt; min || n &gt; max) throw new Error(&#39;숫자 범위를 확인해 주세요.&#39;);
+  return n;
+}
+function 불리언_(v) { return v === true || String(v).toLowerCase() === &#39;true&#39;; }
+function 학교메일_(v) {
+  const e = 정리_(v).toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+$/.test(e) || e.split(&#39;@&#39;)[1] !== 설정_().DOMAIN) throw new Error(&#39;학교 이메일을 입력하세요.&#39;);
+  return e;
+}
+function 표_(name) {
+  if (!표구조[name]) throw new Error(&#39;잘못된 데이터 요청입니다.&#39;);
+  return SpreadsheetApp.openById(설정_().DB_ID).getSheetByName(name);
+}
+function 목록_(name) {
+  const data = 표_(name).getDataRange().getValues();
+  const keys = data.shift();
+  return data.filter(r =&gt; r[0]).map(r =&gt; {
+    const o = {}; keys.forEach((k,i) =&gt; o[k] = r[i] instanceof Date ? r[i].toISOString() : r[i]); return o;
+  });
+}
+function 안전셀_(v) {
+  if (typeof v === &#39;string&#39; &amp;&amp; /^[=+\-@\t\r]/.test(v)) return &quot;&#39;&quot; + v;
+  return v == null ? &#39;&#39; : v;
+}
+function 추가_(name, obj) { 추가여럿_(name, [obj]); }
+function 추가여럿_(name, rows) {
+  if (!rows.length) return;
+  const s = 표_(name), keys = 표구조[name];
+  s.getRange(s.getLastRow()+1,1,rows.length,keys.length).setValues(rows.map(o =&gt; keys.map(k =&gt; 안전셀_(o[k]))));
+}
+function 수정_(name, id, changes) {
+  const s = 표_(name), data = s.getDataRange().getValues(), keys = 표구조[name];
+  const idx = data.findIndex((r,i) =&gt; i &gt; 0 &amp;&amp; String(r[0]) === String(id));
+  if (idx &lt; 0) throw new Error(&#39;자료를 찾을 수 없습니다.&#39;);
+  keys.forEach((k,i) =&gt; { if (Object.prototype.hasOwnProperty.call(changes,k)) data[idx][i] = 안전셀_(changes[k]); });
+  s.getRange(idx+1,1,1,keys.length).setValues([data[idx]]);
+}
+function 제거_(name, id) {
+  const s = 표_(name), ids = s.getRange(1,1,Math.max(1,s.getLastRow()),1).getValues();
+  const i = ids.findIndex((r,j) =&gt; j &gt; 0 &amp;&amp; String(r[0]) === String(id));
+  if (i &gt;= 0) s.deleteRow(i+1);
+}
+function 잠금_(fn) {
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(20000)) throw new Error(&#39;다른 요청을 처리 중입니다. 잠시 후 다시 시도하세요.&#39;);
+  try { return fn(); } finally { lock.releaseLock(); }
+}
+function 사용자_() {
+  const p = 설정_(), email = Session.getActiveUser().getEmail().toLowerCase();
+  if (!email || email.split(&#39;@&#39;)[1] !== p.DOMAIN) return {role:&#39;guest&#39;,email:&#39;&#39;};
+  if (p.ADMINS.split(&#39;,&#39;).map(x =&gt; x.trim().toLowerCase()).includes(email)) return {role:&#39;admin&#39;,email:email,name:&#39;관리자&#39;};
+  const t = 목록_(&#39;교사&#39;).find(t =&gt; t.email === email);
+  if (t &amp;&amp; t.status === &#39;approved&#39;) return {role:&#39;teacher&#39;,email:email,name:t.name,id:t.id};
+  const r = 목록_(&#39;인증신청&#39;).filter(r =&gt; r.email === email).pop();
+  return {role:&#39;unapproved&#39;,email:email,name:t ? t.name : &#39;&#39;,status:t &amp;&amp; t.status !== &#39;approved&#39; ? t.status : (r ? r.status : &#39;none&#39;)};
+}
+function 관리자_() { const u = 사용자_(); if (u.role !== &#39;admin&#39;) throw new Error(&#39;관리자 권한이 필요합니다.&#39;); return u; }
+function 교직원_() { const u = 사용자_(); if (![&#39;admin&#39;,&#39;teacher&#39;].includes(u.role)) throw new Error(&#39;승인된 학교 계정으로 로그인하세요.&#39;); return u; }
+function 제출함권한_(boxId, kind) {
+  const u = 교직원_(), b = 목록_(&#39;제출함&#39;).find(b =&gt; b.id === boxId);
+  if (!b) throw new Error(&#39;제출함을 찾을 수 없습니다.&#39;);
+  if (u.role === &#39;admin&#39;) return b;
+  if (b.deleteAt) throw new Error(&#39;삭제 대기 중인 제출함입니다.&#39;);
+  const a = 목록_(&#39;권한&#39;).find(a =&gt; a.boxId === boxId &amp;&amp; a.teacherId === u.id);
+  if (!a || !불리언_(a[kind || &#39;view&#39;])) throw new Error(&#39;이 제출함에 대한 권한이 없습니다.&#39;);
+  return b;
+}
+function 감사_(action,target) {
+  추가_(&#39;감사&#39;,{id:아이디_(),actor:Session.getActiveUser().getEmail() || &#39;익명&#39;,action:action,target:target,createdAt:시각_()});
+}
+function 서명_(text) {
+  return Utilities.base64EncodeWebSafe(Utilities.computeHmacSha256Signature(text, 설정_().SECRET));
+}
+function 동일_(a,b) {
+  a = String(a); b = String(b); let diff = a.length ^ b.length;
+  for (let i=0;i&lt;Math.max(a.length,b.length);i++) diff |= (a.charCodeAt(i)||0) ^ (b.charCodeAt(i)||0);
+  return diff === 0;
+}
+function 캐시삭제_() { CacheService.getScriptCache().remove(&#39;public-config&#39;); }
+
+/** 트리거 실행 함수. 외부 호출은 관리자만 가능합니다. */
+function 정기정리() {
+  // 설치형 트리거는 소유자 계정으로 실행됩니다. 익명 호출은 거부합니다.
+  관리자_();
+  return 잠금_(() =&gt; {
+    const now = Date.now(), errors = [];
+    목록_(&#39;임시파일&#39;).filter(x =&gt; Date.parse(x.expireAt) &lt;= now).forEach(x =&gt; {
+      try { DriveApp.getFileById(x.driveId).setTrashed(true); 제거_(&#39;임시파일&#39;,x.id); }
+      catch(e) { errors.push(&#39;임시파일 &#39; + x.id); }
+    });
+    목록_(&#39;제출함&#39;).filter(b =&gt; b.deleteAt &amp;&amp; Date.parse(b.deleteAt) &lt;= now).forEach(b =&gt; {
+      try {
+        DriveApp.getFolderById(b.folderId).setTrashed(true);
+        const f = 목록_(&#39;파일&#39;).filter(f =&gt; f.boxId === b.id &amp;&amp; f.status === &#39;stored&#39;);
+        f.forEach(x =&gt; 수정_(&#39;파일&#39;,x.id,{status:&#39;trashed&#39;}));
+        수정_(&#39;제출함&#39;,b.id,{deleteAt:&#39;&#39;,active:false,name:b.name + &#39; [휴지통 이동]&#39;,folderId:&#39;&#39;});
+        감사_(&#39;제출함 휴지통 이동&#39;,b.id);
+      } catch(e) { errors.push(&#39;제출함 &#39; + b.id); }
+    });
+    const limit = now - 86400000;
+    목록_(&#39;접수&#39;).filter(r =&gt; r.status === &#39;uploading&#39; &amp;&amp; Date.parse(r.updatedAt) &lt; limit).forEach(r =&gt; {
+      const any = 목록_(&#39;파일&#39;).some(f =&gt; f.receiptId === r.id &amp;&amp; f.status === &#39;stored&#39;);
+      수정_(&#39;접수&#39;,r.id,{status:any ? &#39;partial&#39; : &#39;failed&#39;,updatedAt:시각_()});
+    });
+    통계갱신_(); 캐시삭제_();
+    if (errors.length) 감사_(&#39;정리 재시도 필요&#39;,errors.join(&#39;, &#39;));
+    return {message:errors.length ? &#39;일부 정리에 실패했습니다. 감사 기록을 확인하세요.&#39; : &#39;정리가 완료되었습니다.&#39;};
+  });
+}
+function 통계갱신_() {
+  const files = 목록_(&#39;파일&#39;).filter(f =&gt; f.status === &#39;stored&#39;), receipts = 목록_(&#39;접수&#39;);
+  const count = {}; files.forEach(f =&gt; count[f.receiptId] = (count[f.receiptId]||0)+1);
+  const groups = {};
+  receipts.filter(r =&gt; count[r.id]).forEach(r =&gt; {
+    const date = Utilities.formatDate(new Date(r.createdAt),&#39;Asia/Seoul&#39;,&#39;yyyy-MM-dd&#39;);
+    const key = r.year + &#39;:&#39; + date + &#39;:&#39; + r.boxId;
+    if (!groups[key]) groups[key] = {id:key,year:r.year,date:date,boxId:r.boxId,count:0,files:0};
+    groups[key].count++; groups[key].files += count[r.id];
+  });
+  const s = 표_(&#39;통계&#39;); if (s.getLastRow()&gt;1) s.getRange(2,1,s.getLastRow()-1,표구조.통계.length).clearContent();
+  추가여럿_(&#39;통계&#39;,Object.values(groups));
+}
+</code></pre></section>
+<section id="file2"><h2>서버.gs</h2><button data-copy="code2">전체 코드 복사</button><pre><code id="code2">function doGet(e) {
+  const page = String(e &amp;&amp; e.parameter &amp;&amp; e.parameter.page || &#39;parent&#39;);
+  const t = HtmlService.createTemplateFromFile(&#39;화면&#39;);
+  // 경로는 화면 선택일 뿐 인증 수단이 아닙니다.
+  t.page = [&#39;parent&#39;,&#39;admin&#39;,&#39;teacher&#39;].includes(page) ? page : &#39;parent&#39;;
+  t.entry = e &amp;&amp; e.parameter &amp;&amp; e.parameter.entry === &#39;1&#39; ? &#39;1&#39; : &#39;0&#39;;
+  return t.evaluate().setTitle(&#39;학교 파일 제출&#39;).addMetaTag(&#39;viewport&#39;,&#39;width=device-width, initial-scale=1&#39;);
+}
+
+/** 공개 진입점은 하나로 제한하며 보호 작업은 각 처리 함수에서도 인증합니다. */
+function 요청(action, data) {
+  try {
+    const handlers = {
+      시작:시작_, 로그인확인:로그인확인_, 학생확인:학생확인_, 제출시작:제출시작_, 파일전송:파일전송_, 제출완료:제출완료_, 제출상태:제출상태_, 제출조회:제출조회_,
+      교사신청:교사신청_, 관리자자료:관리자자료_, 저장:저장_, 학생삭제:학생삭제_, CSV확인:CSV확인_, CSV반영:CSV반영_,
+      학급생성:학급생성_, 승인:승인_, 권한저장:권한저장_, 담임저장:담임저장_, 담임삭제:담임삭제_,
+      제출함삭제:제출함삭제_, 제출함복원:제출함복원_, 파일목록:파일목록_, 파일작업:파일작업_, 다운로드:다운로드_, 압축:압축_, 설정저장:설정저장_, 대시보드:대시보드_
+    };
+    if (!Object.prototype.hasOwnProperty.call(handlers, action)) throw new Error(&#39;지원하지 않는 요청입니다.&#39;);
+    return {ok:true,data:handlers[action](data || {})};
+  } catch(e) {
+    // 입력값&#183;암호&#183;파일 본문은 로그에 남기지 않습니다.
+    return {ok:false,message:String(e.message || &#39;요청을 처리하지 못했습니다.&#39;).slice(0,250)};
+  }
+}
+function 시작_() {
+  const p = 설정_(), cache = CacheService.getScriptCache();
+  let raw = cache.get(&#39;public-config&#39;), config;
+  if (raw) config = JSON.parse(raw);
+  else {
+    config = {year:현재학년도_(),classes:목록_(&#39;학급&#39;).filter(x =&gt; 불리언_(x.active) &amp;&amp; Number(x.year) === 현재학년도_()).map(x =&gt; ({grade:Number(x.grade),classNo:Number(x.classNo)})),
+      limits:{fileMB:Number(p.FILE_MB),totalMB:Number(p.TOTAL_MB),count:Number(p.FILE_COUNT)}};
+    cache.put(&#39;public-config&#39;,JSON.stringify(config),120);
+  }
+  return Object.assign({},config,{staffUrl:p.STAFF_URL,publicUrl:p.PUBLIC_URL});
+}
+function 로그인확인_() {
+  const u = 사용자_();
+  if (![&#39;teacher&#39;,&#39;admin&#39;].includes(u.role)) return {user:u,year:현재학년도_(),boxes:[]};
+  const permitted = u.role === &#39;admin&#39; ? null : 목록_(&#39;권한&#39;).filter(a =&gt; a.teacherId === u.id &amp;&amp; 불리언_(a.view));
+  return {user:u,year:현재학년도_(),boxes:목록_(&#39;제출함&#39;).filter(b =&gt; b.folderId &amp;&amp; (u.role === &#39;admin&#39; || (!b.deleteAt &amp;&amp; permitted.some(a =&gt; a.boxId === b.id)))).map(b =&gt; ({id:b.id,year:b.year,name:b.name,active:불리언_(b.active),deleted:!!b.deleteAt}))};
+}
+function 학생입력_(d) {
+  const o = {year:현재학년도_(),grade:숫자_(d.grade,1,12),classNo:숫자_(d.classNo,1,99),student:정리_(d.student,60),number:정리_(d.number,10)};
+  if (!o.student) throw new Error(&#39;학생 이름을 입력하세요.&#39;);
+  const classes = 목록_(&#39;학급&#39;).filter(c =&gt; Number(c.year)===o.year &amp;&amp; 불리언_(c.active));
+  if (!classes.some(c =&gt; Number(c.grade)===o.grade &amp;&amp; Number(c.classNo)===o.classNo)) throw new Error(&#39;등록된 학년과 반을 선택하세요.&#39;);
+  const students = 목록_(&#39;학생&#39;).filter(s =&gt; Number(s.year)===o.year &amp;&amp; 불리언_(s.active));
+  const valid = new Map(); students.forEach(s =&gt; valid.set([s.grade,s.classNo,s.number,s.name].join(&#39;|&#39;),s));
+  const all = [...valid.values()], cls = all.filter(s =&gt; Number(s.grade)===o.grade &amp;&amp; Number(s.classNo)===o.classNo);
+  const must = all.length &gt;= 70 || cls.length &gt;= 15;
+  let matches = cls.filter(s =&gt; s.name === o.student);
+  if (matches.length&gt;1 &amp;&amp; !o.number) return Object.assign(o,{needsNumber:true});
+  if (o.number) matches = matches.filter(s =&gt; String(s.number) === String(Number(o.number)));
+  if (must &amp;&amp; matches.length!==1) throw new Error(&#39;학생 정보가 일치하지 않습니다. 학년, 반, 이름을 확인해 주세요.&#39;);
+  o.studentId = matches.length===1 ? matches[0].id : &#39;&#39;;
+  o.studentKey = o.studentId || [o.year,o.grade,o.classNo,o.student,o.number].join(&#39;|&#39;);
+  return o;
+}
+function 학생확인_(d) {
+  const s = 학생입력_(d); if (s.needsNumber) return {needsNumber:true};
+  return {needsNumber:false,boxes:학부모제출함_(s)};
+}
+function 접수가능_(b) {
+  const now = Date.now();
+  return !!b.folderId &amp;&amp; 불리언_(b.active) &amp;&amp; !b.deleteAt &amp;&amp; (!b.openAt || Date.parse(b.openAt)&lt;=now) &amp;&amp; (!b.closeAt || Date.parse(b.closeAt)&gt;=now);
+}
+function 학부모제출함_(s) {
+  const cutoff = Date.now()-30*86400000;
+  const stats = 목록_(&#39;접수&#39;).filter(r =&gt; Number(r.year)===s.year &amp;&amp; [&#39;complete&#39;,&#39;partial&#39;].includes(r.status) &amp;&amp; Date.parse(r.createdAt)&gt;=cutoff);
+  const counts = {}; stats.forEach(r =&gt; counts[r.boxId]=(counts[r.boxId]||0)+1);
+  const boxes = 목록_(&#39;제출함&#39;).filter(b =&gt; Number(b.year)===s.year &amp;&amp; 접수가능_(b));
+  const general = boxes.filter(b=&gt;b.type===&#39;general&#39;).sort((a,b)=&gt;(counts[b.id]||0)-(counts[a.id]||0)||Number(a.sort)-Number(b.sort)||a.name.localeCompare(b.name,&#39;ko&#39;));
+  const popular = general.slice(0,3).map(b=&gt;b.id);
+  return general.concat(boxes.filter(b=&gt;b.type===&#39;class&#39; &amp;&amp; Number(b.grade)===s.grade &amp;&amp; Number(b.classNo)===s.classNo)).map(b=&gt;({id:b.id,name:b.name,type:b.type,popular:popular.includes(b.id)}));
+}
+function 암호검사_(p) {
+  if (typeof p!==&#39;string&#39; || p.length&lt;10 || p.length&gt;100 || !/[A-Za-z가-힣]/.test(p) || !/[0-9]/.test(p)) throw new Error(&#39;임시암호는 문자와 숫자를 섞어 10~100자로 입력하세요.&#39;);
+}
+function 접수토큰_(r) { return 서명_(&#39;receipt|&#39; + r.id + &#39;|&#39; + r.requestId); }
+function 접수인증_(d) {
+  const r = 목록_(&#39;접수&#39;).find(r=&gt;r.id===d.receiptId);
+  if (!r || !동일_(접수토큰_(r),d.token || &#39;&#39;)) throw new Error(&#39;접수 정보를 다시 확인하세요.&#39;);
+  return r;
+}
+function 제출시작_(d) {
+  암호검사_(d.password);
+  const s = 학생입력_(d); if(s.needsNumber) throw new Error(&#39;동명이인 구분을 위해 학생 번호를 입력하세요.&#39;);
+  const parent = 정리_(d.parent,60), phone = 정리_(d.phone,30).replace(/[^0-9]/g,&#39;&#39;);
+  if(!parent || !/^0[0-9]{8,10}$/.test(phone)) throw new Error(&#39;학부모 이름과 전화번호를 확인하세요.&#39;);
+  const box = 학부모제출함_(s).find(b=&gt;b.id===d.boxId);
+  if(!box) throw new Error(&#39;선택한 제출함에는 제출할 수 없습니다.&#39;);
+  const requestId = 정리_(d.requestId,80); if (!/^[a-zA-Z0-9-]{16,80}$/.test(requestId)) throw new Error(&#39;요청 식별자가 올바르지 않습니다.&#39;);
+  return 잠금_(()=&gt;{
+    const old = 목록_(&#39;접수&#39;).find(r=&gt;r.requestId===requestId);
+    if(old) {
+      if (!동일_(old.proof,서명_(old.salt+&#39;|&#39;+d.password)) || old.student!==s.student || Number(old.grade)!==s.grade || Number(old.classNo)!==s.classNo || old.boxId!==d.boxId || old.parent!==parent || old.phone!==phone) throw new Error(&#39;기존 접수 정보와 다릅니다. 새 접수를 시작하세요.&#39;);
+      return {receiptId:old.id,token:접수토큰_(old)};
+    }
+    const key = &#39;rate:&#39; + 서명_(s.studentKey).slice(0,35), cache = CacheService.getScriptCache();
+    if (Number(cache.get(key)||0)&gt;=10) throw new Error(&#39;잠시 후 다시 제출해 주세요.&#39;);
+    cache.put(key,String(Number(cache.get(key)||0)+1),3600);
+    const salt = 아이디_(), now = 시각_();
+    const r = {id:아이디_(),requestId:requestId,year:s.year,grade:s.grade,classNo:s.classNo,studentId:s.studentId,student:s.student,parent:parent,phone:phone,salt:salt,proof:서명_(salt+&#39;|&#39;+d.password),boxId:d.boxId,status:&#39;uploading&#39;,createdAt:now,updatedAt:now};
+    추가_(&#39;접수&#39;,r); return {receiptId:r.id,token:접수토큰_(r)};
+  });
+}
+function 학생폴더_(r,b) {
+  const key = r.studentId || [r.year,r.grade,r.classNo,r.student].join(&#39;|&#39;);
+  const old = 목록_(&#39;학생폴더&#39;).find(x=&gt;x.boxId===b.id &amp;&amp; x.studentKey===key);
+  if(old) return DriveApp.getFolderById(old.folderId);
+  const suffix = r.studentId ? &#39;_&#39; + r.studentId.slice(0,6) : &#39;&#39;;
+  const folder = DriveApp.getFolderById(b.folderId).createFolder(안전파일명_(r.grade+&#39;_&#39;+r.classNo+&#39;_&#39;+r.student+suffix));
+  추가_(&#39;학생폴더&#39;,{id:아이디_(),boxId:b.id,studentKey:key,folderId:folder.getId()}); return folder;
+}
+function 안전파일명_(name) { return 정리_(name,160).replace(/[\\/:*?&quot;&lt;&gt;|\u0000-\u001f]/g,&#39;_&#39;).replace(/^\.+/,&#39;_&#39;) || &#39;첨부파일&#39;; }
+function 파일전송_(d) {
+  const p=설정_(), r=접수인증_(d), name=안전파일명_(d.name), ext=name.split(&#39;.&#39;).pop().toLowerCase();
+  const types={hwp:[&#39;application/x-hwp&#39;,&#39;application/haansofthwp&#39;,&#39;application/vnd.hancom.hwp&#39;],hwpx:[&#39;application/hwp+zip&#39;,&#39;application/vnd.hancom.hwpx&#39;,&#39;application/zip&#39;],xls:[&#39;application/vnd.ms-excel&#39;],xlsx:[&#39;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&#39;,&#39;application/zip&#39;],pdf:[&#39;application/pdf&#39;],jpg:[&#39;image/jpeg&#39;],jpeg:[&#39;image/jpeg&#39;],png:[&#39;image/png&#39;],gif:[&#39;image/gif&#39;],webp:[&#39;image/webp&#39;],bmp:[&#39;image/bmp&#39;,&#39;image/x-ms-bmp&#39;],heic:[&#39;image/heic&#39;,&#39;image/heif&#39;],heif:[&#39;image/heif&#39;,&#39;image/heic&#39;]};
+  if(!types[ext]) throw new Error(&#39;허용하지 않는 확장자입니다. HWP, HWPX, 엑셀, PDF, 이미지 파일을 선택하세요.&#39;);
+  const mime=정리_(d.mime,120)||&#39;application/octet-stream&#39;;
+  if (mime!==&#39;application/octet-stream&#39; &amp;&amp; !types[ext].includes(mime)) throw new Error(&#39;확장자와 파일 형식 정보가 다릅니다.&#39;);
+  const clientId=정리_(d.clientId,150); if(!clientId) throw new Error(&#39;파일 식별자가 없습니다.&#39;);
+  if(typeof d.base64!==&#39;string&#39; || d.base64.length&gt;Number(p.FILE_MB)*1048576*1.34+16) throw new Error(&#39;파일 용량 제한을 초과했습니다.&#39;);
+  const bytes=Utilities.base64Decode(d.base64);
+  if(!bytes.length || bytes.length&gt;Number(p.FILE_MB)*1048576) throw new Error(&#39;파일 용량을 확인하세요.&#39;);
+  // MIME은 클라이언트 값이므로 널리 알려진 형식은 시그니처도 확인합니다.
+  const sig=bytes.slice(0,12).map(x=&gt;((x+256)%256).toString(16).padStart(2,&#39;0&#39;)).join(&#39;&#39;);
+  if ((ext===&#39;pdf&#39;&amp;&amp;!sig.startsWith(&#39;25504446&#39;)) || (ext===&#39;png&#39;&amp;&amp;!sig.startsWith(&#39;89504e470d0a1a0a&#39;)) || ([&#39;jpg&#39;,&#39;jpeg&#39;].includes(ext)&amp;&amp;!sig.startsWith(&#39;ffd8&#39;)) || ([&#39;xlsx&#39;,&#39;hwpx&#39;].includes(ext)&amp;&amp;!sig.startsWith(&#39;504b&#39;))) throw new Error(&#39;파일 내용과 확장자가 일치하지 않습니다.&#39;);
+  // 소규모 파일의 저장과 메타데이터 확정만 잠급니다. 인코딩&#183;전송은 잠금 밖입니다.
+  return 잠금_(()=&gt;{
+    const current=접수인증_(d), b=목록_(&#39;제출함&#39;).find(b=&gt;b.id===current.boxId);
+    if(!b || !접수가능_(b)) throw new Error(&#39;현재 접수할 수 없는 제출함입니다.&#39;);
+    if (Date.now()-Date.parse(current.createdAt)&gt;86400000) throw new Error(&#39;접수 유효시간이 지났습니다. 새 접수를 시작하세요.&#39;);
+    const saved=목록_(&#39;파일&#39;).filter(f=&gt;f.receiptId===r.id &amp;&amp; f.status===&#39;stored&#39;);
+    const duplicate=saved.find(f=&gt;f.clientId===clientId); if(duplicate) return {id:duplicate.id,name:duplicate.name,duplicate:true};
+    if(saved.length&gt;=Number(p.FILE_COUNT) || saved.reduce((a,f)=&gt;a+Number(f.size),0)+bytes.length&gt;Number(p.TOTAL_MB)*1048576) throw new Error(&#39;접수별 파일 수 또는 총용량 제한을 초과했습니다.&#39;);
+    const folder=학생폴더_(current,b), stem=name.slice(0,-ext.length-1);
+    let finalName=stem+&#39;[&#39;+Utilities.formatDate(new Date(),&#39;Asia/Seoul&#39;,&#39;yy-MM-dd-HH-mm-ss&#39;)+&#39;].&#39;+ext;
+    let n=1; while(folder.getFilesByName(finalName).hasNext()) finalName=stem+&#39;[&#39;+Utilities.formatDate(new Date(),&#39;Asia/Seoul&#39;,&#39;yy-MM-dd-HH-mm-ss&#39;)+&#39;]_&#39;+(n++)+&#39;.&#39;+ext;
+    const id=아이디_();
+    추가_(&#39;파일&#39;,{id:id,receiptId:r.id,clientId:clientId,boxId:b.id,originalName:name,name:finalName,size:bytes.length,mime:mime,driveId:&#39;&#39;,status:&#39;saving&#39;,createdAt:시각_()});
+    let file;
+    try {
+      file=folder.createFile(Utilities.newBlob(bytes,mime,finalName));
+      수정_(&#39;파일&#39;,id,{driveId:file.getId(),status:&#39;stored&#39;});
+      수정_(&#39;접수&#39;,r.id,{status:&#39;uploading&#39;,updatedAt:시각_()});
+      return {id:id,name:finalName};
+    } catch(e) {
+      if(file) { try{file.setTrashed(true);}catch(ignore){} }
+      수정_(&#39;파일&#39;,id,{status:&#39;failed&#39;}); throw new Error(&#39;저장에 실패했습니다. 해당 파일을 다시 전송하세요.&#39;);
+    }
+  });
+}
+function 제출완료_(d) {
+  return 잠금_(()=&gt;{
+    const r=접수인증_(d), count=목록_(&#39;파일&#39;).filter(f=&gt;f.receiptId===r.id&amp;&amp;f.status===&#39;stored&#39;).length;
+    const expected=숫자_(d.expected,1,Number(설정_().FILE_COUNT));
+    const status=count&gt;=expected?&#39;complete&#39;:count?&#39;partial&#39;:&#39;failed&#39;;
+    수정_(&#39;접수&#39;,r.id,{status:status,updatedAt:시각_()});
+    return {id:r.id,status:status,count:count};
+  });
+}
+function 제출상태_(d) {
+  const r=접수인증_(d); return {id:r.id,status:r.status,files:목록_(&#39;파일&#39;).filter(f=&gt;f.receiptId===r.id&amp;&amp;f.status===&#39;stored&#39;).map(f=&gt;({id:f.id,clientId:f.clientId,name:f.name,size:f.size}))};
+}
+function 제출조회_(d) {
+  const y=숫자_(d.year,2020,2100), g=숫자_(d.grade,1,12), c=숫자_(d.classNo,1,99), name=정리_(d.student,60);
+  암호검사_(d.password);
+  const key=&#39;lookup:&#39;+서명_([y,g,c,name].join(&#39;|&#39;)).slice(0,40), cache=CacheService.getScriptCache();
+  const hits=잠금_(()=&gt;{const n=Number(cache.get(key)||0)+1;cache.put(key,String(n),600);return n;});
+  if(hits&gt;8) throw new Error(&#39;조회 시도가 많습니다. 10분 후 다시 시도하세요.&#39;);
+  const receipts=목록_(&#39;접수&#39;).filter(r=&gt;Number(r.year)===y&amp;&amp;Number(r.grade)===g&amp;&amp;Number(r.classNo)===c&amp;&amp;r.student===name&amp;&amp;동일_(r.proof,서명_(r.salt+&#39;|&#39;+d.password)));
+  if(!receipts.length) throw new Error(&#39;입력 정보와 일치하는 제출 기록을 확인할 수 없습니다.&#39;);
+  const fs=목록_(&#39;파일&#39;), boxes=목록_(&#39;제출함&#39;);
+  return receipts.map(r=&gt;({id:r.id,createdAt:r.createdAt,status:r.status,box:(boxes.find(b=&gt;b.id===r.boxId)||{}).name||&#39;이전 제출함&#39;,files:fs.filter(f=&gt;f.receiptId===r.id&amp;&amp;f.status===&#39;stored&#39;).map(f=&gt;({name:f.name,size:f.size}))}));
+}
+function 교사신청_(d) {
+  const u=사용자_(); if(!u.email) throw new Error(&#39;학교 Google 계정으로 로그인하세요.&#39;);
+  if([&#39;admin&#39;,&#39;teacher&#39;].includes(u.role)) throw new Error(&#39;이미 승인된 계정입니다.&#39;);
+  if([&#39;suspended&#39;,&#39;deleted&#39;].includes(u.status)) throw new Error(&#39;이용 중지 계정입니다. 관리자에게 문의하세요.&#39;);
+  const name=정리_(d.name,60); if(!name) throw new Error(&#39;이름을 입력하세요.&#39;);
+  if(학교메일_(d.email)!==u.email) throw new Error(&#39;로그인한 학교 이메일과 일치해야 합니다.&#39;);
+  const home=불리언_(d.homeroom), y=숫자_(d.year,2020,2100);
+  const g=home?숫자_(d.grade,1,12):&#39;&#39;, c=home?숫자_(d.classNo,1,99):&#39;&#39;;
+  return 잠금_(()=&gt;{
+    if(목록_(&#39;인증신청&#39;).some(r=&gt;r.email===u.email&amp;&amp;r.status===&#39;pending&#39;)) throw new Error(&#39;이미 승인 대기 중입니다.&#39;);
+    추가_(&#39;인증신청&#39;,{id:아이디_(),email:u.email,name:name,year:y,grade:g,classNo:c,homeroom:home,status:&#39;pending&#39;,createdAt:시각_()});
+    return {message:&#39;신청했습니다. 관리자 승인을 기다려 주세요.&#39;};
+  });
+}
+</code></pre></section>
+<section id="file3"><h2>관리.gs</h2><button data-copy="code3">전체 코드 복사</button><pre><code id="code3">function 관리자자료_(d) {
+  관리자_(); const y=숫자_(d.year||현재학년도_(),2020,2100), p=설정_();
+  return {year:y,classes:목록_(&#39;학급&#39;).filter(x=&gt;Number(x.year)===y),students:목록_(&#39;학생&#39;).filter(x=&gt;Number(x.year)===y&amp;&amp;불리언_(x.active)),teachers:목록_(&#39;교사&#39;),applications:목록_(&#39;인증신청&#39;).filter(x=&gt;x.status===&#39;pending&#39;),homerooms:목록_(&#39;담임&#39;).filter(x=&gt;Number(x.year)===y),boxes:목록_(&#39;제출함&#39;).filter(x=&gt;Number(x.year)===y),permissions:목록_(&#39;권한&#39;),settings:{PUBLIC_URL:p.PUBLIC_URL,STAFF_URL:p.STAFF_URL,FILE_MB:p.FILE_MB,TOTAL_MB:p.TOTAL_MB,FILE_COUNT:p.FILE_COUNT,ZIP_MB:p.ZIP_MB,ZIP_COUNT:p.ZIP_COUNT,RETENTION_DAYS:p.RETENTION_DAYS},audit:목록_(&#39;감사&#39;).slice(-30).reverse()};
+}
+function 설정저장_(d) {
+  관리자_(); return 잠금_(()=&gt;{
+    const values={};
+    [&#39;PUBLIC_URL&#39;,&#39;STAFF_URL&#39;].forEach(k=&gt;{const v=정리_(d[k],500); if(v&amp;&amp;!/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(v)) throw new Error(&#39;배포의 /exec 주소를 입력하세요.&#39;); values[k]=v;});
+    [&#39;FILE_MB&#39;,&#39;TOTAL_MB&#39;,&#39;FILE_COUNT&#39;,&#39;ZIP_MB&#39;,&#39;ZIP_COUNT&#39;,&#39;RETENTION_DAYS&#39;].forEach(k=&gt;values[k]=String(숫자_(d[k],1,k===&#39;RETENTION_DAYS&#39;?3650:k.includes(&#39;COUNT&#39;)?50:30)));
+    if(Number(values.FILE_MB)&gt;Number(values.TOTAL_MB)) throw new Error(&#39;전체 용량이 파일별 용량 이상이어야 합니다.&#39;);
+    PropertiesService.getScriptProperties().setProperties(values); 캐시삭제_(); 감사_(&#39;설정 변경&#39;,&#39;운영 설정&#39;); return {message:&#39;저장했습니다.&#39;};
+  });
+}
+function 학년도폴더_(y) {
+  const root=DriveApp.getFolderById(설정_().ROOT_ID), name=y+&#39;학년도&#39;, found=root.getFoldersByName(name);
+  return found.hasNext()?found.next():root.createFolder(name);
+}
+function 제출함추가_(o) {
+  const id=아이디_(), folder=학년도폴더_(o.year).createFolder(안전파일명_(o.name)+&#39;_&#39;+id.slice(0,6));
+  const b=Object.assign({id:id,type:&#39;general&#39;,grade:&#39;&#39;,classNo:&#39;&#39;,active:true,sort:0,openAt:&#39;&#39;,closeAt:&#39;&#39;,deleteAt:&#39;&#39;,folderId:folder.getId()},o);
+  추가_(&#39;제출함&#39;,b); return b;
+}
+function 저장_(d) {
+  관리자_(); return 잠금_(()=&gt;{
+    const o=d.item||{}, kind=d.kind;
+    if(kind===&#39;student&#39;) {
+      const s=학생정규화_(o), all=목록_(&#39;학생&#39;);
+      if(all.some(x=&gt;x.id!==o.id&amp;&amp;불리언_(x.active)&amp;&amp;Number(x.year)===s.year&amp;&amp;Number(x.grade)===s.grade&amp;&amp;Number(x.classNo)===s.classNo&amp;&amp;String(x.number)===String(s.number))) throw new Error(&#39;같은 반에 같은 번호가 있습니다.&#39;);
+      if(o.id) 수정_(&#39;학생&#39;,o.id,s); else 추가_(&#39;학생&#39;,Object.assign({id:아이디_()},s));
+    } else if(kind===&#39;teacher&#39;) {
+      const name=정리_(o.name,60), email=학교메일_(o.email); if(!name) throw new Error(&#39;교사 이름을 입력하세요.&#39;);
+      const teachers=목록_(&#39;교사&#39;); if(teachers.some(t=&gt;t.id!==o.id&amp;&amp;t.email===email)) throw new Error(&#39;이미 등록된 이메일입니다.&#39;);
+      const status=[&#39;suspended&#39;,&#39;deleted&#39;].includes(o.status)?o.status:&#39;approved&#39;;
+      const record={name:name,email:email,status:status};
+      if(o.id) 수정_(&#39;교사&#39;,o.id,record); else 추가_(&#39;교사&#39;,Object.assign({id:아이디_(),createdAt:시각_()},record));
+    } else if(kind===&#39;box&#39;) {
+      const name=정리_(o.name,100); if(!name) throw new Error(&#39;제출함 이름을 입력하세요.&#39;);
+      const openAt=o.openAt?new Date(o.openAt).toISOString():&#39;&#39;, closeAt=o.closeAt?new Date(o.closeAt).toISOString():&#39;&#39;;
+      if(openAt&amp;&amp;closeAt&amp;&amp;openAt&gt;closeAt) throw new Error(&#39;접수 기간을 확인하세요.&#39;);
+      const record={name:name,active:불리언_(o.active),sort:숫자_(o.sort||0,0,999),openAt:openAt,closeAt:closeAt};
+      if(o.id) { const b=목록_(&#39;제출함&#39;).find(b=&gt;b.id===o.id); if(!b||!b.folderId||b.deleteAt) throw new Error(&#39;수정할 수 없는 제출함입니다.&#39;); 수정_(&#39;제출함&#39;,o.id,record); }
+      else 제출함추가_(Object.assign({year:숫자_(o.year,2020,2100)},record));
+    } else throw new Error(&#39;지원하지 않는 저장입니다.&#39;);
+    감사_(&#39;자료 저장&#39;,kind+&#39;:&#39;+(o.id||&#39;신규&#39;)); 캐시삭제_(); return {message:&#39;저장했습니다.&#39;};
+  });
+}
+function 학생정규화_(s) {
+  const o={year:숫자_(s.year,2020,2100),grade:숫자_(s.grade,1,12),classNo:숫자_(s.classNo,1,99),number:숫자_(s.number,1,999),name:정리_(s.name,60),active:true};
+  if(!o.name) throw new Error(&#39;학생 이름을 입력하세요.&#39;);
+  if(!목록_(&#39;학급&#39;).some(c=&gt;Number(c.year)===o.year&amp;&amp;Number(c.grade)===o.grade&amp;&amp;Number(c.classNo)===o.classNo&amp;&amp;불리언_(c.active))) throw new Error(&#39;먼저 해당 학급을 생성하세요.&#39;);
+  return o;
+}
+function 학생삭제_(d) {
+  관리자_(); return 잠금_(()=&gt;{수정_(&#39;학생&#39;,d.id,{active:false}); 감사_(&#39;학생 비활성화&#39;,d.id);return {message:&#39;학생을 삭제했습니다. 과거 제출 기록은 보존됩니다.&#39;};});
+}
+function CSV분석_(text) {
+  const rows=Utilities.parseCsv(String(text||&#39;&#39;).replace(/^\uFEFF/,&#39;&#39;));
+  if(rows.length&gt;1001) throw new Error(&#39;한 번에 1,000명까지 등록할 수 있습니다.&#39;);
+  const header=rows.shift()||[], wanted=[&#39;학년도&#39;,&#39;학년&#39;,&#39;반&#39;,&#39;번호&#39;,&#39;학생이름&#39;];
+  if(wanted.some((x,i)=&gt;정리_(header[i])!==x)) throw new Error(&#39;양식의 열 제목과 순서를 유지하세요.&#39;);
+  const errors=[], result=[], keys=new Set();
+  rows.forEach((r,i)=&gt;{
+    if(r.every(x=&gt;!정리_(x))) return;
+    try {
+      const o=학생정규화_({year:r[0],grade:r[1],classNo:r[2],number:r[3],name:r[4]});
+      const key=[o.year,o.grade,o.classNo,o.number].join(&#39;|&#39;);
+      if(keys.has(key)) throw new Error(&#39;CSV 내부 학급&#183;번호 중복&#39;); keys.add(key);result.push(o);
+    } catch(e) { errors.push((i+2)+&#39;행: &#39;+e.message); }
+  });
+  return {rows:result,errors:errors};
+}
+function CSV확인_(d) {
+  관리자_(); const p=CSV분석_(d.text), existing=목록_(&#39;학생&#39;).filter(s=&gt;불리언_(s.active));
+  let update=0; p.rows.forEach(o=&gt;{if(existing.some(s=&gt;[&#39;year&#39;,&#39;grade&#39;,&#39;classNo&#39;,&#39;number&#39;].every(k=&gt;Number(s[k])===Number(o[k]))))update++;});
+  return {count:p.rows.length,updates:update,adds:p.rows.length-update,errors:p.errors,preview:p.rows.slice(0,20)};
+}
+function CSV반영_(d) {
+  관리자_(); return 잠금_(()=&gt;{
+    const p=CSV분석_(d.text); if(p.errors.length||!p.rows.length) throw new Error(&#39;CSV 오류를 먼저 수정하세요.&#39;);
+    const y=숫자_(d.year,2020,2100); if(p.rows.some(s=&gt;s.year!==y)) throw new Error(&#39;현재 선택 학년도의 학생만 등록하세요.&#39;);
+    const old=목록_(&#39;학생&#39;), replacement=d.mode===&#39;replace&#39;;
+    if(replacement) {
+      const backup=DriveApp.getFileById(설정_().DB_ID).makeCopy(&#39;명렬표 변경 전 백업_&#39;+시각_(),DriveApp.getFolderById(설정_().ROOT_ID));
+      감사_(&#39;전체 교체 전 백업&#39;,backup.getId());
+    }
+    const map=new Map(old.map(s=&gt;[[s.year,s.grade,s.classNo,s.number].join(&#39;|&#39;),s])), adds=[], output=old.map(s=&gt;Object.assign({},s));
+    const positions=new Map(output.map((s,i)=&gt;[s.id,i]));
+    if(replacement) output.forEach(s=&gt;{if(Number(s.year)===y)s.active=false;});
+    p.rows.forEach(o=&gt;{const key=[o.year,o.grade,o.classNo,o.number].join(&#39;|&#39;), match=map.get(key); if(match) Object.assign(output[positions.get(match.id)],o); else adds.push(Object.assign({id:아이디_()},o));});
+    const sheet=표_(&#39;학생&#39;), all=output.concat(adds);
+    if(all.length) sheet.getRange(2,1,all.length,표구조.학생.length).setValues(all.map(o=&gt;표구조.학생.map(k=&gt;안전셀_(o[k]))));
+    감사_(&#39;CSV 반영&#39;,String(p.rows.length)+&#39;명 &#39;+(replacement?&#39;전체 교체&#39;:&#39;추가&#183;수정&#39;)); return {message:p.rows.length+&#39;명 반영했습니다.&#39;};
+  });
+}
+function 학급생성_(d) {
+  관리자_(); const year=숫자_(d.year,2020,2100), grade=숫자_(d.grade,1,12), start=숫자_(d.start,1,99), end=숫자_(d.end,1,99);
+  if(start&gt;end||end-start&gt;39) throw new Error(&#39;반 범위는 한 번에 40개 이하로 지정하세요.&#39;);
+  return 잠금_(()=&gt;{
+    const classes=목록_(&#39;학급&#39;), boxes=목록_(&#39;제출함&#39;); let count=0;
+    for(let c=start;c&lt;=end;c++) {
+      const cls=classes.find(x=&gt;Number(x.year)===year&amp;&amp;Number(x.grade)===grade&amp;&amp;Number(x.classNo)===c);
+      if(!cls) 추가_(&#39;학급&#39;,{id:아이디_(),year:year,grade:grade,classNo:c,active:true});
+      const b=boxes.find(x=&gt;Number(x.year)===year&amp;&amp;x.type===&#39;class&#39;&amp;&amp;Number(x.grade)===grade&amp;&amp;Number(x.classNo)===c&amp;&amp;x.folderId);
+      if(!b) { 제출함추가_({year:year,name:year+&#39;학년도 &#39;+grade+&#39;학년 &#39;+c+&#39;반&#39;,type:&#39;class&#39;,grade:grade,classNo:c}); count++; }
+    }
+    캐시삭제_(); 감사_(&#39;학급 생성&#39;,year+&#39; &#39;+grade+&#39;학년 &#39;+start+&#39;~&#39;+end+&#39;반&#39;); return {message:&#39;새 제출함 &#39;+count+&#39;개를 생성했습니다.&#39;};
+  });
+}
+function 권한부여_(boxId,teacherId,values) {
+  if(!목록_(&#39;제출함&#39;).some(b=&gt;b.id===boxId)) throw new Error(&#39;제출함이 없습니다.&#39;);
+  if(!목록_(&#39;교사&#39;).some(t=&gt;t.id===teacherId&amp;&amp;t.status===&#39;approved&#39;)) throw new Error(&#39;승인된 교사를 선택하세요.&#39;);
+  const old=목록_(&#39;권한&#39;).find(a=&gt;a.boxId===boxId&amp;&amp;a.teacherId===teacherId);
+  const record={boxId:boxId,teacherId:teacherId,view:불리언_(values.view)||불리언_(values.download)||불리언_(values.manage),download:불리언_(values.download),manage:불리언_(values.manage)};
+  if(old) 수정_(&#39;권한&#39;,old.id,record); else 추가_(&#39;권한&#39;,Object.assign({id:아이디_()},record));
+}
+function 권한저장_(d) {
+  관리자_(); return 잠금_(()=&gt;{권한부여_(d.boxId,d.teacherId,d); 감사_(&#39;제출함 권한 변경&#39;,d.boxId+&#39;:&#39;+d.teacherId); return {message:&#39;권한을 저장했습니다.&#39;};});
+}
+function 담임배정_(d) {
+  const year=숫자_(d.year,2020,2100), grade=숫자_(d.grade,1,12), cls=숫자_(d.classNo,1,99);
+  const b=목록_(&#39;제출함&#39;).find(b=&gt;Number(b.year)===year&amp;&amp;b.type===&#39;class&#39;&amp;&amp;Number(b.grade)===grade&amp;&amp;Number(b.classNo)===cls&amp;&amp;b.folderId&amp;&amp;!b.deleteAt);
+  if(!b) throw new Error(&#39;먼저 해당 학급 제출함을 생성하세요.&#39;);
+  const prev=목록_(&#39;담임&#39;).find(h=&gt;Number(h.year)===year&amp;&amp;Number(h.grade)===grade&amp;&amp;Number(h.classNo)===cls);
+  if(prev&amp;&amp;prev.teacherId!==d.teacherId) {
+    const a=목록_(&#39;권한&#39;).find(a=&gt;a.boxId===b.id&amp;&amp;a.teacherId===prev.teacherId); if(a) 제거_(&#39;권한&#39;,a.id);
+  }
+  const record={year:year,grade:grade,classNo:cls,teacherId:d.teacherId};
+  권한부여_(b.id,d.teacherId,{view:true,download:true,manage:false});
+  if(prev) 수정_(&#39;담임&#39;,prev.id,record); else 추가_(&#39;담임&#39;,Object.assign({id:아이디_()},record));
+}
+function 담임저장_(d) { 관리자_();return 잠금_(()=&gt;{담임배정_(d);감사_(&#39;담임 변경&#39;,d.teacherId);return {message:&#39;담임을 배정했습니다.&#39;};}); }
+function 담임삭제_(d) {
+  관리자_();return 잠금_(()=&gt;{
+    const h=목록_(&#39;담임&#39;).find(h=&gt;h.id===d.id); if(!h) throw new Error(&#39;배정 정보가 없습니다.&#39;);
+    const b=목록_(&#39;제출함&#39;).find(b=&gt;Number(b.year)===Number(h.year)&amp;&amp;b.type===&#39;class&#39;&amp;&amp;Number(b.grade)===Number(h.grade)&amp;&amp;Number(b.classNo)===Number(h.classNo));
+    if(b) {const a=목록_(&#39;권한&#39;).find(a=&gt;a.boxId===b.id&amp;&amp;a.teacherId===h.teacherId);if(a)제거_(&#39;권한&#39;,a.id);}
+    제거_(&#39;담임&#39;,h.id);감사_(&#39;담임 해제&#39;,h.id);return {message:&#39;배정과 해당 학급 권한을 해제했습니다. 제출자료는 보존됩니다.&#39;};
+  });
+}
+function 승인_(d) {
+  관리자_();return 잠금_(()=&gt;{
+    const r=목록_(&#39;인증신청&#39;).find(r=&gt;r.id===d.id&amp;&amp;r.status===&#39;pending&#39;); if(!r) throw new Error(&#39;처리할 대기 신청이 없습니다.&#39;);
+    if(d.approve) {
+      // 담임 제출함을 먼저 확인하여 부분 승인 오류를 줄입니다.
+      if(불리언_(r.homeroom)&amp;&amp;!목록_(&#39;제출함&#39;).some(b=&gt;Number(b.year)===Number(r.year)&amp;&amp;b.type===&#39;class&#39;&amp;&amp;Number(b.grade)===Number(r.grade)&amp;&amp;Number(b.classNo)===Number(r.classNo)&amp;&amp;b.folderId&amp;&amp;!b.deleteAt)) throw new Error(&#39;신청한 학급의 제출함을 먼저 생성하세요.&#39;);
+      const t=목록_(&#39;교사&#39;).find(t=&gt;t.email===r.email), id=t?t.id:아이디_();
+      if(t) 수정_(&#39;교사&#39;,id,{name:r.name,status:&#39;approved&#39;}); else 추가_(&#39;교사&#39;,{id:id,email:r.email,name:r.name,status:&#39;approved&#39;,createdAt:시각_()});
+      if(불리언_(r.homeroom)) 담임배정_({year:r.year,grade:r.grade,classNo:r.classNo,teacherId:id});
+    }
+    수정_(&#39;인증신청&#39;,r.id,{status:d.approve?&#39;approved&#39;:&#39;rejected&#39;});감사_(d.approve?&#39;교사 승인&#39;:&#39;교사 반려&#39;,r.id);return {message:&#39;처리했습니다.&#39;};
+  });
+}
+function 제출함삭제_(d) {
+  관리자_();return 잠금_(()=&gt;{const b=제출함권한_(d.id);if(!b.folderId)throw new Error(&#39;이미 정리된 제출함입니다.&#39;);수정_(&#39;제출함&#39;,b.id,{active:false,deleteAt:new Date(Date.now()+30*86400000).toISOString()});캐시삭제_();감사_(&#39;제출함 삭제 예약&#39;,b.id);return {message:&#39;30일 삭제 대기로 전환했습니다.&#39;};});
+}
+function 제출함복원_(d) {
+  관리자_();return 잠금_(()=&gt;{const b=제출함권한_(d.id);if(!b.folderId)throw new Error(&#39;휴지통 이동 후에는 드라이브에서 복원하세요.&#39;);수정_(&#39;제출함&#39;,b.id,{active:true,deleteAt:&#39;&#39;});캐시삭제_();감사_(&#39;제출함 복원&#39;,b.id);return {message:&#39;복원했습니다.&#39;};});
+}
+function 파일목록_(d) {
+  제출함권한_(d.boxId,&#39;view&#39;);const term=정리_(d.search,80).toLowerCase(), page=숫자_(d.page||1,1,100000), receipts=목록_(&#39;접수&#39;);
+  const map=new Map(receipts.map(r=&gt;[r.id,r]));
+  let files=목록_(&#39;파일&#39;).filter(f=&gt;f.boxId===d.boxId&amp;&amp;f.status===&#39;stored&#39;).map(f=&gt;{
+    const r=map.get(f.receiptId)||{};
+    return {id:f.id,name:f.name,originalName:f.originalName,size:f.size,createdAt:f.createdAt,student:r.student||&#39;&#39;,grade:r.grade||&#39;&#39;,classNo:r.classNo||&#39;&#39;,parent:r.parent||&#39;&#39;,receiptId:f.receiptId};
+  }).filter(f=&gt;!term||[f.name,f.student,f.parent,f.createdAt].join(&#39; &#39;).toLowerCase().includes(term)).reverse();
+  return {total:files.length,page:page,files:files.slice((page-1)*30,page*30)};
+}
+function 파일권한_(id,kind) {
+  const f=목록_(&#39;파일&#39;).find(f=&gt;f.id===id&amp;&amp;f.status===&#39;stored&#39;);if(!f) throw new Error(&#39;파일을 찾을 수 없습니다.&#39;);
+  제출함권한_(f.boxId,kind);return f;
+}
+function 파일작업_(d) {
+  교직원_();return 잠금_(()=&gt;{
+    const f=파일권한_(d.id,&#39;manage&#39;), file=DriveApp.getFileById(f.driveId);
+    if(d.action===&#39;rename&#39;) {
+      const name=안전파일명_(d.name), oldExt=f.name.split(&#39;.&#39;).pop().toLowerCase();
+      if(name.split(&#39;.&#39;).pop().toLowerCase()!==oldExt) throw new Error(&#39;확장자는 변경할 수 없습니다.&#39;);
+      file.setName(name);수정_(&#39;파일&#39;,f.id,{name:name});
+    } else if(d.action===&#39;delete&#39;) {file.setTrashed(true);수정_(&#39;파일&#39;,f.id,{status:&#39;trashed&#39;});}
+    else if(d.action===&#39;move&#39;) {
+      const target=제출함권한_(d.targetId,&#39;manage&#39;), r=목록_(&#39;접수&#39;).find(r=&gt;r.id===f.receiptId);
+      if(!target.folderId||target.deleteAt)throw new Error(&#39;이동할 수 없는 제출함입니다.&#39;);
+      if(Number(target.year)!==Number(r.year))throw new Error(&#39;같은 학년도 제출함으로만 이동할 수 있습니다.&#39;);
+      if(target.type===&#39;class&#39;&amp;&amp;(Number(target.grade)!==Number(r.grade)||Number(target.classNo)!==Number(r.classNo)))throw new Error(&#39;다른 반의 학급 제출함으로 이동할 수 없습니다.&#39;);
+      file.moveTo(학생폴더_(r,target));수정_(&#39;파일&#39;,f.id,{boxId:target.id});
+    } else throw new Error(&#39;지원하지 않는 파일 작업입니다.&#39;);
+    감사_(&#39;파일 &#39;+d.action,f.id+(d.targetId?&#39;:&#39;+d.targetId:&#39;&#39;));return {message:&#39;처리했습니다.&#39;};
+  });
+}
+function 다운로드_(d) {
+  const f=파일권한_(d.id,&#39;download&#39;);if(Number(f.size)&gt;Number(설정_().FILE_MB)*1048576)throw new Error(&#39;앱 다운로드 제한을 초과한 파일입니다. 관리자에게 문의하세요.&#39;);
+  const blob=DriveApp.getFileById(f.driveId).getBlob();감사_(&#39;파일 다운로드&#39;,f.id);
+  return {name:f.name,mime:f.mime,base64:Utilities.base64Encode(blob.getBytes())};
+}
+function 압축_(d) {
+  제출함권한_(d.boxId,&#39;download&#39;);const p=설정_();
+  const all=목록_(&#39;파일&#39;).filter(f=&gt;f.boxId===d.boxId&amp;&amp;f.status===&#39;stored&#39;);
+  const ids=Array.isArray(d.ids)?new Set(d.ids):null, fs=ids?all.filter(f=&gt;ids.has(f.id)):all;
+  if(!fs.length)throw new Error(&#39;파일을 선택하세요.&#39;);
+  if(fs.length&gt;Number(p.ZIP_COUNT)||fs.reduce((n,f)=&gt;n+Number(f.size),0)&gt;Number(p.ZIP_MB)*1048576)throw new Error(&#39;압축 제한을 초과했습니다. 더 적은 파일을 선택하세요.&#39;);
+  const blobs=fs.map((f,i)=&gt;DriveApp.getFileById(f.driveId).getBlob().setName(String(i+1).padStart(3,&#39;0&#39;)+&#39;_&#39;+f.name));
+  const name=&#39;제출파일_&#39;+Utilities.formatDate(new Date(),&#39;Asia/Seoul&#39;,&#39;yyyyMMdd_HHmmss&#39;)+&#39;.zip&#39;;
+  const zip=Utilities.zip(blobs,name);
+  감사_(&#39;ZIP 다운로드&#39;,d.boxId+&#39;:&#39;+fs.length+&#39;개&#39;);
+  // 응답으로 전달하므로 공개 링크나 공유 임시 파일을 만들지 않습니다.
+  return {name:name,mime:&#39;application/zip&#39;,base64:Utilities.base64Encode(zip.getBytes())};
+}
+function 대시보드_(d) {
+  관리자_();const y=숫자_(d.year||현재학년도_(),2020,2100), receipts=목록_(&#39;접수&#39;).filter(r=&gt;Number(r.year)===y), boxes=목록_(&#39;제출함&#39;).filter(b=&gt;Number(b.year)===y);
+  const ids=new Set(receipts.map(r=&gt;r.id)), fs=목록_(&#39;파일&#39;).filter(f=&gt;ids.has(f.receiptId)&amp;&amp;f.status===&#39;stored&#39;), success=new Set(fs.map(f=&gt;f.receiptId));
+  const completed=receipts.filter(r=&gt;success.has(r.id)), users=new Set(completed.map(r=&gt;r.studentId||[r.grade,r.classNo,r.student].join(&#39;|&#39;)));
+  const daily={}, byBox={}; const cutoff=Date.now()-30*86400000;
+  completed.filter(r=&gt;Date.parse(r.createdAt)&gt;=cutoff).forEach(r=&gt;{const day=Utilities.formatDate(new Date(r.createdAt),&#39;Asia/Seoul&#39;,&#39;MM-dd&#39;);daily[day]=(daily[day]||0)+1;byBox[r.boxId]=(byBox[r.boxId]||0)+1;});
+  return {receipts:completed.length,files:fs.length,users:users.size,boxes:boxes.filter(b=&gt;접수가능_(b)).length,teachers:목록_(&#39;교사&#39;).filter(t=&gt;t.status===&#39;approved&#39;).length,incomplete:receipts.filter(r=&gt;[&#39;uploading&#39;,&#39;partial&#39;,&#39;failed&#39;].includes(r.status)).length,daily:Object.keys(daily).sort().map(k=&gt;({label:k,value:daily[k]})),byBox:Object.keys(byBox).map(k=&gt;({label:(boxes.find(b=&gt;b.id===k)||{}).name||&#39;이전 제출함&#39;,value:byBox[k]})),notice:&#39;제출자 수는 학생 ID 또는 학년&#183;반&#183;이름 조합 기준입니다. 통계는 선택 학년도 기준입니다.&#39;};
+}
+</code></pre></section>
+<section id="file4"><h2>화면.html</h2><button data-copy="code4">전체 코드 복사</button><pre><code id="code4">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+  &lt;base target=&quot;_top&quot;&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css&quot;&gt;
+  &lt;style&gt;
+    :root{--ink:#23302d;--muted:#667570;--line:#dce3df;--brand:#276654;--bg:#f4f6f4}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 SUIT,system-ui,sans-serif}button,input,select,textarea{font:inherit}button,a,input,select,textarea{touch-action:manipulation}button{cursor:pointer;border:1px solid var(--line);background:white;color:var(--ink);padding:10px 17px;border-radius:5px;min-height:46px}button.primary{background:var(--brand);color:white;border-color:var(--brand)}button.danger{color:#a13333}button:disabled{opacity:.5;cursor:wait}a{color:var(--brand)}header{background:white;border-bottom:1px solid var(--line)}header&gt;div{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:17px 24px;gap:12px}.brand{font-size:21px;font-weight:800}main{max-width:1200px;margin:30px auto;padding:0 24px 60px}.narrow{max-width:650px;margin:auto}.panel{background:white;border:1px solid var(--line);padding:28px;margin:18px 0;border-radius:6px}h1{font-size:28px;line-height:1.35;margin:0 0 14px}h2{font-size:22px;margin:22px 0 12px}h3{font-size:19px;margin:12px 0}p{margin:8px 0 16px}.muted,small{color:var(--muted);font-size:16px}label{display:block;font-weight:600;margin:14px 0 5px}input,select,textarea{width:100%;background:white;border:1px solid #bcc9c1;padding:11px 12px;border-radius:4px;color:var(--ink);min-height:46px}input[type=checkbox]{width:21px;min-height:21px;vertical-align:middle}label.check{font-weight:400;display:flex;align-items:center;gap:9px}textarea{min-height:130px}.row{display:flex;gap:14px;align-items:end;flex-wrap:wrap}.row&gt;.field{flex:1;min-width:140px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 0}.stack{display:grid;gap:10px}.choice{text-align:left;padding:15px 18px;display:flex;justify-content:space-between;width:100%}.choice.selected{border:2px solid var(--brand);background:#edf5ef}.tag{color:var(--brand);font-size:16px}.steps{color:var(--muted);margin-bottom:15px}.summary{border-left:3px solid var(--brand);padding-left:15px;margin:16px 0}.file{border-bottom:1px solid var(--line);padding:12px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}.file&gt;div{overflow-wrap:anywhere}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:17px}th,td{padding:11px;text-align:left;border-bottom:1px solid var(--line)}th{background:#f5f7f5}td button{font-size:16px;padding:5px 10px;min-height:36px}nav{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}nav button.active{background:var(--brand);color:white}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}.metric{background:white;border:1px solid var(--line);padding:18px}.metric strong{display:block;font-size:30px}.bar{display:grid;grid-template-columns:minmax(100px,1fr) 3fr 40px;gap:10px;align-items:center;margin:10px 0}.bar i{display:block;background:#6a9d85;height:14px;min-width:2px}#notice{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#233d31;color:white;padding:13px 22px;border-radius:5px;max-width:90vw;z-index:99;display:none}#working{position:fixed;top:0;left:0;right:0;height:4px;background:var(--brand);display:none;z-index:100}.error{color:#a13333;white-space:pre-line}.hidden{display:none!important}:focus-visible{outline:3px solid #9dc5b5;outline-offset:2px}.split{display:grid;grid-template-columns:1fr 1fr;gap:18px}hr{border:0;border-top:1px solid var(--line);margin:25px 0}details{margin:16px 0}summary{cursor:pointer;font-weight:600}@media(max-width:700px){main{padding:0 15px 40px;margin-top:20px}.panel{padding:20px}.split{grid-template-columns:1fr}header&gt;div{padding:14px 15px}.brand{font-size:19px}h1{font-size:25px}.row&gt;.field{min-width:110px}.actions button{flex:1}}
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;working&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+&lt;header&gt;&lt;div&gt;&lt;span class=&quot;brand&quot;&gt;학교 파일 제출&lt;/span&gt;&lt;div id=&quot;top&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/header&gt;
+&lt;main id=&quot;app&quot;&gt;&lt;div class=&quot;panel narrow&quot; role=&quot;status&quot;&gt;불러오는 중…&lt;/div&gt;&lt;/main&gt;
+&lt;div id=&quot;notice&quot; role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+&lt;script&gt;
+const PAGE=&#39;&lt;?!= page ?&gt;&#39;, ENTRY=&#39;&lt;?!= entry ?&gt;&#39;;
+const $=id=&gt;document.getElementById(id), esc=v=&gt;String(v??&#39;&#39;).replace(/[&amp;&lt;&gt;&quot;&#39;]/g,x=&gt;({&#39;&amp;&#39;:&#39;&amp;amp;&#39;,&#39;&lt;&#39;:&#39;&amp;lt;&#39;,&#39;&gt;&#39;:&#39;&amp;gt;&#39;,&#39;&quot;&#39;:&#39;&amp;quot;&#39;,&quot;&#39;&quot;:&#39;&amp;#39;&#39;}[x]));
+const state={config:null,parent:{},files:[],boxes:[],selected:&#39;&#39;,receipt:null,requestId:&#39;&#39;,user:null,staffBoxes:[],year:new Date().getFullYear(),admin:null,tab:&#39;대시보드&#39;,page:1,search:&#39;&#39;,listBox:&#39;&#39;,csvText:&#39;&#39;,csvChecked:false};
+let pending=0, messageTimer, searchTimer, listSequence=0;
+function notify(text){$(&#39;notice&#39;).textContent=text;$(&#39;notice&#39;).style.display=&#39;block&#39;;clearTimeout(messageTimer);messageTimer=setTimeout(()=&gt;$(&#39;notice&#39;).style.display=&#39;none&#39;,5000)}
+function call(action,data={}){pending++;$(&#39;working&#39;).style.display=&#39;block&#39;;return new Promise((resolve,reject)=&gt;{google.script.run.withSuccessHandler(r=&gt;{if(r.ok)resolve(r.data);else reject(new Error(r.message))}).withFailureHandler(()=&gt;reject(new Error(&#39;서버와 연결하지 못했습니다. 잠시 후 다시 시도하세요.&#39;))).요청(action,data)}).finally(()=&gt;{pending--;if(!pending)$(&#39;working&#39;).style.display=&#39;none&#39;})}
+async function busy(button,text,fn){if(button&amp;&amp;button.disabled)return;if(button){button.disabled=true;button.dataset.old=button.textContent;button.textContent=text}try{return await fn()}catch(e){notify(e.message);throw e}finally{if(button&amp;&amp;button.isConnected){button.disabled=false;button.textContent=button.dataset.old}}}
+function on(id,fn){if($(id))$(id).onclick=e=&gt;Promise.resolve(fn(e)).catch(()=&gt;{})}
+function submit(id,fn){$(id).onsubmit=e=&gt;{e.preventDefault();const b=e.submitter||$(id).querySelector(&#39;button[type=submit]&#39;);busy(b,&#39;처리 중…&#39;,()=&gt;fn(Object.fromEntries(new FormData($(id))),b)).catch(()=&gt;{})}}
+function field(name,label,value=&#39;&#39;,type=&#39;text&#39;,extra=&#39;&#39;){return `&lt;div class=&quot;field&quot;&gt;&lt;label for=&quot;${esc(name)}&quot;&gt;${esc(label)}&lt;/label&gt;&lt;input id=&quot;${esc(name)}&quot; name=&quot;${esc(name)}&quot; type=&quot;${type}&quot; value=&quot;${esc(value)}&quot; ${extra}&gt;&lt;/div&gt;`}
+function select(name,label,options,value=&#39;&#39;){return `&lt;div class=&quot;field&quot;&gt;&lt;label for=&quot;${name}&quot;&gt;${label}&lt;/label&gt;&lt;select id=&quot;${name}&quot; name=&quot;${name}&quot;&gt;${options.map(o=&gt;`&lt;option value=&quot;${esc(o.value)}&quot; ${String(o.value)===String(value)?&#39;selected&#39;:&#39;&#39;}&gt;${esc(o.label)}&lt;/option&gt;`).join(&#39;&#39;)}&lt;/select&gt;&lt;/div&gt;`}
+function check(name,label,value=false){return `&lt;label class=&quot;check&quot;&gt;&lt;input type=&quot;checkbox&quot; name=&quot;${name}&quot; ${value?&#39;checked&#39;:&#39;&#39;}&gt;${esc(label)}&lt;/label&gt;`}
+function bytes(n){return Number(n)&lt;1048576?Math.round(Number(n)/1024)+&#39; KB&#39;:(Number(n)/1048576).toFixed(1)+&#39; MB&#39;}
+function date(v){return v?new Date(v).toLocaleString(&#39;ko-KR&#39;,{timeZone:&#39;Asia/Seoul&#39;}):&#39;-&#39;}
+function status(v){return ({uploading:&#39;전송 중&#39;,complete:&#39;완료&#39;,partial:&#39;일부 완료&#39;,failed:&#39;실패&#39;,approved:&#39;승인&#39;,pending:&#39;대기&#39;,suspended:&#39;이용 중지&#39;,deleted:&#39;삭제&#39;,rejected:&#39;반려&#39;})[v]||v}
+function uid(){return crypto.randomUUID?crypto.randomUUID():Date.now().toString(16)+&#39;-&#39;+Math.random().toString(16).slice(2)+&#39;-&#39;+Math.random().toString(16).slice(2)}
+function table(head,rows){return `&lt;div class=&quot;table-wrap&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;${head.map(h=&gt;`&lt;th&gt;${h}&lt;/th&gt;`).join(&#39;&#39;)}&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;${rows.length?rows.map(r=&gt;`&lt;tr&gt;${r.map(c=&gt;`&lt;td&gt;${c}&lt;/td&gt;`).join(&#39;&#39;)}&lt;/tr&gt;`).join(&#39;&#39;):`&lt;tr&gt;&lt;td colspan=&quot;${head.length}&quot;&gt;등록된 내용이 없습니다.&lt;/td&gt;&lt;/tr&gt;`}&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;`}
+function yearControl(){return `&lt;div class=&quot;row&quot;&gt;&lt;div class=&quot;field&quot; style=&quot;max-width:170px&quot;&gt;&lt;label for=&quot;yearFilter&quot;&gt;학년도&lt;/label&gt;&lt;input id=&quot;yearFilter&quot; type=&quot;number&quot; min=&quot;2020&quot; max=&quot;2100&quot; value=&quot;${state.year}&quot;&gt;&lt;/div&gt;&lt;button id=&quot;changeYear&quot;&gt;조회&lt;/button&gt;&lt;/div&gt;`}
+async function boot(){try{state.config=await call(&#39;시작&#39;);state.year=state.config.year;if(PAGE===&#39;parent&#39;){parentStart()}else if(ENTRY===&#39;1&#39;){await staffLogin()}else{loginGuide()}}catch(e){$(&#39;app&#39;).innerHTML=`&lt;div class=&quot;panel narrow&quot;&gt;&lt;h1&gt;설정 확인&lt;/h1&gt;&lt;p class=&quot;error&quot;&gt;${esc(e.message)}&lt;/p&gt;&lt;p&gt;학교 담당자에게 문의해 주세요.&lt;/p&gt;&lt;/div&gt;`}}
+function loginGuide(message=&#39;Google 계정으로 로그인하세요&#39;){
+  $(&#39;top&#39;).innerHTML=&#39;&lt;button id=&quot;home&quot;&gt;학부모 화면&lt;/button&gt;&#39;;on(&#39;home&#39;,parentStart);
+  const target=state.config.staffUrl, link=target?target+&#39;?page=&#39;+PAGE+&#39;&amp;entry=1&#39;:&#39;&#39;;
+  $(&#39;app&#39;).innerHTML=`&lt;section class=&quot;panel narrow&quot;&gt;&lt;h1&gt;${PAGE===&#39;admin&#39;?&#39;관리자&#39;:&#39;교사&#39;} 로그인&lt;/h1&gt;&lt;p&gt;${esc(message)}&lt;/p&gt;&lt;p class=&quot;muted&quot;&gt;신청한 학교 이메일을 사용해 주세요.&lt;/p&gt;${link?`&lt;a href=&quot;${esc(link)}&quot; class=&quot;login-link&quot;&gt;&lt;button class=&quot;primary&quot;&gt;Google 계정으로 로그인&lt;/button&gt;&lt;/a&gt;`:&#39;&lt;p class=&quot;error&quot;&gt;운영자가 교직원 배포 주소를 등록해야 합니다.&lt;/p&gt;&#39;}&lt;details&gt;&lt;summary&gt;다른 계정으로 접속했나요?&lt;/summary&gt;&lt;p&gt;Google 계정 메뉴에서 학교 계정으로 전환한 뒤 다시 접속하세요. 계정 선택이 되지 않으면 다른 브라우저 프로필을 사용하세요.&lt;/p&gt;&lt;a href=&quot;https://accounts.google.com/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Google 계정 열기&lt;/a&gt;&lt;/details&gt;&lt;/section&gt;`;
+}
+async function staffLogin(){
+  const result=await call(&#39;로그인확인&#39;);state.user=result.user;state.staffBoxes=result.boxes;state.year=result.year;
+  const u=state.user;
+  if(!u.email){loginGuide(&#39;Google 계정으로 로그인하세요&#39;);return}
+  if(PAGE===&#39;admin&#39;&amp;&amp;u.role!==&#39;admin&#39;){loginGuide(&#39;관리자 권한이 없습니다. 등록된 관리자 학교 이메일로 로그인해 주세요.&#39;);return}
+  if(u.role===&#39;unapproved&#39;){applicationScreen();return}
+  $(&#39;top&#39;).innerHTML=`&lt;span class=&quot;muted&quot;&gt;${esc(u.name||u.email)}&lt;/span&gt; &lt;button id=&quot;switchAccount&quot;&gt;계정 안내&lt;/button&gt;`;on(&#39;switchAccount&#39;,()=&gt;loginGuide(&#39;신청한 학교 이메일로 로그인해 주세요.&#39;));
+  staffShell();await showTab(u.role===&#39;admin&#39;?&#39;대시보드&#39;:&#39;제출함 열람&#39;);
+}
+function applicationScreen(){
+  const u=state.user;let content=&#39;&#39;;
+  if(u.status===&#39;pending&#39;)content=&#39;&lt;p&gt;교사 인증 승인 대기 중입니다.&lt;/p&gt;&#39;;
+  else if([&#39;suspended&#39;,&#39;deleted&#39;].includes(u.status))content=&#39;&lt;p&gt;이용이 중지되었습니다. 관리자에게 문의하세요.&lt;/p&gt;&#39;;
+  else content=`&lt;form id=&quot;applyForm&quot;&gt;${u.status===&#39;rejected&#39;?&#39;&lt;p&gt;이전 신청이 반려되었습니다. 정보를 확인하고 다시 신청하세요.&lt;/p&gt;&#39;:&#39;&#39;}${field(&#39;name&#39;,&#39;교사 이름&#39;,&#39;&#39;,&#39;text&#39;,&#39;required maxlength=&quot;60&quot;&#39;)}${field(&#39;email&#39;,&#39;학교 이메일&#39;,u.email,&#39;email&#39;,&#39;readonly required&#39;)}${check(&#39;homeroom&#39;,&#39;담임교사입니다&#39;)}&lt;div id=&quot;homeroomFields&quot; class=&quot;hidden row&quot;&gt;${field(&#39;year&#39;,&#39;학년도&#39;,state.year,&#39;number&#39;,&#39;min=&quot;2020&quot; max=&quot;2100&quot;&#39;)}${field(&#39;grade&#39;,&#39;학년&#39;,1,&#39;number&#39;,&#39;min=&quot;1&quot; max=&quot;12&quot;&#39;)}${field(&#39;classNo&#39;,&#39;반&#39;,1,&#39;number&#39;,&#39;min=&quot;1&quot; max=&quot;99&quot;&#39;)}&lt;/div&gt;&lt;div class=&quot;actions&quot;&gt;&lt;button type=&quot;submit&quot; class=&quot;primary&quot;&gt;인증 신청&lt;/button&gt;&lt;/div&gt;&lt;/form&gt;`;
+  $(&#39;app&#39;).innerHTML=`&lt;section class=&quot;panel narrow&quot;&gt;&lt;h1&gt;교사 인증&lt;/h1&gt;&lt;p class=&quot;muted&quot;&gt;${esc(u.email)}&lt;/p&gt;${content}&lt;div class=&quot;actions&quot;&gt;&lt;button id=&quot;refreshAuth&quot;&gt;승인 상태 확인&lt;/button&gt;&lt;button id=&quot;accountHelp&quot;&gt;다른 계정으로 로그인&lt;/button&gt;&lt;/div&gt;&lt;/section&gt;`;
+  if($(&#39;applyForm&#39;)){document.querySelector(&#39;[name=homeroom]&#39;).onchange=e=&gt;$(&#39;homeroomFields&#39;).classList.toggle(&#39;hidden&#39;,!e.target.checked);submit(&#39;applyForm&#39;,async d=&gt;{d.homeroom=!!document.querySelector(&#39;[name=homeroom]&#39;).checked;const r=await call(&#39;교사신청&#39;,d);notify(r.message);await staffLogin()})}
+  on(&#39;refreshAuth&#39;,e=&gt;busy(e.target,&#39;확인 중…&#39;,staffLogin));on(&#39;accountHelp&#39;,()=&gt;loginGuide(&#39;신청한 학교 이메일로 로그인해 주세요.&#39;));
+}
+function parentStart(){
+  $(&#39;top&#39;).innerHTML=&#39;&lt;button id=&quot;lookup&quot;&gt;업로드 확인&lt;/button&gt;&#39;;on(&#39;lookup&#39;,lookupScreen);
+  const p=state.parent, grades=[...new Set(state.config.classes.map(c=&gt;c.grade))].sort((a,b)=&gt;a-b);
+  $(&#39;app&#39;).innerHTML=`&lt;section class=&quot;panel narrow&quot;&gt;&lt;div class=&quot;steps&quot;&gt;1 / 3 &#183; 학생 정보&lt;/div&gt;&lt;h1&gt;파일을 제출해 주세요&lt;/h1&gt;&lt;p class=&quot;muted&quot;&gt;학생과 보호자 정보를 입력하세요.&lt;/p&gt;${!grades.length?&#39;&lt;p class=&quot;error&quot;&gt;등록된 학급이 없습니다. 학교 담당자에게 문의해 주세요.&lt;/p&gt;&#39;:&#39;&#39;}&lt;form id=&quot;parentForm&quot;&gt;&lt;div class=&quot;row&quot;&gt;${select(&#39;grade&#39;,&#39;학년&#39;,grades.map(g=&gt;({value:g,label:g+&#39;학년&#39;})),p.grade)}${select(&#39;classNo&#39;,&#39;반&#39;,[],p.classNo)}&lt;/div&gt;${field(&#39;student&#39;,&#39;학생 이름&#39;,p.student||&#39;&#39;,&#39;text&#39;,&#39;required maxlength=&quot;60&quot; autocomplete=&quot;off&quot;&#39;)}&lt;div id=&quot;numberWrap&quot; class=&quot;${p.number?&#39;&#39;:&#39;hidden&#39;}&quot;&gt;${field(&#39;number&#39;,&#39;학생 번호 &#183; 동명이인 구분&#39;,p.number||&#39;&#39;,&#39;number&#39;,&#39;min=&quot;1&quot; max=&quot;999&quot;&#39;)}&lt;/div&gt;${field(&#39;parent&#39;,&#39;학부모 이름&#39;,p.parent||&#39;&#39;,&#39;text&#39;,&#39;required maxlength=&quot;60&quot;&#39;)}${field(&#39;phone&#39;,&#39;학부모 전화번호&#39;,p.phone||&#39;&#39;,&#39;tel&#39;,&#39;required maxlength=&quot;30&quot; autocomplete=&quot;tel&quot;&#39;)}${field(&#39;password&#39;,&#39;제출 확인용 임시암호&#39;,p.password||&#39;&#39;,&#39;password&#39;,&#39;required minlength=&quot;10&quot; maxlength=&quot;100&quot; autocomplete=&quot;new-password&quot;&#39;)}&lt;small&gt;문자와 숫자를 섞어 10자 이상 입력하세요. 제출 확인 시 필요합니다.&lt;/small&gt;&lt;p class=&quot;muted&quot; style=&quot;margin-top:18px&quot;&gt;입력 정보와 파일은 학교의 제출 업무에 사용됩니다. 민감한 자료는 담당 교사와 확인 후 제출해 주세요.&lt;/p&gt;&lt;div class=&quot;actions&quot;&gt;&lt;button class=&quot;primary&quot; type=&quot;submit&quot; ${!grades.length?&#39;disabled&#39;:&#39;&#39;}&gt;다음&lt;/button&gt;&lt;/div&gt;&lt;/form&gt;&lt;details&gt;&lt;summary&gt;교직원 메뉴&lt;/summary&gt;&lt;div class=&quot;actions&quot;&gt;&lt;a href=&quot;?page=teacher&quot;&gt;교사&lt;/a&gt;&lt;a href=&quot;?page=admin&quot;&gt;관리자&lt;/a&gt;&lt;/div&gt;&lt;/details&gt;&lt;/section&gt;`;
+  function setClasses(){const v=$(&#39;grade&#39;).value, items=state.config.classes.filter(c=&gt;String(c.grade)===v).sort((a,b)=&gt;a.classNo-b.classNo);$(&#39;classNo&#39;).innerHTML=items.map(c=&gt;`&lt;option value=&quot;${c.classNo}&quot; ${String(c.classNo)===String(p.classNo)?&#39;selected&#39;:&#39;&#39;}&gt;${c.classNo}반&lt;/option&gt;`).join(&#39;&#39;)}
+  $(&#39;grade&#39;).onchange=setClasses;setClasses();
+  submit(&#39;parentForm&#39;,async d=&gt;{const r=await call(&#39;학생확인&#39;,d);state.parent=d;if(r.needsNumber){$(&#39;numberWrap&#39;).classList.remove(&#39;hidden&#39;);$(&#39;number&#39;).required=true;$(&#39;number&#39;).focus();notify(&#39;동명이인 구분을 위해 학생 번호를 입력하세요.&#39;);return}state.boxes=r.boxes;parentFiles()});
+}
+function parentFiles(){
+  const p=state.parent, general=state.boxes.filter(b=&gt;b.type===&#39;general&#39;), popular=general.filter(b=&gt;b.popular), rest=general.filter(b=&gt;!b.popular), cls=state.boxes.filter(b=&gt;b.type===&#39;class&#39;);
+  const choices=list=&gt;list.map(b=&gt;`&lt;button type=&quot;button&quot; class=&quot;choice ${state.selected===b.id?&#39;selected&#39;:&#39;&#39;}&quot; data-box=&quot;${esc(b.id)}&quot;&gt;&lt;span&gt;${esc(b.name)}&lt;/span&gt;&lt;span&gt;${state.selected===b.id?&#39;선택됨&#39;:&#39;선택&#39;}&lt;/span&gt;&lt;/button&gt;`).join(&#39;&#39;);
+  $(&#39;app&#39;).innerHTML=`&lt;section class=&quot;panel narrow&quot;&gt;&lt;div class=&quot;steps&quot;&gt;2 / 3 &#183; 제출함과 파일&lt;/div&gt;&lt;h1&gt;어디에 제출할까요?&lt;/h1&gt;&lt;div class=&quot;summary&quot;&gt;${esc(p.grade)}학년 ${esc(p.classNo)}반 ${esc(p.student)}&lt;/div&gt;&lt;h2&gt;많이 찾는 제출함&lt;/h2&gt;&lt;div class=&quot;stack&quot;&gt;${choices(popular)||&#39;&lt;p class=&quot;muted&quot;&gt;일반 제출함이 없습니다.&lt;/p&gt;&#39;}&lt;/div&gt;${rest.length?`&lt;details&gt;&lt;summary&gt;일반 제출함 전체보기 &#183; ${general.length}개&lt;/summary&gt;&lt;div class=&quot;stack&quot;&gt;${choices(rest)}&lt;/div&gt;&lt;/details&gt;`:&#39;&#39;}&lt;h2&gt;우리 반 제출함&lt;/h2&gt;&lt;div class=&quot;stack&quot;&gt;${choices(cls)||&#39;&lt;p class=&quot;muted&quot;&gt;접수 중인 학급 제출함이 없습니다.&lt;/p&gt;&#39;}&lt;/div&gt;&lt;hr&gt;&lt;label for=&quot;filePicker&quot;&gt;첨부파일&lt;/label&gt;&lt;input id=&quot;filePicker&quot; type=&quot;file&quot; multiple accept=&quot;.hwp,.hwpx,.xls,.xlsx,.pdf,.jpg,.jpeg,.png,.gif,.webp,.bmp,.heic,.heif&quot;&gt;&lt;small&gt;파일당 ${state.config.limits.fileMB} MB &#183; 총 ${state.config.limits.totalMB} MB &#183; 최대 ${state.config.limits.count}개&lt;/small&gt;&lt;div id=&quot;fileList&quot;&gt;&lt;/div&gt;&lt;div id=&quot;uploadProgress&quot; role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;&lt;div class=&quot;actions&quot;&gt;&lt;button id=&quot;backParent&quot;&gt;이전&lt;/button&gt;&lt;button id=&quot;sendFiles&quot; class=&quot;primary&quot;&gt;전송&lt;/button&gt;&lt;/div&gt;&lt;/section&gt;`;
+  document.querySelectorAll(&#39;[data-box]&#39;).forEach(b=&gt;b.onclick=()=&gt;{if(state.receipt){notify(&#39;이미 접수한 제출함은 바꿀 수 없습니다. 새 접수를 시작하세요.&#39;);return}state.selected=b.dataset.box;document.querySelectorAll(&#39;[data-box]&#39;).forEach(x=&gt;{x.classList.toggle(&#39;selected&#39;,x.dataset.box===state.selected);x.lastElementChild.textContent=x.dataset.box===state.selected?&#39;선택됨&#39;:&#39;선택&#39;})});
+  $(&#39;filePicker&#39;).onchange=e=&gt;{if(state.receipt){notify(&#39;재전송 중에는 파일을 추가할 수 없습니다.&#39;);return}for(const f of e.target.files){if(state.files.some(x=&gt;x.file.name===f.name&amp;&amp;x.file.size===f.size&amp;&amp;x.file.lastModified===f.lastModified))continue;state.files.push({file:f,id:uid(),done:false,error:&#39;&#39;})}e.target.value=&#39;&#39;;renderFiles()};
+  on(&#39;backParent&#39;,()=&gt;{if(state.receipt){notify(&#39;접수 후에는 정보를 변경할 수 없습니다.&#39;);return}parentStart()});on(&#39;sendFiles&#39;,e=&gt;busy(e.target,&#39;전송 중…&#39;,uploadFiles));renderFiles();
+}
+function renderFiles(){if(!$(&#39;fileList&#39;))return;$(&#39;fileList&#39;).innerHTML=state.files.map((x,i)=&gt;`&lt;div class=&quot;file&quot;&gt;&lt;div&gt;${esc(x.file.name)}&lt;br&gt;&lt;small&gt;${bytes(x.file.size)} &#183; ${x.done?&#39;저장 완료&#39;:x.error?esc(x.error):&#39;대기&#39;}&lt;/small&gt;&lt;/div&gt;${!state.receipt?`&lt;button data-remove=&quot;${i}&quot;&gt;제거&lt;/button&gt;`:&#39;&#39;}&lt;/div&gt;`).join(&#39;&#39;);document.querySelectorAll(&#39;[data-remove]&#39;).forEach(b=&gt;b.onclick=()=&gt;{state.files.splice(Number(b.dataset.remove),1);renderFiles()})}
+function readBase64(file){return new Promise((resolve,reject)=&gt;{const r=new FileReader();r.onload=()=&gt;resolve(String(r.result).split(&#39;,&#39;)[1]);r.onerror=()=&gt;reject(new Error(&#39;파일을 읽지 못했습니다.&#39;));r.readAsDataURL(file)})}
+async function uploadFiles(){
+  if(!state.selected)throw new Error(&#39;제출함을 선택하세요.&#39;);const limits=state.config.limits;
+  if(!state.files.length||state.files.length&gt;limits.count||state.files.some(x=&gt;x.file.size&gt;limits.fileMB*1048576)||state.files.reduce((a,x)=&gt;a+x.file.size,0)&gt;limits.totalMB*1048576)throw new Error(&#39;파일 수와 용량 제한을 확인하세요.&#39;);
+  const controls=[...document.querySelectorAll(&#39;#app button,#app input&#39;)];controls.forEach(b=&gt;b.disabled=true);
+  try{
+    if(!state.requestId)state.requestId=uid();
+    if(!state.receipt)state.receipt=await call(&#39;제출시작&#39;,Object.assign({},state.parent,{boxId:state.selected,requestId:state.requestId}));
+    const known=await call(&#39;제출상태&#39;,state.receipt);known.files.forEach(f=&gt;{const x=state.files.find(x=&gt;x.id===f.clientId);if(x)x.done=true});
+    for(let i=0;i&lt;state.files.length;i++){
+      const x=state.files[i];if(x.done)continue;$(&#39;uploadProgress&#39;).textContent=`파일 ${i+1}/${state.files.length} 저장 중…`;
+      try{await call(&#39;파일전송&#39;,Object.assign({},state.receipt,{clientId:x.id,name:x.file.name,size:x.file.size,mime:x.file.type,base64:await readBase64(x.file)}));x.done=true;x.error=&#39;&#39;}catch(e){x.error=e.message}renderFiles();
+    }
+    const result=await call(&#39;제출완료&#39;,Object.assign({},state.receipt,{expected:state.files.length}));
+    if(result.status===&#39;complete&#39;){
+      $(&#39;app&#39;).innerHTML=`&lt;section class=&quot;panel narrow&quot;&gt;&lt;div class=&quot;steps&quot;&gt;3 / 3 &#183; 완료&lt;/div&gt;&lt;h1&gt;제출이 완료되었습니다&lt;/h1&gt;&lt;p&gt;${esc((state.boxes.find(b=&gt;b.id===state.selected)||{}).name)}&lt;/p&gt;&lt;div class=&quot;summary&quot;&gt;접수번호&lt;br&gt;&lt;strong&gt;${esc(result.id)}&lt;/strong&gt;&lt;/div&gt;${state.files.map(x=&gt;`&lt;div class=&quot;file&quot;&gt;${esc(x.file.name)} &lt;span class=&quot;tag&quot;&gt;저장 완료&lt;/span&gt;&lt;/div&gt;`).join(&#39;&#39;)}&lt;p class=&quot;muted&quot;&gt;제출 확인 시 입력한 임시암호가 필요합니다.&lt;/p&gt;&lt;div class=&quot;actions&quot;&gt;&lt;button id=&quot;newUpload&quot; class=&quot;primary&quot;&gt;새 제출&lt;/button&gt;&lt;button id=&quot;checkUpload&quot;&gt;업로드 확인&lt;/button&gt;&lt;/div&gt;&lt;/section&gt;`;
+      state.parent.password=&#39;&#39;;state.receipt=null;state.requestId=&#39;&#39;;state.files=[];state.selected=&#39;&#39;;on(&#39;newUpload&#39;,parentStart);on(&#39;checkUpload&#39;,lookupScreen);
+    }else{$(&#39;uploadProgress&#39;).textContent=`${status(result.status)} &#183; 저장된 파일 ${result.count}개. 실패한 파일을 다시 전송하세요.`}
+  }finally{controls.forEach(b=&gt;{if(b.isConnected)b.disabled=false})}
+}
+function lookupScreen(){
+  $(&#39;app&#39;).innerHTML=`&lt;section class=&quot;panel narrow&quot;&gt;&lt;h1&gt;업로드 확인&lt;/h1&gt;&lt;form id=&quot;lookupForm&quot;&gt;&lt;div class=&quot;row&quot;&gt;${field(&#39;year&#39;,&#39;학년도&#39;,state.config.year,&#39;number&#39;,&#39;required min=&quot;2020&quot; max=&quot;2100&quot;&#39;)}${field(&#39;grade&#39;,&#39;학년&#39;,&#39;&#39;,&#39;number&#39;,&#39;required min=&quot;1&quot; max=&quot;12&quot;&#39;)}${field(&#39;classNo&#39;,&#39;반&#39;,&#39;&#39;,&#39;number&#39;,&#39;required min=&quot;1&quot; max=&quot;99&quot;&#39;)}&lt;/div&gt;${field(&#39;student&#39;,&#39;학생 이름&#39;,&#39;&#39;,&#39;text&#39;,&#39;required&#39;)}${field(&#39;password&#39;,&#39;임시암호&#39;,&#39;&#39;,&#39;password&#39;,&#39;required minlength=&quot;10&quot; autocomplete=&quot;off&quot;&#39;)}&lt;div class=&quot;actions&quot;&gt;&lt;button type=&quot;submit&quot; class=&quot;primary&quot;&gt;조회&lt;/button&gt;&lt;button id=&quot;lookupBack&quot; type=&quot;button&quot;&gt;돌아가기&lt;/button&gt;&lt;/div&gt;&lt;/form&gt;&lt;div id=&quot;lookupResults&quot;&gt;&lt;/div&gt;&lt;/section&gt;`;
+  on(&#39;lookupBack&#39;,parentStart);submit(&#39;lookupForm&#39;,async d=&gt;{const rows=await call(&#39;제출조회&#39;,d);$(&#39;lookupResults&#39;).innerHTML=rows.map(r=&gt;`&lt;hr&gt;&lt;h2&gt;${esc(r.box)}&lt;/h2&gt;&lt;p&gt;${date(r.createdAt)} &#183; ${status(r.status)}&lt;/p&gt;&lt;small&gt;접수번호 ${esc(r.id)}&lt;/small&gt;${r.files.map(f=&gt;`&lt;div class=&quot;file&quot;&gt;${esc(f.name)} &lt;small&gt;${bytes(f.size)}&lt;/small&gt;&lt;/div&gt;`).join(&#39;&#39;)||&#39;&lt;p&gt;저장된 파일이 없습니다.&lt;/p&gt;&#39;}`).join(&#39;&#39;);$(&#39;password&#39;).value=&#39;&#39;});
+}
+function staffShell(){
+  const tabs=state.user.role===&#39;admin&#39;?[&#39;대시보드&#39;,&#39;제출함 관리&#39;,&#39;학생 명렬표&#39;,&#39;교사&#183;권한&#39;,&#39;제출함 열람&#39;,&#39;운영 설정&#39;]:[&#39;제출함 열람&#39;];
+  $(&#39;app&#39;).innerHTML=`${yearControl()}&lt;nav&gt;${tabs.map(t=&gt;`&lt;button data-tab=&quot;${esc(t)}&quot;&gt;${t}&lt;/button&gt;`).join(&#39;&#39;)}&lt;/nav&gt;&lt;section id=&quot;content&quot;&gt;&lt;/section&gt;`;
+  document.querySelectorAll(&#39;[data-tab]&#39;).forEach(b=&gt;b.onclick=()=&gt;showTab(b.dataset.tab).catch(e=&gt;notify(e.message)));
+  on(&#39;changeYear&#39;,e=&gt;busy(e.target,&#39;조회 중…&#39;,async()=&gt;{const y=Number($(&#39;yearFilter&#39;).value);if(y&lt;2020||y&gt;2100)throw new Error(&#39;학년도를 확인하세요.&#39;);state.year=y;state.admin=null;state.listBox=&#39;&#39;;await showTab(state.tab)}));
+}
+async function showTab(tab){
+  state.tab=tab;document.querySelectorAll(&#39;[data-tab]&#39;).forEach(b=&gt;b.classList.toggle(&#39;active&#39;,b.dataset.tab===tab));$(&#39;content&#39;).innerHTML=&#39;&lt;p role=&quot;status&quot;&gt;불러오는 중…&lt;/p&gt;&#39;;
+  if(tab===&#39;대시보드&#39;){await dashboard();return}
+  if(tab===&#39;제출함 열람&#39;){await fileScreen();return}
+  if(!state.admin)state.admin=await call(&#39;관리자자료&#39;,{year:state.year});
+  if(state.tab!==tab)return;
+  ({&#39;제출함 관리&#39;:boxScreen,&#39;학생 명렬표&#39;:studentScreen,&#39;교사&#183;권한&#39;:teacherScreen,&#39;운영 설정&#39;:settingsScreen})[tab]();
+}
+async function refreshAdmin(){state.admin=await call(&#39;관리자자료&#39;,{year:state.year});const r=await call(&#39;로그인확인&#39;);state.staffBoxes=r.boxes;await showTab(state.tab)}
+async function dashboard(){const tab=state.tab,r=await call(&#39;대시보드&#39;,{year:state.year});if(state.tab!==tab)return;const metrics=[[&#39;제출 건수&#39;,r.receipts],[&#39;파일&#39;,r.files],[&#39;제출자 조합&#39;,r.users],[&#39;활성 제출함&#39;,r.boxes],[&#39;승인 교사&#39;,r.teachers],[&#39;미완료&#183;실패&#39;,r.incomplete]];const bars=list=&gt;{const max=Math.max(1,...list.map(x=&gt;x.value));return list.length?list.map(x=&gt;`&lt;div class=&quot;bar&quot;&gt;&lt;span&gt;${esc(x.label)}&lt;/span&gt;&lt;div&gt;&lt;i style=&quot;width:${x.value/max*100}%&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;span&gt;${x.value}&lt;/span&gt;&lt;/div&gt;`).join(&#39;&#39;):&#39;&lt;p class=&quot;muted&quot;&gt;최근 제출 내역이 없습니다.&lt;/p&gt;&#39;};$(&#39;content&#39;).innerHTML=`&lt;div class=&quot;metrics&quot;&gt;${metrics.map(m=&gt;`&lt;div class=&quot;metric&quot;&gt;&lt;span&gt;${m[0]}&lt;/span&gt;&lt;strong&gt;${m[1]}&lt;/strong&gt;&lt;/div&gt;`).join(&#39;&#39;)}&lt;/div&gt;&lt;p class=&quot;muted&quot;&gt;${esc(r.notice)}&lt;/p&gt;&lt;div class=&quot;split&quot;&gt;&lt;div class=&quot;panel&quot;&gt;&lt;h2&gt;최근 30일 제출&lt;/h2&gt;${bars(r.daily)}&lt;/div&gt;&lt;div class=&quot;panel&quot;&gt;&lt;h2&gt;제출함별 현황&lt;/h2&gt;${bars(r.byBox)}&lt;/div&gt;&lt;/div&gt;`}
+function boxScreen(edit){
+  const a=state.admin,b=edit||{};
+  $(&#39;content&#39;).innerHTML=`&lt;section class=&quot;panel&quot;&gt;&lt;h1&gt;제출함 관리&lt;/h1&gt;&lt;form id=&quot;boxForm&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;id&quot; value=&quot;${esc(b.id||&#39;&#39;)}&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;year&quot; value=&quot;${state.year}&quot;&gt;&lt;div class=&quot;row&quot;&gt;${field(&#39;name&#39;,&#39;제출함 이름&#39;,b.name||&#39;&#39;,&#39;text&#39;,&#39;required maxlength=&quot;100&quot;&#39;)}${field(&#39;sort&#39;,&#39;정렬 순서&#39;,b.sort||0,&#39;number&#39;,&#39;min=&quot;0&quot; max=&quot;999&quot;&#39;)}&lt;/div&gt;&lt;div class=&quot;row&quot;&gt;${field(&#39;openAt&#39;,&#39;접수 시작&#39;,localTime(b.openAt),&#39;datetime-local&#39;)}${field(&#39;closeAt&#39;,&#39;접수 종료&#39;,localTime(b.closeAt),&#39;datetime-local&#39;)}&lt;/div&gt;${check(&#39;active&#39;,&#39;접수 활성화&#39;,b.id?String(b.active)===&#39;true&#39;:true)}&lt;div class=&quot;actions&quot;&gt;&lt;button class=&quot;primary&quot; type=&quot;submit&quot;&gt;${b.id?&#39;수정 저장&#39;:&#39;일반 제출함 생성&#39;}&lt;/button&gt;${b.id?&#39;&lt;button id=&quot;cancelBox&quot; type=&quot;button&quot;&gt;취소&lt;/button&gt;&#39;:&#39;&#39;}&lt;/div&gt;&lt;/form&gt;&lt;hr&gt;&lt;h2&gt;학급 제출함 생성&lt;/h2&gt;&lt;form id=&quot;classForm&quot;&gt;&lt;div class=&quot;row&quot;&gt;${field(&#39;grade&#39;,&#39;학년&#39;,1,&#39;number&#39;,&#39;min=&quot;1&quot; max=&quot;12&quot; required&#39;)}${field(&#39;start&#39;,&#39;시작 반&#39;,1,&#39;number&#39;,&#39;min=&quot;1&quot; max=&quot;99&quot; required&#39;)}${field(&#39;end&#39;,&#39;마지막 반&#39;,3,&#39;number&#39;,&#39;min=&quot;1&quot; max=&quot;99&quot; required&#39;)}&lt;button type=&quot;submit&quot;&gt;범위 확인 후 생성&lt;/button&gt;&lt;/div&gt;&lt;/form&gt;&lt;h2&gt;제출함 목록&lt;/h2&gt;${table([&#39;이름&#39;,&#39;유형&#39;,&#39;상태&#39;,&#39;작업&#39;],a.boxes.map(x=&gt;[esc(x.name),x.type===&#39;class&#39;?&#39;학급&#39;:&#39;일반&#39;,!x.folderId?&#39;휴지통 이동&#39;:x.deleteAt?&#39;삭제 예정 &#39;+date(x.deleteAt):String(x.active)===&#39;true&#39;?&#39;활성&#39;:&#39;비활성&#39;,x.folderId?`&lt;button data-edit-box=&quot;${x.id}&quot; ${x.deleteAt?&#39;disabled&#39;:&#39;&#39;}&gt;수정&lt;/button&gt; ${x.deleteAt?`&lt;button data-restore-box=&quot;${x.id}&quot;&gt;복원&lt;/button&gt;`:`&lt;button data-delete-box=&quot;${x.id}&quot; class=&quot;danger&quot;&gt;삭제 예약&lt;/button&gt;`}`:&#39;-&#39;]))}&lt;/section&gt;`;
+  submit(&#39;boxForm&#39;,async d=&gt;{d.active=!!document.querySelector(&#39;#boxForm [name=active]&#39;).checked;if(d.openAt)d.openAt=new Date(d.openAt).toISOString();if(d.closeAt)d.closeAt=new Date(d.closeAt).toISOString();notify((await call(&#39;저장&#39;,{kind:&#39;box&#39;,item:d})).message);await refreshAdmin()});
+  submit(&#39;classForm&#39;,async d=&gt;{if(!confirm(`${state.year}학년도 ${d.grade}학년 ${d.start}~${d.end}반을 생성합니다. 기존 제출함은 유지됩니다.`))return;notify((await call(&#39;학급생성&#39;,Object.assign(d,{year:state.year}))).message);await refreshAdmin()});
+  on(&#39;cancelBox&#39;,()=&gt;boxScreen());document.querySelectorAll(&#39;[data-edit-box]&#39;).forEach(btn=&gt;btn.onclick=()=&gt;boxScreen(a.boxes.find(x=&gt;x.id===btn.dataset.editBox)));
+  document.querySelectorAll(&#39;[data-delete-box]&#39;).forEach(btn=&gt;btn.onclick=()=&gt;busy(btn,&#39;처리 중…&#39;,async()=&gt;{const f=await call(&#39;파일목록&#39;,{boxId:btn.dataset.deleteBox});if(!confirm(`파일 ${f.total}개가 있는 제출함입니다. 비활성화 후 30일이 지나면 폴더를 휴지통으로 이동합니다. 계속할까요?`))return;notify((await call(&#39;제출함삭제&#39;,{id:btn.dataset.deleteBox})).message);await refreshAdmin()}).catch(()=&gt;{}));
+  document.querySelectorAll(&#39;[data-restore-box]&#39;).forEach(btn=&gt;btn.onclick=()=&gt;busy(btn,&#39;복원 중…&#39;,async()=&gt;{notify((await call(&#39;제출함복원&#39;,{id:btn.dataset.restoreBox})).message);await refreshAdmin()}).catch(()=&gt;{}));
+}
+function localTime(v){if(!v)return &#39;&#39;;const d=new Date(v);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}
+function studentScreen(edit){
+  const a=state.admin,s=edit||{};
+  $(&#39;content&#39;).innerHTML=`&lt;section class=&quot;panel&quot;&gt;&lt;h1&gt;학생 명렬표&lt;/h1&gt;&lt;form id=&quot;studentForm&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;id&quot; value=&quot;${esc(s.id||&#39;&#39;)}&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;year&quot; value=&quot;${state.year}&quot;&gt;&lt;div class=&quot;row&quot;&gt;${field(&#39;grade&#39;,&#39;학년&#39;,s.grade||1,&#39;number&#39;,&#39;required min=&quot;1&quot; max=&quot;12&quot;&#39;)}${field(&#39;classNo&#39;,&#39;반&#39;,s.classNo||1,&#39;number&#39;,&#39;required min=&quot;1&quot; max=&quot;99&quot;&#39;)}${field(&#39;number&#39;,&#39;번호&#39;,s.number||1,&#39;number&#39;,&#39;required min=&quot;1&quot; max=&quot;999&quot;&#39;)}${field(&#39;name&#39;,&#39;학생 이름&#39;,s.name||&#39;&#39;,&#39;text&#39;,&#39;required maxlength=&quot;60&quot;&#39;)}&lt;/div&gt;&lt;div class=&quot;actions&quot;&gt;&lt;button type=&quot;submit&quot; class=&quot;primary&quot;&gt;${s.id?&#39;수정 저장&#39;:&#39;학생 추가&#39;}&lt;/button&gt;${s.id?&#39;&lt;button id=&quot;cancelStudent&quot; type=&quot;button&quot;&gt;취소&lt;/button&gt;&#39;:&#39;&#39;}&lt;/div&gt;&lt;/form&gt;&lt;hr&gt;&lt;h2&gt;CSV 일괄 등록&lt;/h2&gt;&lt;button id=&quot;csvTemplate&quot;&gt;양식 다운로드&lt;/button&gt;&lt;label for=&quot;csvFile&quot;&gt;CSV 파일&lt;/label&gt;&lt;input id=&quot;csvFile&quot; type=&quot;file&quot; accept=&quot;.csv&quot;&gt;${select(&#39;csvEncoding&#39;,&#39;파일 인코딩&#39;,[{value:&#39;utf-8&#39;,label:&#39;UTF-8&#39;},{value:&#39;euc-kr&#39;,label:&#39;한글 Windows CSV&#39;}])}${select(&#39;csvMode&#39;,&#39;반영 방식&#39;,[{value:&#39;merge&#39;,label:&#39;일치 번호 수정 &#183; 나머지 추가&#39;},{value:&#39;replace&#39;,label:&#39;현재 학년도 전체 교체&#39;}])}&lt;div class=&quot;actions&quot;&gt;&lt;button id=&quot;csvPreview&quot;&gt;내용 확인&lt;/button&gt;&lt;button id=&quot;csvApply&quot; class=&quot;primary&quot; disabled&gt;반영&lt;/button&gt;&lt;/div&gt;&lt;div id=&quot;csvResult&quot;&gt;&lt;/div&gt;&lt;hr&gt;&lt;h2&gt;등록 학생 &#183; ${a.students.length}명&lt;/h2&gt;${field(&#39;studentSearch&#39;,&#39;학생 검색&#39;,&#39;&#39;,&#39;search&#39;,&#39;placeholder=&quot;이름 또는 학급&quot;&#39;)}&lt;div id=&quot;studentTable&quot;&gt;&lt;/div&gt;&lt;/section&gt;`;
+  function draw(){const q=($(&#39;studentSearch&#39;).value||&#39;&#39;).trim();const rows=a.students.filter(x=&gt;!q||[x.grade+&#39;학년&#39;,x.classNo+&#39;반&#39;,x.name].join(&#39; &#39;).includes(q));$(&#39;studentTable&#39;).innerHTML=table([&#39;학년&#39;,&#39;반&#39;,&#39;번호&#39;,&#39;이름&#39;,&#39;작업&#39;],rows.map(x=&gt;[esc(x.grade),esc(x.classNo),esc(x.number),esc(x.name),`&lt;button data-edit-student=&quot;${x.id}&quot;&gt;수정&lt;/button&gt; &lt;button data-delete-student=&quot;${x.id}&quot; class=&quot;danger&quot;&gt;삭제&lt;/button&gt;`]));document.querySelectorAll(&#39;[data-edit-student]&#39;).forEach(b=&gt;b.onclick=()=&gt;studentScreen(a.students.find(x=&gt;x.id===b.dataset.editStudent)));document.querySelectorAll(&#39;[data-delete-student]&#39;).forEach(b=&gt;b.onclick=()=&gt;busy(b,&#39;처리 중…&#39;,async()=&gt;{if(!confirm(&#39;명렬표에서 삭제할까요? 기존 제출 기록은 보존됩니다.&#39;))return;notify((await call(&#39;학생삭제&#39;,{id:b.dataset.deleteStudent})).message);await refreshAdmin()}).catch(()=&gt;{}))}draw();$(&#39;studentSearch&#39;).oninput=draw;
+  submit(&#39;studentForm&#39;,async d=&gt;{notify((await call(&#39;저장&#39;,{kind:&#39;student&#39;,item:d})).message);await refreshAdmin()});on(&#39;cancelStudent&#39;,()=&gt;studentScreen());
+  on(&#39;csvTemplate&#39;,()=&gt;downloadBlob(new Blob([&#39;\uFEFF학년도,학년,반,번호,학생이름\r\n&#39;+state.year+&#39;,1,1,1,홍길동\r\n&#39;],{type:&#39;text/csv;charset=utf-8&#39;}),&#39;학생명렬표_양식.csv&#39;));
+  $(&#39;csvFile&#39;).onchange=()=&gt;{state.csvChecked=false;$(&#39;csvApply&#39;).disabled=true};$(&#39;csvEncoding&#39;).onchange=$(&#39;csvFile&#39;).onchange;
+  on(&#39;csvPreview&#39;,e=&gt;busy(e.target,&#39;확인 중…&#39;,async()=&gt;{const f=$(&#39;csvFile&#39;).files[0];if(!f)throw new Error(&#39;CSV 파일을 선택하세요.&#39;);if(f.size&gt;1048576)throw new Error(&#39;CSV는 1 MB 이하로 선택하세요.&#39;);state.csvText=new TextDecoder($(&#39;csvEncoding&#39;).value).decode(await f.arrayBuffer());const r=await call(&#39;CSV확인&#39;,{text:state.csvText});state.csvChecked=!r.errors.length;state.csvFile=f;state.csvEncoding=$(&#39;csvEncoding&#39;).value;$(&#39;csvApply&#39;).disabled=!state.csvChecked;$(&#39;csvResult&#39;).innerHTML=`&lt;p&gt;총 ${r.count}명 &#183; 추가 ${r.adds} &#183; 수정 ${r.updates}&lt;/p&gt;${r.errors.length?`&lt;p class=&quot;error&quot;&gt;${r.errors.map(esc).join(&#39;&lt;br&gt;&#39;)}&lt;/p&gt;`:table([&#39;학년&#39;,&#39;반&#39;,&#39;번호&#39;,&#39;이름 &#183; 처음 20명&#39;],r.preview.map(x=&gt;[x.grade,x.classNo,x.number,esc(x.name)]))}`}));
+  on(&#39;csvApply&#39;,e=&gt;busy(e.target,&#39;반영 중…&#39;,async()=&gt;{if(!state.csvChecked||state.csvFile!==$(&#39;csvFile&#39;).files[0]||state.csvEncoding!==$(&#39;csvEncoding&#39;).value)throw new Error(&#39;먼저 내용을 확인하세요.&#39;);if(!confirm($(&#39;csvMode&#39;).value===&#39;replace&#39;?&#39;현재 학년도 명렬표를 교체합니다. 변경 전 DB 백업이 생성됩니다. 계속할까요?&#39;:&#39;미리 확인한 내용을 반영할까요?&#39;))return;notify((await call(&#39;CSV반영&#39;,{text:state.csvText,year:state.year,mode:$(&#39;csvMode&#39;).value})).message);state.csvChecked=false;await refreshAdmin()}));
+}
+function teacherScreen(edit){
+  const a=state.admin,t=edit||{}, approved=a.teachers.filter(t=&gt;t.status===&#39;approved&#39;), teacherOptions=approved.map(t=&gt;({value:t.id,label:t.name+&#39; &#183; &#39;+t.email})), boxOptions=a.boxes.filter(b=&gt;b.folderId&amp;&amp;!b.deleteAt).map(b=&gt;({value:b.id,label:b.name}));
+  $(&#39;content&#39;).innerHTML=`&lt;section class=&quot;panel&quot;&gt;&lt;h1&gt;교사&#183;권한&lt;/h1&gt;&lt;h2&gt;인증 대기&lt;/h2&gt;${table([&#39;이름&#39;,&#39;학교 이메일&#39;,&#39;담임 신청&#39;,&#39;처리&#39;],a.applications.map(r=&gt;[esc(r.name),esc(r.email),String(r.homeroom)===&#39;true&#39;?esc(r.year+&#39; / &#39;+r.grade+&#39;학년 &#39;+r.classNo+&#39;반&#39;):&#39;일반 교사&#39;,`&lt;button data-approve=&quot;${r.id}&quot;&gt;승인&lt;/button&gt; &lt;button data-reject=&quot;${r.id}&quot;&gt;반려&lt;/button&gt;`]))}&lt;h2&gt;교사 등록&#183;수정&lt;/h2&gt;&lt;form id=&quot;teacherForm&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;id&quot; value=&quot;${esc(t.id||&#39;&#39;)}&quot;&gt;&lt;div class=&quot;row&quot;&gt;${field(&#39;name&#39;,&#39;이름&#39;,t.name||&#39;&#39;,&#39;text&#39;,&#39;required&#39;)}${field(&#39;email&#39;,&#39;학교 이메일&#39;,t.email||&#39;&#39;,&#39;email&#39;,&#39;required&#39;)}${select(&#39;status&#39;,&#39;상태&#39;,[{value:&#39;approved&#39;,label:&#39;승인&#39;},{value:&#39;suspended&#39;,label:&#39;이용 중지&#39;},{value:&#39;deleted&#39;,label:&#39;삭제 &#183; 접근 차단&#39;}],t.status||&#39;approved&#39;)}&lt;/div&gt;&lt;div class=&quot;actions&quot;&gt;&lt;button type=&quot;submit&quot; class=&quot;primary&quot;&gt;저장&lt;/button&gt;${t.id?&#39;&lt;button id=&quot;cancelTeacher&quot; type=&quot;button&quot;&gt;취소&lt;/button&gt;&#39;:&#39;&#39;}&lt;/div&gt;&lt;/form&gt;${table([&#39;이름&#39;,&#39;이메일&#39;,&#39;상태&#39;,&#39;작업&#39;],a.teachers.map(x=&gt;[esc(x.name),esc(x.email),status(x.status),`&lt;button data-edit-teacher=&quot;${x.id}&quot;&gt;수정&lt;/button&gt;`]))}&lt;p class=&quot;muted&quot;&gt;교사 삭제는 접근을 차단하며 학생 제출자료는 삭제하지 않습니다.&lt;/p&gt;&lt;hr&gt;&lt;h2&gt;담임 배정&lt;/h2&gt;&lt;form id=&quot;homeroomForm&quot;&gt;&lt;div class=&quot;row&quot;&gt;${field(&#39;grade&#39;,&#39;학년&#39;,1,&#39;number&#39;,&#39;required min=&quot;1&quot; max=&quot;12&quot;&#39;)}${field(&#39;classNo&#39;,&#39;반&#39;,1,&#39;number&#39;,&#39;required min=&quot;1&quot; max=&quot;99&quot;&#39;)}${select(&#39;teacherId&#39;,&#39;교사&#39;,teacherOptions)}&lt;/div&gt;&lt;div class=&quot;actions&quot;&gt;&lt;button type=&quot;submit&quot;&gt;담임 저장&lt;/button&gt;&lt;/div&gt;&lt;/form&gt;${table([&#39;학년&#183;반&#39;,&#39;담임&#39;,&#39;작업&#39;],a.homerooms.map(h=&gt;[esc(h.grade+&#39;학년 &#39;+h.classNo+&#39;반&#39;),esc((a.teachers.find(t=&gt;t.id===h.teacherId)||{}).name||&#39;미등록&#39;),`&lt;button data-remove-home=&quot;${h.id}&quot;&gt;배정 해제&lt;/button&gt;`]))}&lt;hr&gt;&lt;h2&gt;제출함 권한&lt;/h2&gt;&lt;form id=&quot;permissionForm&quot;&gt;&lt;div class=&quot;row&quot;&gt;${select(&#39;boxId&#39;,&#39;제출함&#39;,boxOptions)}${select(&#39;teacherId&#39;,&#39;교사&#39;,teacherOptions)}&lt;/div&gt;&lt;div class=&quot;row&quot;&gt;${check(&#39;view&#39;,&#39;열람&#39;,true)}${check(&#39;download&#39;,&#39;다운로드&#39;,true)}${check(&#39;manage&#39;,&#39;이름 변경&#183;이동&#183;삭제&#39;)}&lt;/div&gt;&lt;div class=&quot;actions&quot;&gt;&lt;button type=&quot;submit&quot;&gt;권한 저장&lt;/button&gt;&lt;/div&gt;&lt;/form&gt;&lt;p class=&quot;muted&quot;&gt;선택한 교사의 현재 권한을 불러옵니다. 모두 해제하고 저장하면 권한을 회수합니다.&lt;/p&gt;${table([&#39;제출함&#39;,&#39;교사&#39;,&#39;권한&#39;],a.permissions.filter(p=&gt;a.boxes.some(b=&gt;b.id===p.boxId)).map(p=&gt;[esc((a.boxes.find(b=&gt;b.id===p.boxId)||{}).name),esc((a.teachers.find(t=&gt;t.id===p.teacherId)||{}).name),[String(p.view)===&#39;true&#39;?&#39;열람&#39;:&#39;&#39;,String(p.download)===&#39;true&#39;?&#39;다운로드&#39;:&#39;&#39;,String(p.manage)===&#39;true&#39;?&#39;파일 관리&#39;:&#39;&#39;].filter(Boolean).join(&#39; &#183; &#39;)||&#39;없음&#39;]))}&lt;/section&gt;`;
+  submit(&#39;teacherForm&#39;,async d=&gt;{if(d.status!==&#39;approved&#39;&amp;&amp;!confirm(&#39;교사의 접속을 차단합니다. 기존 제출자료는 보존됩니다. 계속할까요?&#39;))return;notify((await call(&#39;저장&#39;,{kind:&#39;teacher&#39;,item:d})).message);await refreshAdmin()});on(&#39;cancelTeacher&#39;,()=&gt;teacherScreen());document.querySelectorAll(&#39;[data-edit-teacher]&#39;).forEach(b=&gt;b.onclick=()=&gt;teacherScreen(a.teachers.find(t=&gt;t.id===b.dataset.editTeacher)));
+  [&#39;approve&#39;,&#39;reject&#39;].forEach(kind=&gt;document.querySelectorAll(&#39;[data-&#39;+kind+&#39;]&#39;).forEach(b=&gt;b.onclick=()=&gt;busy(b,&#39;처리 중…&#39;,async()=&gt;{if(!confirm(kind===&#39;approve&#39;?&#39;신청 정보를 확인했으며 승인할까요?&#39;:&#39;신청을 반려할까요?&#39;))return;notify((await call(&#39;승인&#39;,{id:b.dataset[kind],approve:kind===&#39;approve&#39;})).message);await refreshAdmin()}).catch(()=&gt;{})));
+  submit(&#39;homeroomForm&#39;,async d=&gt;{notify((await call(&#39;담임저장&#39;,Object.assign(d,{year:state.year}))).message);await refreshAdmin()});document.querySelectorAll(&#39;[data-remove-home]&#39;).forEach(b=&gt;b.onclick=()=&gt;busy(b,&#39;해제 중…&#39;,async()=&gt;{if(!confirm(&#39;담임 배정과 해당 학급 권한을 해제할까요? 자료는 보존됩니다.&#39;))return;notify((await call(&#39;담임삭제&#39;,{id:b.dataset.removeHome})).message);await refreshAdmin()}).catch(()=&gt;{}));
+  const pf=$(&#39;permissionForm&#39;);function loadPerm(){const p=a.permissions.find(p=&gt;p.boxId===pf.elements.boxId.value&amp;&amp;p.teacherId===pf.elements.teacherId.value);[&#39;view&#39;,&#39;download&#39;,&#39;manage&#39;].forEach(k=&gt;pf.elements[k].checked=p?String(p[k])===&#39;true&#39;:false)}pf.elements.boxId.onchange=loadPerm;pf.elements.teacherId.onchange=loadPerm;loadPerm();submit(&#39;permissionForm&#39;,async d=&gt;{[&#39;view&#39;,&#39;download&#39;,&#39;manage&#39;].forEach(k=&gt;d[k]=pf.elements[k].checked);notify((await call(&#39;권한저장&#39;,d)).message);await refreshAdmin()});
+}
+async function fileScreen(){
+  const seq=++listSequence;const login=await call(&#39;로그인확인&#39;);if(state.tab!==&#39;제출함 열람&#39;||seq!==listSequence)return;state.staffBoxes=login.boxes;const boxes=state.staffBoxes.filter(b=&gt;Number(b.year)===Number(state.year)&amp;&amp;!b.deleted);
+  if(!boxes.some(b=&gt;b.id===state.listBox))state.listBox=boxes.length?boxes[0].id:&#39;&#39;;
+  $(&#39;content&#39;).innerHTML=`&lt;section class=&quot;panel&quot;&gt;&lt;h1&gt;제출함 열람&lt;/h1&gt;&lt;div class=&quot;row&quot;&gt;${select(&#39;fileBox&#39;,&#39;제출함&#39;,boxes.map(b=&gt;({value:b.id,label:b.name})),state.listBox)}${field(&#39;fileSearch&#39;,&#39;검색&#39;,state.search,&#39;search&#39;,&#39;placeholder=&quot;학생 &#183; 파일명 &#183; 제출일&quot;&#39;)}&lt;/div&gt;&lt;div class=&quot;actions&quot;&gt;&lt;button id=&quot;zipSelected&quot;&gt;선택 ZIP&lt;/button&gt;&lt;button id=&quot;zipAll&quot;&gt;제출함 전체 ZIP&lt;/button&gt;&lt;/div&gt;&lt;p class=&quot;muted&quot;&gt;대용량은 나누어 다운로드하세요. 파일 관리는 별도 권한이 필요합니다.&lt;/p&gt;&lt;div id=&quot;fileRows&quot;&gt;&lt;/div&gt;&lt;div class=&quot;actions&quot;&gt;&lt;button id=&quot;prevFiles&quot;&gt;이전&lt;/button&gt;&lt;span id=&quot;filePage&quot;&gt;&lt;/span&gt;&lt;button id=&quot;nextFiles&quot;&gt;다음&lt;/button&gt;&lt;/div&gt;&lt;/section&gt;`;
+  $(&#39;fileBox&#39;).onchange=()=&gt;{state.listBox=$(&#39;fileBox&#39;).value;state.page=1;loadFileRows().catch(e=&gt;notify(e.message))};$(&#39;fileSearch&#39;).oninput=()=&gt;{clearTimeout(searchTimer);searchTimer=setTimeout(()=&gt;{state.search=$(&#39;fileSearch&#39;).value;state.page=1;loadFileRows().catch(e=&gt;notify(e.message))},350)};
+  on(&#39;prevFiles&#39;,()=&gt;{state.page=Math.max(1,state.page-1);return loadFileRows()});on(&#39;nextFiles&#39;,()=&gt;{state.page++;return loadFileRows()});
+  on(&#39;zipSelected&#39;,e=&gt;busy(e.target,&#39;압축 중…&#39;,async()=&gt;{const ids=[...document.querySelectorAll(&#39;[data-file-check]:checked&#39;)].map(x=&gt;x.dataset.fileCheck);if(!ids.length)throw new Error(&#39;파일을 선택하세요.&#39;);saveResponse(await call(&#39;압축&#39;,{boxId:state.listBox,ids:ids}))}));
+  on(&#39;zipAll&#39;,e=&gt;busy(e.target,&#39;압축 중…&#39;,async()=&gt;{if(!confirm(&#39;제출함 전체를 압축할까요? 용량 제한을 넘으면 선택 다운로드를 이용하세요.&#39;))return;saveResponse(await call(&#39;압축&#39;,{boxId:state.listBox}))}));await loadFileRows();
+}
+async function loadFileRows(){
+  if(!state.listBox){$(&#39;fileRows&#39;).innerHTML=&#39;&lt;p&gt;열람할 수 있는 제출함이 없습니다.&lt;/p&gt;&#39;;$(&#39;prevFiles&#39;).disabled=true;$(&#39;nextFiles&#39;).disabled=true;return}
+  const seq=++listSequence, r=await call(&#39;파일목록&#39;,{boxId:state.listBox,page:state.page,search:state.search});if(seq!==listSequence||!$(&#39;fileRows&#39;))return;
+  $(&#39;fileRows&#39;).innerHTML=table([&#39;선택&#39;,&#39;파일&#39;,&#39;학생&#39;,&#39;제출자 &#183; 입력 정보&#39;,&#39;제출 시각&#39;,&#39;작업&#39;],r.files.map(f=&gt;[`&lt;input type=&quot;checkbox&quot; aria-label=&quot;${esc(f.name)} 선택&quot; data-file-check=&quot;${f.id}&quot;&gt;`,`${esc(f.name)}&lt;br&gt;&lt;small&gt;${bytes(f.size)}&lt;/small&gt;`,esc(f.grade+&#39;학년 &#39;+f.classNo+&#39;반 &#39;+f.student),esc(f.parent),date(f.createdAt),`&lt;button data-download=&quot;${f.id}&quot;&gt;받기&lt;/button&gt; &lt;button data-rename=&quot;${f.id}&quot;&gt;이름&lt;/button&gt; &lt;button data-move=&quot;${f.id}&quot;&gt;이동&lt;/button&gt; &lt;button class=&quot;danger&quot; data-delete=&quot;${f.id}&quot;&gt;삭제&lt;/button&gt;`]));
+  $(&#39;filePage&#39;).textContent=`${state.page} / ${Math.max(1,Math.ceil(r.total/30))} &#183; ${r.total}개`;$(&#39;prevFiles&#39;).disabled=state.page&lt;=1;$(&#39;nextFiles&#39;).disabled=state.page*30&gt;=r.total;
+  document.querySelectorAll(&#39;[data-download]&#39;).forEach(b=&gt;b.onclick=()=&gt;busy(b,&#39;받는 중…&#39;,async()=&gt;saveResponse(await call(&#39;다운로드&#39;,{id:b.dataset.download}))).catch(()=&gt;{}));
+  document.querySelectorAll(&#39;[data-rename]&#39;).forEach(b=&gt;b.onclick=()=&gt;busy(b,&#39;변경 중…&#39;,async()=&gt;{const f=r.files.find(x=&gt;x.id===b.dataset.rename), name=prompt(&#39;확장자를 유지하여 새 파일명을 입력하세요.&#39;,f.name);if(!name)return;notify((await call(&#39;파일작업&#39;,{id:f.id,action:&#39;rename&#39;,name:name})).message);await loadFileRows()}).catch(()=&gt;{}));
+  document.querySelectorAll(&#39;[data-delete]&#39;).forEach(b=&gt;b.onclick=()=&gt;busy(b,&#39;삭제 중…&#39;,async()=&gt;{if(!confirm(&#39;파일을 휴지통으로 이동할까요? 앱에서는 복원할 수 없습니다.&#39;))return;notify((await call(&#39;파일작업&#39;,{id:b.dataset.delete,action:&#39;delete&#39;})).message);await loadFileRows()}).catch(()=&gt;{}));
+  document.querySelectorAll(&#39;[data-move]&#39;).forEach(b=&gt;b.onclick=()=&gt;{const f=r.files.find(x=&gt;x.id===b.dataset.move);const targets=state.staffBoxes.filter(x=&gt;Number(x.year)===Number(state.year)&amp;&amp;!x.deleted&amp;&amp;x.id!==state.listBox);if(!targets.length){notify(&#39;이동할 제출함이 없습니다.&#39;);return}const wrapper=document.createElement(&#39;div&#39;);wrapper.className=&#39;panel&#39;;wrapper.innerHTML=`&lt;h2&gt;파일 이동&lt;/h2&gt;&lt;p&gt;${esc(f.name)}&lt;/p&gt;&lt;p class=&quot;muted&quot;&gt;이동하면 열람 가능한 교사가 달라질 수 있습니다.&lt;/p&gt;${select(&#39;moveTarget&#39;,&#39;도착 제출함&#39;,targets.map(x=&gt;({value:x.id,label:x.name})))}&lt;div class=&quot;actions&quot;&gt;&lt;button id=&quot;confirmMove&quot; class=&quot;primary&quot;&gt;이동&lt;/button&gt;&lt;button id=&quot;cancelMove&quot;&gt;취소&lt;/button&gt;&lt;/div&gt;`;$(&#39;fileRows&#39;).before(wrapper);on(&#39;cancelMove&#39;,()=&gt;wrapper.remove());on(&#39;confirmMove&#39;,e=&gt;busy(e.target,&#39;이동 중…&#39;,async()=&gt;{notify((await call(&#39;파일작업&#39;,{id:f.id,action:&#39;move&#39;,targetId:$(&#39;moveTarget&#39;).value})).message);wrapper.remove();await loadFileRows()}))});
+}
+function settingsScreen(){const s=state.admin.settings;$(&#39;content&#39;).innerHTML=`&lt;section class=&quot;panel&quot;&gt;&lt;h1&gt;운영 설정&lt;/h1&gt;&lt;form id=&quot;settingsForm&quot;&gt;${field(&#39;PUBLIC_URL&#39;,&#39;공개 배포 주소&#39;,s.PUBLIC_URL,&#39;url&#39;,&#39;required placeholder=&quot;https://script.google.com/macros/s/.../exec&quot;&#39;)}${field(&#39;STAFF_URL&#39;,&#39;교직원 배포 주소&#39;,s.STAFF_URL,&#39;url&#39;,&#39;required placeholder=&quot;https://script.google.com/macros/s/.../exec&quot;&#39;)}&lt;div class=&quot;row&quot;&gt;${field(&#39;FILE_MB&#39;,&#39;파일별 MB&#39;,s.FILE_MB,&#39;number&#39;,&#39;required min=&quot;1&quot; max=&quot;30&quot;&#39;)}${field(&#39;TOTAL_MB&#39;,&#39;접수별 MB&#39;,s.TOTAL_MB,&#39;number&#39;,&#39;required min=&quot;1&quot; max=&quot;30&quot;&#39;)}${field(&#39;FILE_COUNT&#39;,&#39;접수별 파일 수&#39;,s.FILE_COUNT,&#39;number&#39;,&#39;required min=&quot;1&quot; max=&quot;50&quot;&#39;)}&lt;/div&gt;&lt;div class=&quot;row&quot;&gt;${field(&#39;ZIP_MB&#39;,&#39;ZIP 원본 합계 MB&#39;,s.ZIP_MB,&#39;number&#39;,&#39;required min=&quot;1&quot; max=&quot;30&quot;&#39;)}${field(&#39;ZIP_COUNT&#39;,&#39;ZIP 파일 수&#39;,s.ZIP_COUNT,&#39;number&#39;,&#39;required min=&quot;1&quot; max=&quot;50&quot;&#39;)}${field(&#39;RETENTION_DAYS&#39;,&#39;자료 보관 검토 기준 &#183; 일&#39;,s.RETENTION_DAYS,&#39;number&#39;,&#39;required min=&quot;1&quot; max=&quot;3650&quot;&#39;)}&lt;/div&gt;&lt;p class=&quot;muted&quot;&gt;보관 기준은 운영 참고값입니다. 자동 삭제하지 않습니다. 제출함 삭제 예약은 별도로 설정하세요.&lt;/p&gt;&lt;div class=&quot;actions&quot;&gt;&lt;button type=&quot;submit&quot; class=&quot;primary&quot;&gt;저장&lt;/button&gt;&lt;/div&gt;&lt;/form&gt;&lt;h2&gt;최근 관리 기록&lt;/h2&gt;${table([&#39;시각&#39;,&#39;작업자&#39;,&#39;작업&#39;,&#39;대상&#39;],state.admin.audit.map(a=&gt;[date(a.createdAt),esc(a.actor),esc(a.action),esc(a.target)]))}&lt;/section&gt;`;submit(&#39;settingsForm&#39;,async d=&gt;{notify((await call(&#39;설정저장&#39;,d)).message);state.config=await call(&#39;시작&#39;);await refreshAdmin()})}
+function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement(&#39;a&#39;);a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=&gt;URL.revokeObjectURL(url),60000)}
+function saveResponse(r){const raw=atob(r.base64),chunks=[];for(let i=0;i&lt;raw.length;i+=65536){const str=raw.slice(i,i+65536),bytes=new Uint8Array(str.length);for(let j=0;j&lt;str.length;j++)bytes[j]=str.charCodeAt(j);chunks.push(bytes)}downloadBlob(new Blob(chunks,{type:r.mime}),r.name)}
+boot();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></section>
+<script>document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{const text=document.getElementById(b.dataset.copy).textContent;try{await navigator.clipboard.writeText(text);b.textContent="복사 완료"}catch(e){const r=document.createRange();r.selectNodeContents(document.getElementById(b.dataset.copy));const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent="전체 선택됨 · Ctrl+C로 복사"}});</script></html>

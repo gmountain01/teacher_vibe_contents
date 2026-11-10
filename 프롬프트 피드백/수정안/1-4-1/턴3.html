@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내 말로 만드는 품사 문제 출제기</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f3f5fc;color:#24304a;font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif;line-height:1.65}main{max-width:1040px;margin:auto;padding:48px 22px}header{margin-bottom:30px}.tag{color:#6756c5;font-weight:800;font-size:14px}h1{font-size:clamp(26px,4vw,38px);line-height:1.3;margin:10px 0}header p{color:#65718a;margin:0}.layout{display:grid;grid-template-columns:1fr 1fr;gap:24px}.panel{background:white;border:1px solid #e1e5f0;border-radius:22px;padding:28px;box-shadow:0 8px 30px #26355806}h2{font-size:20px;margin:0 0 20px}label{display:block;font-weight:750;margin:18px 0 7px}textarea,input{width:100%;font:inherit;border:1px solid #ccd3e3;border-radius:10px;padding:12px;background:#fcfdff;color:inherit}textarea{min-height:100px;resize:vertical}input:focus,textarea:focus{outline:3px solid #dcd7ff;border-color:#7764d4}.hint{font-size:14px;color:#58657d;margin:7px 0}.notice{background:#f0edff;border-radius:12px;padding:14px;font-size:14px;margin:18px 0}.notice strong{color:#5945ad}button{font:inherit;font-weight:750;cursor:pointer;border:0;border-radius:10px;padding:12px 18px;background:#6854c7;color:white}button:hover{background:#5541b1}.submit{width:100%;margin-top:22px}.empty{padding:55px 12px;text-align:center;color:#7b859b;border:2px dashed #e0e4ef;border-radius:15px}.card-label{font-size:13px;font-weight:800;color:#6756c5;letter-spacing:.04em}.sentence{font-size:22px;white-space:pre-wrap;overflow-wrap:anywhere;background:#f5f6fc;border-radius:12px;padding:20px;margin:18px 0}.question{font-size:18px;overflow-wrap:anywhere}.word{color:#614cbe;font-weight:850}.answer{background:#f0f8f4;border:1px solid #d7ebdf;padding:18px;border-radius:12px;margin-top:20px;overflow-wrap:anywhere}.answer p{margin:6px 0;white-space:pre-wrap}.answer h3{font-size:16px;margin:0 0 10px;color:#357154}.secondary{background:#edf0f7;color:#4c5870;margin-top:18px}.secondary:hover{background:#e0e5f0}.footnote{font-size:13px;color:#788298;margin-top:20px}[hidden]{display:none!important}@media(max-width:720px){main{padding:28px 16px}.layout{grid-template-columns:1fr}.panel{padding:22px}}
+  </style>
+</head>
+<body>
+<main>
+  <header><span class="tag">내 문장으로 배우는 국어</span><h1>품사 문제 출제기</h1><p>내가 쓴 문장으로 친구에게 낼 품사 문제를 만들어 보세요.</p></header>
+  <div class="layout">
+    <section class="panel" aria-labelledby="form-title">
+      <h2 id="form-title">1. 문제 재료 적기</h2>
+      <form id="creator">
+        <label for="author">출제한 친구 이름 또는 별명</label>
+        <input id="author" placeholder="예: 국어 탐험가" required>
+        <label for="sentence">내가 쓴 문장</label>
+        <textarea id="sentence" placeholder="예: 학생이 책을 읽는다." required></textarea>
+        <label for="word">문제로 낼 낱말</label>
+        <input id="word" placeholder="예: 학생" required>
+        <div class="notice"><strong>조사가 붙은 말은 나눠 적어요.</strong><br>‘학생이’는 ‘학생’과 ‘이’로 나누어, 문제로 낼 것을 하나만 적으세요. 예를 들어 ‘학생’을 물을 수도, ‘이’를 물을 수도 있어요.</div>
+        <label for="part">정답 품사</label>
+        <input id="part" list="parts" placeholder="예: 명사" required>
+        <datalist id="parts"><option value="명사"><option value="대명사"><option value="수사"><option value="동사"><option value="형용사"><option value="관형사"><option value="부사"><option value="조사"><option value="감탄사"></datalist>
+        <p class="hint">선택하거나 직접 적어 주세요.</p>
+        <label for="reason">그렇게 생각한 이유</label>
+        <textarea id="reason" placeholder="예: ‘학생’은 사람의 이름을 나타내는 말이기 때문입니다." required></textarea>
+        <button class="submit" type="submit">문제 카드 만들기</button>
+      </form>
+    </section>
+    <section class="panel" aria-labelledby="preview-title">
+      <h2 id="preview-title">2. 완성된 문제 카드</h2>
+      <p id="save-status" role="status" class="hint"></p>
+      <div id="empty" class="empty">내 문장을 품사 문제로!<br>왼쪽 내용을 채우고<br>문제 카드를 만들어 보세요.</div>
+      <article id="card" hidden>
+        <span class="card-label">내가 만든 품사 문제</span>
+        <div class="sentence" id="card-sentence"></div>
+        <p class="question">위 문장에서 <span class="word" id="card-word"></span>의 품사는 무엇인가요?</p>
+        <p class="hint">품사를 생각하고, 그 이유도 말해 보세요.</p>
+        <button type="button" id="toggle" aria-expanded="false" aria-controls="answer">정답과 이유 보기</button>
+        <div id="answer" class="answer" hidden><h3>출제자가 적은 정답과 이유</h3><p><strong>정답: </strong><span id="card-part"></span></p><p id="card-reason"></p></div>
+        <p class="footnote">정답과 이유는 학생이 입력한 내용 그대로 사용합니다. 품사를 자동으로 판별하거나 수정하지 않습니다.</p>
+      </article>
+    </section>
+  </div>
+  <section class="panel" style="margin-top:24px">
+    <h2>3. 우리 반 문제 목록</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:10px">
+      <button type="button" id="export">문제 파일 내려받기</button>
+      <button type="button" id="import">문제 파일 불러오기</button>
+      <input type="file" id="import-file" accept=".json,application/json" hidden>
+    </div>
+    <p id="file-status" class="hint" role="status" aria-live="polite"></p>
+    <label style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="teacher" style="width:auto"> 선생님 확인 모드</label>
+    <p class="hint">선생님이 이 모드를 켜고 정답과 이유를 살펴본 뒤 ‘확인 완료’를 눌러 주세요. 이 모드는 교사용 화면 전환이며 로그인 기능은 아닙니다.</p>
+    <div id="question-list"></div>
+  </section>
+  <section class="panel" style="margin-top:24px">
+    <h2>4. 문제 풀기</h2>
+    <p class="hint">선생님이 확인 완료한 문제만 나옵니다. 품사를 고르면 정답과 친구의 이유가 보여요.</p>
+    <div id="quiz" aria-live="polite"></div>
+  </section>
+  <p class="footnote">문제는 이 브라우저에 자동 저장되어 창을 닫았다 열어도 남습니다. 같은 HTML을 같은 브라우저에서 열어 주세요. 브라우저 데이터를 삭제하면 지워질 수 있으니 문제 파일도 내려받아 보관하세요. 다른 컴퓨터에서는 같은 HTML을 열고 파일을 불러오세요.</p>
+</main>
+<script>
+  const byId = id => document.getElementById(id);
+  const storageKey = 'pos-question-bank-v1';
+  const fileFormat = 'korean-pos-question-bank';
+  let questions = [];
+  let quizIndex = 0;
+  try {
+    const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    if (Array.isArray(saved)) questions = saved.filter(q => q && ['id','author','sentence','word','part','reason'].every(k => typeof q[k] === 'string')).map(q => ({...q, approved:q.approved === true}));
+  } catch { byId('save-status').textContent = '저장된 목록을 불러오지 못했습니다. 이번에 만든 문제는 사용할 수 있습니다.'; }
+  function save() {
+    try { localStorage.setItem(storageKey, JSON.stringify(questions)); byId('save-status').textContent = '문제 목록에 저장했습니다.'; }
+    catch { byId('save-status').textContent = '브라우저 저장이 불가능해 현재 화면에서만 유지됩니다.'; }
+  }
+  byId('export').addEventListener('click', () => {
+    const data = {format:fileFormat, version:1, questions};
+    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = '품사문제_' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.append(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url),1000);
+    byId('file-status').textContent = `${questions.length}개 문제를 파일로 내보냈습니다. 확인 완료 상태도 함께 담았습니다.`;
+  });
+  byId('import').addEventListener('click', () => byId('import-file').click());
+  byId('import-file').addEventListener('change', async event => {
+    const file = event.target.files[0];
+    if (!file) return;
+    try {
+      if (file.size > 5 * 1024 * 1024) throw new Error('파일이 너무 큽니다. 5MB 이하의 문제 파일을 선택해 주세요.');
+      let data;
+      try { data = JSON.parse((await file.text()).replace(/^\uFEFF/,'')); }
+      catch { throw new Error('읽을 수 없는 파일입니다. 이 출제기에서 내려받은 JSON 문제 파일을 선택해 주세요.'); }
+      if (!data || data.format !== fileFormat || data.version !== 1 || !Array.isArray(data.questions)) throw new Error('지원하는 품사 문제 파일이 아닙니다. 이 출제기에서 내려받은 파일을 선택해 주세요.');
+      if (data.questions.length > 10000) throw new Error('한 번에 불러올 수 있는 문제 수는 10,000개입니다.');
+      const fields = ['id','author','sentence','word','part','reason'];
+      const imported = data.questions.map((q,index) => {
+        if (!q || typeof q !== 'object' || !fields.every(k => typeof q[k] === 'string' && q[k].trim().length > 0 && q[k].length <= 50000) || typeof q.approved !== 'boolean') throw new Error(`${index+1}번 문제의 내용이나 확인 상태가 올바르지 않습니다. 파일을 불러오지 않았습니다.`);
+        const clean = {approved:q.approved};
+        fields.forEach(k => clean[k] = q[k]);
+        return clean;
+      });
+      if (!imported.length) { byId('file-status').textContent = '파일에 문제가 없습니다. 목록은 변경하지 않았습니다.'; return; }
+      const approvedCount = imported.filter(q => q.approved).length;
+      if (!window.confirm(`${file.name}\n문제 ${imported.length}개 (확인 완료 ${approvedCount}개)를 불러올까요?\n기존 ${questions.length}개는 유지하고 목록 끝에 추가합니다.\n파일의 확인 완료 상태도 유지됩니다. 같은 파일을 다시 불러오면 문제가 중복됩니다.`)) {
+        byId('file-status').textContent = '불러오기를 취소했습니다. 목록은 변경하지 않았습니다.'; return;
+      }
+      imported.forEach((q,index) => q.id = Date.now().toString(36) + '-' + index + '-' + Math.random().toString(36).slice(2));
+      questions.push(...imported); save(); renderList(); renderQuiz();
+      byId('file-status').textContent = `문제 ${imported.length}개를 추가했습니다. 현재 총 ${questions.length}개입니다.`;
+    } catch (error) {
+      byId('file-status').textContent = error.message || '파일을 불러오지 못했습니다. 기존 목록은 유지됩니다.';
+    } finally { event.target.value = ''; }
+  });
+  function element(tag, text, className) {
+    const node = document.createElement(tag);
+    if (text !== undefined) node.textContent = text;
+    if (className) node.className = className;
+    return node;
+  }
+  function renderList() {
+    const list = byId('question-list'); list.replaceChildren();
+    if (!questions.length) list.append(element('p','아직 만든 문제가 없습니다. 첫 문제를 만들어 보세요.','empty'));
+    questions.forEach((q, index) => {
+      const card = element('article'); card.style.cssText = 'border-top:1px solid #e1e5f0;padding:20px 0;overflow-wrap:anywhere';
+      card.append(element('strong', `${index+1}. ${q.author} · ${q.approved ? '확인 완료' : '선생님 확인 대기'}`));
+      card.append(element('div', q.sentence, 'sentence'), element('p', `문제로 낼 낱말: ${q.word}`));
+      if (byId('teacher').checked) {
+        const answer = element('div', undefined, 'answer');
+        answer.append(element('p', `학생이 적은 정답: ${q.part}`),element('p', `학생이 적은 이유: ${q.reason}`)); card.append(answer);
+        const approve = element('button', q.approved ? '확인 취소' : '확인 완료'); approve.style.marginTop = '12px';
+        approve.addEventListener('click', () => {
+          if (!byId('teacher').checked) return;
+          q.approved = !q.approved; save(); renderList(); renderQuiz();
+        });
+        card.append(approve);
+      }
+      list.append(card);
+    });
+  }
+  function renderQuiz() {
+    const area = byId('quiz'); area.replaceChildren();
+    const approved = questions.filter(q => q.approved);
+    if (!approved.length) { area.append(element('p','아직 확인 완료된 문제가 없습니다. 선생님의 확인을 기다려 주세요.','empty')); return; }
+    quizIndex = quizIndex % approved.length;
+    const q = approved[quizIndex];
+    area.append(element('p',`${quizIndex+1} / ${approved.length} · 출제: ${q.author}`,'card-label'),element('div',q.sentence,'sentence'),element('p',`‘${q.word}’의 품사는 무엇인가요?`,'question'));
+    const choices = element('div'); choices.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px';
+    const feedback = element('div',undefined,'answer'); feedback.hidden = true;
+    const parts = [...new Set(['명사','대명사','수사','동사','형용사','관형사','부사','조사','감탄사',q.part])];
+    parts.forEach(part => {
+      const button = element('button',part);
+      button.addEventListener('click', () => {
+        if (!q.approved) return;
+        choices.querySelectorAll('button').forEach(b => { b.disabled = true; b.style.opacity = b === button ? '1' : '.45'; });
+        feedback.replaceChildren(element('h3',part === q.part ? '정답이에요!' : '정답과 비교해 보세요.'),element('p',`내가 고른 품사: ${part}`),element('p',`학생이 적은 정답: ${q.part}`),element('p',`${q.author}의 이유: ${q.reason}`)); feedback.hidden = false;
+      });
+      choices.append(button);
+    });
+    const next = element('button','다음 문제','secondary');
+    next.addEventListener('click', () => { quizIndex = (quizIndex+1) % approved.length; renderQuiz(); });
+    area.append(choices,feedback,next);
+  }
+  byId('creator').addEventListener('submit', event => {
+    event.preventDefault();
+    const fields = ['author', 'sentence', 'word', 'part', 'reason'];
+    for (const name of fields) {
+      if (!byId(name).value.trim()) { byId(name).setCustomValidity('내용을 적어 주세요.'); byId(name).reportValidity(); return; }
+    }
+    for (const name of fields.filter(name => name !== 'author')) byId('card-' + name).textContent = byId(name).value;
+    const question = {id:Date.now().toString(36)+Math.random().toString(36).slice(2),approved:false};
+    fields.forEach(name => question[name] = byId(name).value);
+    questions.push(question); save(); renderList(); renderQuiz();
+    byId('empty').hidden = true;
+    byId('card').hidden = false;
+    byId('answer').hidden = true;
+    byId('toggle').textContent = '정답과 이유 보기';
+    byId('toggle').setAttribute('aria-expanded', 'false');
+  });
+  document.querySelectorAll('input, textarea').forEach(field => field.addEventListener('input', () => field.setCustomValidity('')));
+  byId('toggle').addEventListener('click', () => {
+    const show = byId('answer').hidden;
+    byId('answer').hidden = !show;
+    byId('toggle').textContent = show ? '정답과 이유 숨기기' : '정답과 이유 보기';
+    byId('toggle').setAttribute('aria-expanded', String(show));
+  });
+  byId('teacher').addEventListener('change',renderList);
+  renderList(); renderQuiz();
+</script>
+</body>
+</html>

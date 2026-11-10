@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 교실 소음 지수</title>
+<style>
+:root{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#19352f;background:#f4f7f2;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;min-height:100svh;display:grid;place-items:center;padding:28px}
+main{width:min(760px,100%);text-align:center}.eyebrow{font-size:13px;font-weight:800;letter-spacing:.18em;color:#638176}h1{font-size:clamp(26px,5vw,40px);letter-spacing:-.05em;margin:16px 0 10px}.intro{color:#61756e;line-height:1.7;margin:0 0 30px}
+.panel{--accent:#23886a;background:white;border:1px solid #e1e9df;border-radius:32px;padding:32px clamp(20px,5vw,56px);box-shadow:0 20px 70px #19352f08}
+.status{display:inline-flex;align-items:center;gap:9px;color:#61756e;font-size:14px}.dot{width:9px;height:9px;border-radius:50%;background:#a7b5ad}.active .dot{background:var(--accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 12%,transparent)}
+.reading{display:flex;justify-content:center;align-items:baseline;margin:12px 0 0;gap:8px}.number{font-size:clamp(110px,24vw,184px);font-weight:750;line-height:1.25;font-variant-numeric:tabular-nums;letter-spacing:-.07em;color:var(--accent);transition:color .5s}.unit{font-size:22px;color:#87958f}.label{font-size:16px;font-weight:650;color:#61756e;margin:0 0 28px}
+.track{height:14px;background:#eef2ec;border-radius:20px;overflow:hidden}.fill{height:100%;width:0;background:var(--accent);border-radius:20px;transition:background .5s}.scale{display:flex;justify-content:space-between;font-size:12px;color:#8a9890;margin-top:10px}.message{min-height:28px;font-size:20px;font-weight:700;margin:27px 0 23px}
+button{border:0;border-radius:16px;background:#193f34;color:white;font:inherit;font-size:18px;font-weight:700;min-width:180px;padding:17px 32px;cursor:pointer;transition:background .2s,transform .2s}button:hover{background:#285d4d;transform:translateY(-1px)}button:focus-visible{outline:3px solid #6fbfa0;outline-offset:5px}button:disabled{opacity:.6;cursor:wait;transform:none}
+.error{color:#ac382e;line-height:1.6;font-size:14px;margin:20px 0 0}.error:empty{display:none}.note{font-size:13px;line-height:1.8;color:#77897f;margin:22px 0 0}.privacy{font-size:12px;color:#89978f;margin-top:22px}@media(max-width:440px){body{padding:18px}.panel{padding-top:25px;border-radius:25px}.intro{font-size:14px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">OUR CLASSROOM</div>
+  <h1>우리 교실, 지금 얼마나 조용할까요?</h1>
+  <p class="intro">모둠 활동의 소리 크기를 함께 살펴봐요.</p>
+  <section class="panel" id="panel" aria-label="교실 소음 측정기">
+    <div class="status"><span class="dot" aria-hidden="true"></span><span id="status" role="status">마이크 연결 전</span></div>
+    <div class="reading"><span class="number" id="number">0</span><span class="unit">/ 100</span></div>
+    <p class="label">소음 지수</p>
+    <div class="track" role="meter" aria-label="소음 지수" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="meter"><div class="fill" id="fill"></div></div>
+    <div class="scale"><span>0 · 조용해요</span><span>100 · 소리가 커요</span></div>
+    <p class="message" id="message">준비되면 시작을 눌러 주세요</p>
+    <button id="toggle" type="button">시작</button>
+    <p class="error" id="error" role="alert"></p>
+    <p class="note">마이크 접근을 허용하면 측정이 시작됩니다.<br>기기와 마이크 위치에 따라 달라지는 상대 지수이며, 데시벨(dB) 측정값은 아닙니다.</p>
+  </section>
+  <p class="privacy">소리는 이 기기에서만 분석하며, 녹음하거나 전송하지 않습니다.</p>
+</main>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+let context, stream, analyser, source, samples, frame, running = false, displayed = 0, lastTime = 0;
+let lastBand = -1;
+function paint(value) {
+  const rounded = Math.round(value);
+  $('number').textContent = rounded;
+  $('fill').style.width = value + '%';
+  $('meter').setAttribute('aria-valuenow', rounded);
+  if (!running) return;
+  const band = value < 35 ? 0 : value < 65 ? 1 : 2;
+  if (band !== lastBand) {
+    lastBand = band;
+    $('panel').style.setProperty('--accent', ['#23886a','#b37b19','#d45b47'][band]);
+    $('message').textContent = ['차분한 소리로 활동하고 있어요','이야기 소리가 들려요','목소리를 조금 낮춰 볼까요?'][band];
+  }
+}
+function tick(time) {
+  if (!running) return;
+  analyser.getFloatTimeDomainData(samples);
+  let sum = 0;
+  for (const sample of samples) sum += sample * sample;
+  const rms = Math.sqrt(sum / samples.length);
+  // Map a practical microphone range (-60 to -10 dBFS) to a relative 0–100 scale.
+  const dbfs = 20 * Math.log10(Math.max(rms, 0.000001));
+  const target = Math.max(0, Math.min(100, (dbfs + 60) * 2));
+  const elapsed = lastTime ? Math.min(time - lastTime, 100) : 16;
+  lastTime = time;
+  // Time-based smoothing keeps movement consistent across display refresh rates.
+  displayed += (target - displayed) * (1 - Math.exp(-elapsed / 350));
+  paint(displayed);
+  frame = requestAnimationFrame(tick);
+}
+function release() {
+  running = false;
+  cancelAnimationFrame(frame);
+  if (stream) stream.getTracks().forEach(track => track.stop());
+  if (source) source.disconnect();
+  if (context && context.state !== 'closed') context.close().catch(() => {});
+  stream = context = source = analyser = null;
+  $('panel').classList.remove('active');
+}
+function stop() {
+  release();
+  $('status').textContent = '측정 멈춤 · 마이크 꺼짐';
+  $('message').textContent = '다시 시작하면 새로 측정해요';
+  $('toggle').textContent = '다시 시작';
+}
+$('toggle').addEventListener('click', async () => {
+  if (running) { stop(); return; }
+  $('error').textContent = '';
+  $('toggle').disabled = true;
+  $('status').textContent = '마이크 연결 중…';
+  try {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      throw Object.assign(new Error(), {name:'UnsupportedError'});
+    }
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) throw Object.assign(new Error(), {name:'UnsupportedError'});
+    context = new AudioContextClass();
+    await context.resume();
+    stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false},video:false});
+    analyser = context.createAnalyser();
+    analyser.fftSize = 2048;
+    source = context.createMediaStreamSource(stream);
+    source.connect(analyser);
+    // Do not connect to speakers: this prevents microphone feedback.
+    samples = new Float32Array(analyser.fftSize);
+    stream.getAudioTracks()[0].addEventListener('ended', () => { if (running) stop(); });
+    displayed = 0; lastTime = 0; lastBand = -1; running = true;
+    $('panel').classList.add('active');
+    $('status').textContent = '실시간 측정 중';
+    $('toggle').textContent = '멈춤';
+    paint(0);
+    frame = requestAnimationFrame(tick);
+  } catch (error) {
+    release();
+    $('status').textContent = '마이크 연결을 확인해 주세요';
+    $('toggle').textContent = '다시 시작';
+    const messages = {
+      NotAllowedError:'마이크 권한이 허용되지 않았습니다. 브라우저의 사이트 설정에서 마이크를 허용한 뒤 다시 시작해 주세요.',
+      NotFoundError:'연결된 마이크가 없습니다. 마이크를 연결한 뒤 다시 시작해 주세요.',
+      NotReadableError:'마이크를 사용할 수 없습니다. 다른 앱이 사용 중인지 확인해 주세요.',
+      UnsupportedError:'이 브라우저에서는 마이크에 접근할 수 없습니다. 최신 Chrome 또는 Edge에서 열어 주세요. 파일에서 실행되지 않으면 localhost 또는 HTTPS 환경에서 열어 주세요.'
+    };
+    $('error').textContent = messages[error.name] || '마이크 연결에 실패했습니다. 브라우저 권한과 마이크 연결을 확인한 뒤 다시 시도해 주세요.';
+  } finally { $('toggle').disabled = false; }
+});
+window.addEventListener('pagehide', release);
+</script>
+</body>
+</html>

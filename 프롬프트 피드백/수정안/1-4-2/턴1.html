@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>문장 구조 학습판</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f2f5fb;color:#24324a;font-family:"맑은 고딕",sans-serif;line-height:1.7}main{max-width:900px;margin:auto;padding:54px 22px}header{text-align:center;margin-bottom:32px}h1{font-size:clamp(27px,5vw,38px);margin:8px 0}header p{color:#627086;margin:8px 0}.badge{color:#5265b8;font-weight:700;font-size:14px;letter-spacing:2px}.legend{display:flex;justify-content:center;gap:24px;margin:24px 0}.subject-key{color:#175bc6;border-bottom:3px solid #2671e8}.predicate-key{color:#c42e3e;border-bottom:3px solid #e34657}.examples{display:grid;gap:16px}.card{background:white;border:1px solid #dfe5ef;border-radius:16px;overflow:hidden;box-shadow:0 4px 15px #23395d06}.sentence{display:block;width:100%;border:0;background:transparent;text-align:left;padding:23px 25px;font:inherit;font-size:21px;color:inherit;cursor:pointer;line-height:2}.sentence:hover{background:#f8faff}.sentence:focus-visible{outline:3px solid #728de1;outline-offset:-4px}.number{font-size:13px;color:#8794a8;display:inline-block;width:34px;vertical-align:middle}.card.active .subject{text-decoration:underline;text-decoration-color:#2671e8;text-decoration-thickness:3px;text-underline-offset:7px}.card.active .predicate{text-decoration:underline;text-decoration-color:#e34657;text-decoration-thickness:3px;text-underline-offset:7px}.answer{margin:0;padding:0 25px 22px 59px;color:#5d6b81;font-size:15px}.answer strong{display:inline-block;background:#edf1ff;color:#4358a1;border-radius:7px;padding:2px 10px;margin-right:9px}.answer[hidden]{display:none}footer{text-align:center;color:#7b879a;font-size:13px;margin-top:26px}@media(max-width:540px){main{padding:30px 15px}.sentence{font-size:18px;padding:18px 16px}.answer{padding:0 16px 18px}.answer strong{display:table;margin-bottom:8px}.number{width:26px}}
+</style>
+</head>
+<body>
+<main>
+<header><div class="badge">국어 · 문장 탐구</div><h1>문장 구조 학습판</h1><p>예문을 눌러 주어와 서술어, 문장의 종류를 확인해 보세요.</p><div class="legend"><span class="subject-key">주어 · 파란 밑줄</span><span class="predicate-key">서술어 · 빨간 밑줄</span></div></header>
+<section class="examples" aria-label="문장 예문 6개">
+<article class="card"><button class="sentence" aria-expanded="false" aria-controls="answer1"><span class="number">01</span><span class="subject">새가</span> <span class="predicate">노래한다</span>.</button><p class="answer" id="answer1" hidden><strong>홑문장</strong>주어와 서술어의 관계가 한 번 나타나는 문장입니다.</p></article>
+<article class="card"><button class="sentence" aria-expanded="false" aria-controls="answer2"><span class="number">02</span><span class="subject">민수가</span> 책을 <span class="predicate">읽는다</span>.</button><p class="answer" id="answer2" hidden><strong>홑문장</strong>주어와 서술어의 관계가 한 번 나타나는 문장입니다.</p></article>
+<article class="card"><button class="sentence" aria-expanded="false" aria-controls="answer3"><span class="number">03</span><span class="subject">나는</span> <span class="subject">비가</span> <span class="predicate">오기를</span> <span class="predicate">기다린다</span>.</button><p class="answer" id="answer3" hidden><strong>안은문장</strong>‘비가 오기’라는 명사절을 안고 있습니다. 바깥 문장의 주어는 ‘나는’, 서술어는 ‘기다린다’입니다.</p></article>
+<article class="card"><button class="sentence" aria-expanded="false" aria-controls="answer4"><span class="number">04</span><span class="subject">나는</span> <span class="subject">마음이</span> <span class="predicate">착한</span> 친구를 <span class="predicate">좋아한다</span>.</button><p class="answer" id="answer4" hidden><strong>안은문장</strong>‘마음이 착한’이라는 관형절이 ‘친구’를 꾸밉니다. 바깥 문장의 주어는 ‘나는’, 서술어는 ‘좋아한다’입니다.</p></article>
+<article class="card"><button class="sentence" aria-expanded="false" aria-controls="answer5"><span class="number">05</span><span class="subject">해가</span> <span class="predicate">뜨고</span> <span class="subject">새가</span> <span class="predicate">운다</span>.</button><p class="answer" id="answer5" hidden><strong>이어진문장</strong>‘해가 뜨다’와 ‘새가 울다’가 ‘-고’로 대등하게 이어져 있습니다.</p></article>
+<article class="card"><button class="sentence" aria-expanded="false" aria-controls="answer6"><span class="number">06</span><span class="subject">비가</span> <span class="predicate">오면</span> <span class="subject">우리는</span> 집에 <span class="predicate">머문다</span>.</button><p class="answer" id="answer6" hidden><strong>이어진문장</strong>‘비가 오다’와 ‘우리는 집에 머물다’가 조건을 나타내는 ‘-면’으로 종속적으로 이어져 있습니다.</p></article>
+</section>
+<footer>예문을 다시 누르면 밑줄과 설명이 숨겨집니다. · 안은문장은 안긴절의 주어와 서술어도 표시합니다.</footer>
+</main>
+<script>
+document.querySelectorAll('.sentence').forEach(button=>{
+ button.addEventListener('click',()=>{
+  const expanded=button.getAttribute('aria-expanded')!=='true';
+  button.setAttribute('aria-expanded',String(expanded));
+  button.closest('.card').classList.toggle('active',expanded);
+  document.getElementById(button.getAttribute('aria-controls')).hidden=!expanded;
+ });
+});
+</script>
+</body>
+</html>

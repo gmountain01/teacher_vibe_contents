@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 교실 소음 지수</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif;color:#17352f;background:#f2f6f2}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}main{width:min(680px,100%);text-align:center;background:white;border:1px solid #dce7de;border-radius:32px;padding:44px 32px;box-shadow:0 16px 60px #193f3010}.eyebrow{font-size:13px;font-weight:800;letter-spacing:3px;color:#527366}h1{font-size:clamp(25px,5vw,36px);margin:14px 0}p{line-height:1.7;color:#5c7069}.meter{margin:30px auto 24px;padding:24px;background:#f5f9f6;border-radius:24px}.value{font-size:clamp(96px,22vw,156px);font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums;letter-spacing:-7px}.unit{font-weight:600;color:#708179;margin-top:4px}.track{height:12px;border-radius:10px;background:#dfebe2;overflow:hidden;margin:24px 0 6px}.fill{width:0;height:100%;background:#319775;border-radius:10px;transition:width .12s linear}.scale{display:flex;justify-content:space-between;color:#72847a;font-size:12px}button{font:inherit;font-weight:700;border:0;border-radius:14px;padding:15px 32px;cursor:pointer;background:#207b60;color:white}button:disabled{opacity:.5;cursor:default}#stop{background:#e9f0ec;color:#34574a;margin-left:8px}#status{min-height:28px;margin:18px 0 0;font-size:14px}.note{font-size:13px;margin:24px 0 0}.privacy{color:#27745b;font-size:13px}#help{text-align:left;background:#fff6e4;border:1px solid #f1d79c;padding:18px;border-radius:16px;margin-top:20px;font-size:14px;line-height:1.7}#help p{margin:0;color:#614d27}#help ol{padding-left:22px;margin-bottom:0}details{text-align:left;margin-top:24px;font-size:13px;color:#63766c;line-height:1.7}summary{cursor:pointer}@media(max-width:480px){main{padding:30px 18px}.value{letter-spacing:-4px}}
+.traffic{display:flex;justify-content:center;gap:18px;background:#20372f;border-radius:24px;padding:18px;width:max-content;margin:0 auto 12px}.lamp{width:52px;height:52px;border-radius:50%;background:#526158;opacity:.35;border:3px solid transparent}.lamp.on{opacity:1;border-color:white}.green.on{background:#30bd7d}.yellow.on{background:#ffcf40}.red.on{background:#ef6262}#signalText{font-weight:700;margin:0 0 18px}.settings{border:1px solid #dce7de;border-radius:16px;padding:16px;margin:22px 0}.settings legend{font-weight:700}.settings label{display:inline-flex;gap:8px;align-items:center;margin:5px 10px}.settings input{width:75px;font:inherit;padding:8px;border:1px solid #b5c8bc;border-radius:8px}.settings p{font-size:12px;margin:10px 0 0}#thresholdError{color:#b33b35}
+</style>
+</head>
+<body>
+<main>
+<div class="eyebrow">CLASSROOM SOUND</div>
+<h1>우리 교실 소음 지수</h1>
+<p>교실의 소리 크기를 함께 살펴보세요.</p>
+<section class="meter" aria-label="현재 소음 지수">
+<div class="traffic" role="img" aria-label="신호등 대기 중" id="traffic"><span class="lamp green" id="green"></span><span class="lamp yellow" id="yellow"></span><span class="lamp red" id="red"></span></div>
+<div id="signalText" role="status" aria-live="polite">신호등 대기 중</div>
+<div class="value" id="value">0</div><div class="unit">소음 지수 / 100</div>
+<div class="track"><div class="fill" id="fill"></div></div><div class="scale"><span>0 · 작은 소리</span><span>큰 소리 · 100</span></div>
+</section>
+<fieldset class="settings"><legend>신호등 기준 설정</legend><label for="yellowLimit">노랑 <input id="yellowLimit" type="number" min="5" max="99" step="1" value="55">점</label><label for="redLimit">빨강 <input id="redLimit" type="number" min="6" max="100" step="1" value="72">점</label><p>올라갈 때: 기준 이상 2초 · 내려갈 때: 기준보다 4점 낮은 값 이하 2초</p><p>기본 설정: 노랑 → 초록은 51점 이하, 빨강 → 노랑은 68점 이하</p><p id="thresholdError" role="status" aria-live="polite"></p></fieldset>
+<fieldset class="settings"><legend>마이크와 보정</legend><label for="microphone">마이크 <select id="microphone" style="font:inherit;padding:8px;max-width:100%;min-width:0"><option value="">기본 마이크</option></select></label><div><button id="calibrate" disabled>3초 보정</button></div><p id="calibrationStatus" role="status" aria-live="polite">보정 전 · 조용할 때 측정을 시작하고 눌러 주세요.</p><p>3초 동안 측정한 소리 크기의 중앙값을 35점으로 맞춥니다. 마이크를 바꾸면 보정이 초기화됩니다.</p></fieldset>
+<button id="start">시작</button><button id="stop" disabled>중지</button>
+<p id="status" role="status" aria-live="polite">시작을 누르면 마이크 사용 허락을 요청합니다.</p>
+<div id="help" hidden><p id="error"></p><ol><li>주소창 옆 사이트 설정(자물쇠 또는 설정 아이콘)에서 <b>마이크 → 허용</b>을 선택하세요.</li><li>컴퓨터·휴대폰의 개인정보 설정에서도 브라우저의 마이크 접근을 허용하세요.</li><li>마이크 연결을 확인하고, 필요하면 다른 앱의 마이크 사용을 종료한 뒤 새로고침하세요.</li><li>계속 막히면 이 파일을 HTTPS 또는 localhost 환경에서 열어 주세요. 브라우저에 따라 파일 직접 열기에서는 마이크가 제한될 수 있습니다.</li></ol></div>
+<p class="note"><b>정밀 소음계가 아닌 교실용 상대 점수입니다.</b><br>기기·마이크·거리마다 점수가 달라지며, 데시벨(dB)이 아닙니다.</p>
+<div class="privacy">소리는 기기 안에서만 분석합니다. 녹음·저장·외부 전송하지 않습니다.</div>
+<details><summary>소음 지수는 어떻게 계산하나요?</summary>마이크 신호의 평균 에너지(RMS)를 상대 점수 0~100으로 변환합니다. 작은 변화와 순간적인 소리에 숫자가 지나치게 흔들리지 않도록 완만하게 표시합니다. 중지를 누르거나 화면을 떠나면 마이크 사용을 종료합니다.</details>
+</main>
+<script>
+'use strict';
+const start=document.getElementById('start'),stop=document.getElementById('stop'),value=document.getElementById('value'),fill=document.getElementById('fill'),status=document.getElementById('status'),help=document.getElementById('help'),error=document.getElementById('error');
+let stream=null,context=null,source=null,analyser=null,frame=0,score=0,last=0,active=false,pending=false;
+const microphone=document.getElementById('microphone'),calibrate=document.getElementById('calibrate'),calibrationStatus=document.getElementById('calibrationStatus');
+let offset=0,calibration=null,calibrationTimer=0,currentDevice='';
+function cancelCalibration(message){calibration=null;clearInterval(calibrationTimer);calibrate.disabled=!active;if(message)calibrationStatus.textContent=message;}
+function resetCalibration(){offset=0;cancelCalibration('보정 전 · 조용할 때 3초 보정을 눌러 주세요.');held={};}
+async function refreshMicrophones(){
+ if(!navigator.mediaDevices?.enumerateDevices)return;
+ try{const devices=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='audioinput');const selected=microphone.value;microphone.replaceChildren(new Option('기본 마이크',''));devices.forEach((d,i)=>{if(d.deviceId)microphone.add(new Option(d.label||`마이크 ${i+1}`,d.deviceId));});if([...microphone.options].some(o=>o.value===selected))microphone.value=selected;else if(selected){resetCalibration();if(active)finish();status.textContent='선택한 마이크가 연결 해제되었습니다. 마이크를 다시 선택해 주세요.';}}
+ catch(e){status.textContent='마이크 목록을 가져오지 못했습니다. 기본 마이크로 시작할 수 있습니다.';}
+}
+calibrate.addEventListener('click',()=>{if(!active||calibration)return;held={};calibration={started:performance.now(),last:performance.now(),samples:[]};calibrate.disabled=true;calibrationStatus.textContent='보정 중 · 3초 동안 조용히 해 주세요.';calibrationTimer=setInterval(()=>{if(calibration)calibrationStatus.textContent=`보정 중 · ${Math.max(1,Math.ceil((3000-(performance.now()-calibration.started))/1000))}초 남음 · 조용히 해 주세요.`;},200);});
+function collectCalibration(db,now){if(!calibration)return;if(document.hidden||now-calibration.last>500){cancelCalibration('보정이 중단되었습니다. 화면을 열어 두고 다시 눌러 주세요.');return;}calibration.last=now;calibration.samples.push(db);if(now-calibration.started>=3000){const ordered=calibration.samples.sort((a,b)=>a-b),mid=Math.floor(ordered.length/2),median=ordered.length%2?ordered[mid]:(ordered[mid-1]+ordered[mid])/2;offset=35-(median+65)/55*100;cancelCalibration('보정 완료 · 조용한 소리의 중앙값을 35점으로 맞췄습니다.');held={};}}
+microphone.addEventListener('change',()=>{const restart=active;cleanup();resetCalibration();score=0;value.textContent='0';fill.style.width='0%';if(restart)startMeasurement();else status.textContent='마이크를 선택했습니다. 시작을 눌러 주세요.';});
+if(navigator.mediaDevices){navigator.mediaDevices.addEventListener('devicechange',refreshMicrophones);refreshMicrophones();}
+const yellowLimit=document.getElementById('yellowLimit'),redLimit=document.getElementById('redLimit');
+let yellowThreshold=55,redThreshold=72,signal='green',held={},signalLast=0;
+function showSignal(next){signal=next;for(const color of ['green','yellow','red'])document.getElementById(color).classList.toggle('on',active&&color===next);const label=active?({green:'초록 · 알맞은 소리',yellow:'노랑 · 목소리를 낮춰 주세요',red:'빨강 · 소리를 줄여 주세요'}[next]):'신호등 대기 중';document.getElementById('signalText').textContent=label;document.getElementById('traffic').setAttribute('aria-label',label);held={};}
+function updateSignal(now){
+ if(document.hidden||now-signalLast>500)held={};signalLast=now;if(document.hidden)return;
+ const conditions=signal==='green'?{red:score>=redThreshold,yellow:score>=yellowThreshold}:signal==='yellow'?{red:score>=redThreshold,green:score<=yellowThreshold-4}:{green:score<=yellowThreshold-4,yellow:score<=redThreshold-4};
+ for(const [color,condition] of Object.entries(conditions)){if(!condition){delete held[color];continue;}if(held[color]===undefined)held[color]=now;if(now-held[color]>=2000){showSignal(color);break;}}
+}
+function changeThresholds(){const y=yellowLimit.valueAsNumber,r=redLimit.valueAsNumber;const valid=Number.isInteger(y)&&Number.isInteger(r)&&y>=5&&r<=100&&y<r;document.getElementById('thresholdError').textContent=valid?'기준을 적용했습니다.':'노랑은 5~99점, 빨강은 노랑보다 큰 100점 이하의 정수로 입력하세요. 마지막 유효 기준을 유지합니다.';yellowLimit.setAttribute('aria-invalid',String(!valid));redLimit.setAttribute('aria-invalid',String(!valid));if(valid){yellowThreshold=y;redThreshold=r;held={};}}
+yellowLimit.addEventListener('input',changeThresholds);redLimit.addEventListener('input',changeThresholds);document.addEventListener('visibilitychange',()=>{held={};signalLast=0;if(document.hidden&&calibration)cancelCalibration('보정이 중단되었습니다. 화면을 열어 두고 다시 눌러 주세요.');});
+function cleanup(){active=false;if(calibration)cancelCalibration('보정이 중단되었습니다. 다시 측정한 뒤 보정해 주세요.');calibrate.disabled=true;showSignal('green');cancelAnimationFrame(frame);if(source){source.disconnect();source=null}if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}if(context){context.close().catch(()=>{});context=null}analyser=null;stop.disabled=true;start.disabled=false;start.textContent='시작';}
+function finish(){cleanup();score=0;value.textContent='0';fill.style.width='0%';status.textContent='측정을 중지했습니다. 마이크 사용이 종료되었습니다.';}
+async function startMeasurement(){
+ if(active||pending)return;pending=true;start.disabled=true;microphone.disabled=true;help.hidden=true;status.textContent='마이크 사용을 허용해 주세요…';
+ try{
+  if(!navigator.mediaDevices?.getUserMedia)throw new Error('UNSUPPORTED');
+  stream=await navigator.mediaDevices.getUserMedia({audio:{...(microphone.value?{deviceId:{exact:microphone.value}}:{}),echoCancellation:false,noiseSuppression:false,autoGainControl:false},video:false});
+  const actualDevice=stream.getAudioTracks()[0].getSettings().deviceId||microphone.value;if(currentDevice&&actualDevice!==currentDevice)resetCalibration();currentDevice=actualDevice;
+  context=new(window.AudioContext||window.webkitAudioContext)();await context.resume();source=context.createMediaStreamSource(stream);analyser=context.createAnalyser();analyser.fftSize=2048;source.connect(analyser);
+  // No connection to speakers, recording API, or network requests.
+  const samples=new Float32Array(analyser.fftSize);active=true;calibrate.disabled=false;score=0;showSignal('green');signalLast=0;last=performance.now();stop.disabled=false;start.textContent='측정 중';status.textContent='마이크로 교실 소리를 측정하고 있습니다.';
+  stream.getAudioTracks()[0].addEventListener('ended',()=>{if(active){finish();status.textContent='마이크 연결이 종료되었습니다. 연결과 권한을 확인해 주세요.';}});
+  function tick(now){if(!active)return;analyser.getFloatTimeDomainData(samples);let energy=0;for(let i=0;i<samples.length;i++)energy+=samples[i]*samples[i];const rms=Math.sqrt(energy/samples.length);const db=20*Math.log10(Math.max(rms,1e-8));collectCalibration(db,now);const target=Math.max(0,Math.min(100,(db+65)/55*100+offset));const dt=Math.min((now-last)/1000,.1);last=now;score+=(target-score)*(1-Math.exp(-dt/.45));value.textContent=String(Math.round(score));fill.style.width=score+'%';if(!calibration)updateSignal(now);frame=requestAnimationFrame(tick)}
+  frame=requestAnimationFrame(tick);
+  await refreshMicrophones();if([...microphone.options].some(o=>o.value===currentDevice))microphone.value=currentDevice;
+ }catch(e){cleanup();help.hidden=false;error.textContent=e.name==='NotAllowedError'||e.name==='SecurityError'?'마이크 사용이 차단되었거나 허용되지 않았습니다.':e.name==='NotFoundError'?'사용할 수 있는 마이크가 없습니다. 마이크를 연결해 주세요.':e.name==='NotReadableError'?'마이크를 열 수 없습니다. 연결 상태와 다른 앱의 사용 여부를 확인하세요.':'이 환경에서는 마이크를 사용할 수 없습니다. 최신 브라우저와 사이트 권한을 확인하세요.';status.textContent='측정을 시작하지 못했습니다. 아래 안내를 확인하세요.';}finally{pending=false;microphone.disabled=false;}
+}
+start.addEventListener('click',startMeasurement);
+stop.addEventListener('click',finish);window.addEventListener('pagehide',cleanup);
+</script>
+</body>
+</html>

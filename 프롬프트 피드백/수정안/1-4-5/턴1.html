@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>정렬 실험실 · 버블 정렬</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fc;color:#1c2942;font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif}main{max-width:980px;margin:48px auto;padding:0 24px}.eyebrow{color:#5265bf;font-weight:800;letter-spacing:.12em;font-size:13px}h1{font-size:36px;margin:10px 0}header p{color:#63708a;line-height:1.7}.panel{background:white;border:1px solid #e1e7f2;border-radius:24px;padding:28px;margin-top:24px;box-shadow:0 12px 36px #213b6810}.top{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:#56627a}.legend span{display:flex;align-items:center;gap:6px}.dot{width:12px;height:12px;border-radius:4px;background:#8095c8}.compare{background:#f2b63e!important}.swap{background:#ee7c68!important}.fixed{background:#46ae91!important}.chart{height:340px;display:flex;align-items:stretch;gap:clamp(6px,2vw,20px);padding:28px 8px 0}.column{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}.bar{width:100%;max-width:78px;background:#8095c8;border-radius:10px 10px 3px 3px;display:flex;align-items:flex-start;justify-content:center;padding-top:10px;color:#17263e;font-weight:800;font-size:20px;transition:height .2s,background .2s}.index{border-top:1px solid #dbe2ef;width:100%;text-align:center;padding:12px 0 0;margin-top:3px;font-size:14px;color:#69758c}.axis{text-align:center;color:#7b869c;font-size:12px;margin-top:10px}.message{margin-top:24px;min-height:92px;background:#f0f3fc;border-radius:14px;padding:18px 20px;font-size:18px;line-height:1.65;display:flex;align-items:center}.stats{display:flex;gap:12px}.stat{background:#f3f6fc;border-radius:12px;padding:10px 16px;font-size:14px;color:#62708b}.stat strong{color:#293a60;font-size:22px;margin-left:10px}.controls{display:flex;align-items:center;gap:10px;margin-top:24px;flex-wrap:wrap}button{border:1px solid #dce3f0;border-radius:11px;padding:12px 22px;background:white;color:#354565;font:700 16px inherit;cursor:pointer}button.primary{background:#4e60c5;color:white;border-color:#4e60c5}button:hover:not(:disabled){filter:brightness(.95)}button:focus-visible{outline:3px solid #9ba9fa;outline-offset:3px}button:disabled{opacity:.38;cursor:default}#step{margin-left:auto;font-size:14px;color:#6c7890}.help{color:#6c7890;font-size:14px;line-height:1.8;margin-top:20px}@media(max-width:560px){main{margin:26px auto;padding:0 14px}.panel{padding:18px}h1{font-size:29px}.chart{height:290px;padding-left:0;padding-right:0}.bar{font-size:16px}.message{font-size:16px}.legend{gap:10px;font-size:12px}.stat{padding:8px 12px}button{padding:11px 16px}}
+</style>
+</head>
+<body>
+<main>
+<header><div class="eyebrow">ALGORITHM LAB</div><h1>정렬 실험실</h1><p>이웃한 두 수를 비교하는 버블 정렬로, 작은 수부터 차례대로 정렬해 보세요.</p></header>
+<section class="panel" aria-label="버블 정렬 실험">
+<div class="top"><div class="legend"><span><i class="dot"></i>대기</span><span><i class="dot compare"></i>비교</span><span><i class="dot swap"></i>교환</span><span><i class="dot fixed"></i>확정</span></div><div class="stats"><div class="stat">비교<strong id="comparisons">0</strong></div><div class="stat">교환<strong id="swaps">0</strong></div></div></div>
+<div id="chart" class="chart" role="img" aria-label="정렬할 수의 막대그래프"></div><div class="axis">위치 번호 (0부터 시작)</div>
+<div id="message" class="message" role="status" aria-live="polite"></div>
+<div class="controls"><button id="previous">← 이전</button><button id="next" class="primary">다음 →</button><button id="reset">처음으로</button><span id="step"></span></div>
+</section>
+<p class="help">‘다음’을 누를 때마다 비교 또는 교환을 딱 한 번 진행합니다.<br>한 바퀴가 끝나면 가장 큰 수가 오른쪽에 확정됩니다. ‘이전’은 막대와 횟수를 함께 되돌립니다.</p>
+</main>
+<script>
+const original=[42,18,65,30,8,54,23,76];
+const states=[];
+let values=[...original], comparisons=0, swaps=0;
+function save(message,active=[],kind='',fixedFrom=values.length){states.push({values:[...values],comparisons,swaps,message,active:[...active],kind,fixedFrom});}
+save('준비됐나요? ‘다음’을 눌러 위치 0과 1의 두 수부터 비교해 보세요.');
+for(let end=values.length-1;end>0;end--){
+  for(let i=0;i<end;i++){
+    const a=values[i],b=values[i+1],needsSwap=a>b,last=i===end-1;
+    comparisons++;
+    save(`${a}와 ${b} 비교: ${needsSwap?'왼쪽이 더 크므로 교환합니다.':'왼쪽이 더 작거나 같으므로 그대로 둡니다.'}${last&&!needsSwap?` ${values[end]}은(는) 위치 ${end}에 확정되었습니다.`:''}`,[i,i+1],'compare',last&&!needsSwap?end:end+1);
+    if(needsSwap){
+      [values[i],values[i+1]]=[values[i+1],values[i]];swaps++;
+      save(`${a}와 ${b} 교환: ${b}을(를) 왼쪽으로, ${a}을(를) 오른쪽으로 옮겼습니다.${last?` ${values[end]}은(는) 위치 ${end}에 확정되었습니다.`:''}`,[i,i+1],'swap',last?end:end+1);
+    }
+  }
+}
+// 마지막 비교 또는 교환에서 남은 첫 번째 위치도 함께 확정한다.
+states[states.length-1].fixedFrom=0;
+states[states.length-1].message+=' 모든 막대가 작은 수부터 정렬되었습니다!';
+let cursor=0;
+const chart=document.getElementById('chart');
+function render(){
+ const s=states[cursor];
+ chart.replaceChildren();
+ s.values.forEach((value,index)=>{
+  const column=document.createElement('div');column.className='column';
+  const bar=document.createElement('div');
+  const status=index>=s.fixedFrom?'fixed':s.active.includes(index)?s.kind:'';
+  bar.className='bar '+status;bar.style.height=(value/80*255)+'px';bar.textContent=value;
+  const label=document.createElement('div');label.className='index';label.textContent=index;
+  column.append(bar,label);chart.append(column);
+ });
+ chart.setAttribute('aria-label',s.values.map((v,i)=>`위치 ${i}: ${v}${i>=s.fixedFrom?', 확정':s.active.includes(i)?', '+(s.kind==='compare'?'비교 중':'교환됨'):''}`).join('; '));
+ document.getElementById('message').textContent=s.message;
+ document.getElementById('comparisons').textContent=s.comparisons;
+ document.getElementById('swaps').textContent=s.swaps;
+ document.getElementById('previous').disabled=cursor===0;
+ document.getElementById('next').disabled=cursor===states.length-1;
+ document.getElementById('step').textContent=`${cursor} / ${states.length-1} 단계`;
+}
+document.getElementById('previous').addEventListener('click',()=>{if(cursor>0){cursor--;render();}});
+document.getElementById('next').addEventListener('click',()=>{if(cursor<states.length-1){cursor++;render();}});
+document.getElementById('reset').addEventListener('click',()=>{cursor=0;render();});
+render();
+</script>
+</body>
+</html>

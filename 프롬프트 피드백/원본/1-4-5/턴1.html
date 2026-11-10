@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>버블 정렬 실험실</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f1f5fb;color:#17243b;font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif}main{max-width:1000px;margin:40px auto;padding:28px;background:white;border:1px solid #dce4ef;border-radius:22px;box-shadow:0 12px 36px #2439560b}h1{margin:0 0 8px;font-size:30px}.intro{margin:0;color:#526178;line-height:1.7}.stats{display:flex;gap:14px;margin:26px 0;flex-wrap:wrap}.stat{background:#f0f5fc;border-radius:12px;padding:14px 22px;flex:1;min-width:140px}.stat strong{font-size:28px;display:block;margin-top:3px;color:#254f99}.legend{display:flex;flex-wrap:wrap;gap:18px;font-size:14px;color:#47566d}.legend span{display:flex;align-items:center;gap:7px}.dot{width:14px;height:14px;border-radius:4px;display:inline-block}.normal{background:#638ee2}.compare{background:#f7d34b}.swap{background:#fb963e}.sorted{background:#55bc88}.chart{height:340px;display:flex;align-items:stretch;gap:clamp(5px,2vw,20px);padding:40px 12px 0;border-bottom:2px solid #cad4e3;margin:18px 0 0}.column{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative;padding-bottom:32px}.bar{width:100%;max-width:78px;border-radius:8px 8px 0 0;position:relative;min-height:12px}.value{position:absolute;top:-29px;width:100%;text-align:center;font-size:20px;font-weight:750}.index{position:absolute;bottom:5px;color:#64748b;font-size:15px}.axis{font-size:13px;color:#64748b;text-align:center;margin:8px 0 22px}.message{background:#f3f6fb;border-left:4px solid #638ee2;border-radius:8px;padding:18px;font-size:18px;line-height:1.6;min-height:66px}.controls{display:flex;justify-content:center;gap:12px;margin-top:22px}button{border:1px solid #cbd5e1;border-radius:10px;padding:12px 27px;font:inherit;font-weight:700;cursor:pointer;background:white;color:#243650}button.primary{background:#285fc4;color:white;border-color:#285fc4}button:disabled{opacity:.4;cursor:default}button:focus-visible{outline:3px solid #9ebfff;outline-offset:3px}.hint{text-align:center;font-size:13px;color:#64748b;margin:16px 0 0}@media(max-width:600px){main{margin:12px;padding:18px}h1{font-size:25px}.chart{height:290px;padding-left:0;padding-right:0}.value{font-size:17px}.stat{padding:12px}.message{font-size:16px}button{padding:12px 20px}}
+</style>
+</head>
+<body>
+<main>
+<h1>버블 정렬 실험실</h1>
+<p class="intro">이웃한 두 수를 비교하며 작은 수부터 큰 수 순서로 정렬해 보세요.<br>‘다음’을 누르면 비교 한 번 또는 교환 한 번이 진행됩니다.</p>
+<div class="stats"><div class="stat">비교 횟수<strong id="comparisons">0</strong></div><div class="stat">교환 횟수<strong id="swaps">0</strong></div></div>
+<div class="legend"><span><i class="dot normal"></i>정렬 중</span><span><i class="dot compare"></i>비교</span><span><i class="dot swap"></i>교환</span><span><i class="dot sorted"></i>위치 확정</span></div>
+<div id="chart" class="chart" role="img" aria-label="정렬할 숫자 막대"></div>
+<p class="axis">위치 번호 (0부터 시작)</p>
+<div id="message" class="message" role="status" aria-live="polite"></div>
+<div class="controls"><button id="previous" type="button">이전</button><button id="next" class="primary" type="button">다음</button><button id="reset" type="button">처음으로</button></div>
+<p class="hint" id="progress"></p>
+</main>
+<script>
+'use strict';
+const initial = [42,18,65,30,8,54,23,76];
+const frames = [];
+let values = [...initial], comparisons = 0, swaps = 0;
+function record(kind, pair, fixed, message) {
+  frames.push({values:[...values], comparisons, swaps, kind, pair:[...pair], fixed, message});
+}
+record('normal', [], initial.length, '‘다음’을 눌러 첫 번째와 두 번째 수를 비교하세요.');
+for(let end=values.length-1;end>0;end--){
+  for(let j=0;j<end;j++){
+    const left=values[j], right=values[j+1], exchange=left>right;
+    comparisons++;
+    const finalComparison=j===end-1;
+    const complete=end===1 && finalComparison;
+    const fixedAfter=complete ? 0 : end;
+    record('compare',[j,j+1],!exchange && finalComparison ? fixedAfter : end+1,
+      `${left}와 ${right} 비교: ${exchange ? '왼쪽이 더 크므로 교환합니다.' : '왼쪽이 더 작거나 같으므로 교환하지 않습니다.'}`+
+      (!exchange && finalComparison ? (complete ? ' 오름차순 정렬이 완료되었습니다.' : ` 위치 ${end}의 ${values[end]}은(는) 위치가 확정되었습니다.`) : ''));
+    if(exchange){
+      [values[j],values[j+1]]=[values[j+1],values[j]];
+      swaps++;
+      record('swap',[j,j+1],finalComparison ? fixedAfter : end+1,
+        `${left}와 ${right}의 위치를 교환했습니다.`+
+        (finalComparison ? (complete ? ' 오름차순 정렬이 완료되었습니다.' : ` 위치 ${end}의 ${values[end]}은(는) 위치가 확정되었습니다.`) : ''));
+    }
+  }
+}
+let current=0;
+const chart=document.getElementById('chart');
+function render(){
+  const frame=frames[current];
+  chart.replaceChildren();
+  frame.values.forEach((value,index)=>{
+    const column=document.createElement('div');column.className='column';
+    const bar=document.createElement('div');
+    // 확정된 위치는 같은 단계의 비교·교환 강조보다 우선합니다.
+    const color=index>=frame.fixed ? 'sorted' : frame.pair.includes(index) ? frame.kind : 'normal';
+    bar.className=`bar ${color}`;bar.style.height=`${value/80*245}px`;
+    const label=document.createElement('span');label.className='value';label.textContent=value;
+    const position=document.createElement('span');position.className='index';position.textContent=index;
+    bar.append(label);column.append(bar,position);chart.append(column);
+  });
+  chart.setAttribute('aria-label',frame.values.map((v,i)=>`위치 ${i}: ${v}`).join(', '));
+  document.getElementById('comparisons').textContent=frame.comparisons;
+  document.getElementById('swaps').textContent=frame.swaps;
+  document.getElementById('message').textContent=frame.message;
+  document.getElementById('previous').disabled=current===0;
+  document.getElementById('next').disabled=current===frames.length-1;
+  document.getElementById('progress').textContent=`${current} / ${frames.length-1} 단계`;
+}
+document.getElementById('previous').addEventListener('click',()=>{if(current>0){current--;render();}});
+document.getElementById('next').addEventListener('click',()=>{if(current<frames.length-1){current++;render();}});
+document.getElementById('reset').addEventListener('click',()=>{current=0;render();});
+render();
+</script>
+</body>
+</html>

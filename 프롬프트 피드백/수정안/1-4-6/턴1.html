@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>나의 파이썬 연습장</title>
+<style>
+:root{color-scheme:light;--ink:#203047;--muted:#69798e;--accent:#4568e8}*{box-sizing:border-box}body{margin:0;background:#f2f5fa;color:var(--ink);font-family:system-ui,-apple-system,"맑은 고딕",sans-serif}main{max-width:1180px;margin:auto;padding:48px 28px}header{display:flex;align-items:center;justify-content:space-between;gap:20px}h1{font-size:30px;letter-spacing:-1px;margin:8px 0}p{line-height:1.7}.eyebrow{color:var(--accent);font-weight:800;font-size:12px;letter-spacing:2px}.sub{color:var(--muted);margin:8px 0 25px}.notice{padding:15px 20px;background:#e8edff;border-radius:12px;font-size:14px;line-height:1.7;margin-bottom:25px}.badge{white-space:nowrap;border:1px solid #dce3ee;background:white;border-radius:30px;padding:9px 14px;font-size:13px}.workspace{display:grid;grid-template-columns:1.25fr 1fr;gap:20px}.panel{background:white;border:1px solid #dce3ee;border-radius:16px;overflow:hidden;box-shadow:0 5px 20px #24395d06}.toolbar{height:64px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e6ebf3;gap:10px}.title{font-weight:750;font-size:14px}.filename{font-size:12px;color:var(--muted);margin-left:8px}button{border:0;border-radius:8px;padding:10px 16px;cursor:pointer;font:inherit;font-size:13px;font-weight:700;background:#edf1f7;color:var(--ink)}button.primary{background:var(--accent);color:white}button:disabled{opacity:.5;cursor:wait}button:focus-visible,textarea:focus-visible{outline:3px solid #86a4ff;outline-offset:-3px}.editor{height:410px;display:flex;background:#182335;color:#e0e8f5}.numbers{flex:0 0 48px;overflow:hidden;padding:20px 10px;text-align:right;background:#152032;color:#6e809a;user-select:none;font:14px/24px Consolas,monospace;white-space:pre}.code-area{position:relative;flex:1;min-width:0;overflow:hidden}#highlight,#code{position:absolute;inset:0;margin:0;border:0;padding:20px 16px;font:14px/24px Consolas,"Courier New",monospace;tab-size:4;white-space:pre;overflow:auto;letter-spacing:0;word-spacing:0}#highlight{pointer-events:none;scrollbar-width:none}#highlight::-webkit-scrollbar{display:none}#code{resize:none;background:transparent;color:transparent;caret-color:white;-webkit-text-fill-color:transparent}#code::selection{background:#6781bc70}.kw{color:#c4a3ff}.str{color:#a6dca3}.comment{color:#8094ad}.num{color:#ffce8d}.fn{color:#80cfff}.foot{padding:12px 18px;font-size:12px;color:var(--muted);border-top:1px solid #e6ebf3;line-height:1.6}.output-wrap{height:410px;overflow:auto;background:#fff}#output{margin:0;padding:20px;font:14px/24px Consolas,"맑은 고딕",monospace;white-space:pre-wrap;overflow-wrap:anywhere}#output:empty:before{content:"실행 결과가 여기에 표시됩니다.";color:#9aa5b5}.error{color:#c33d53}.input-echo{color:#4568e8}.tips{font-size:13px;color:var(--muted);line-height:1.9;margin-top:20px}code{font-family:Consolas,monospace}.overlay{position:fixed;inset:0;background:#f2f5faf5;z-index:10;display:grid;place-items:center;padding:24px}.loading-card{max-width:430px;text-align:center;background:white;padding:40px;border-radius:22px;box-shadow:0 16px 70px #24395d18}.spinner{width:42px;height:42px;border:4px solid #e6ebff;border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 24px}.loading-card h2{font-size:21px}.loading-card p{font-size:14px;color:var(--muted)}[hidden]{display:none!important}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:800px){main{padding:28px 16px}.workspace{grid-template-columns:1fr}header{align-items:flex-start}h1{font-size:25px}.filename{display:none}.editor{height:350px}.output-wrap{height:280px}.toolbar{padding:12px}}
+</style>
+</head>
+<body>
+<div class="overlay" id="loading" role="status" aria-live="polite"><div class="loading-card"><div class="spinner" id="spinner"></div><h2 id="loading-title">파이썬 연습장을 준비하고 있어요</h2><p id="loading-detail">Pyodide를 내려받는 중입니다.<br>처음 불러올 때는 인터넷 연결이 필요하며,<br>환경에 따라 잠시 시간이 걸릴 수 있어요.</p><button id="retry" hidden>다시 불러오기</button></div></div>
+<main>
+<header><div><div class="eyebrow">MY PYTHON NOTEBOOK</div><h1>나의 파이썬 연습장</h1></div><span class="badge" id="status" role="status">● 준비 중</span></header>
+<p class="sub">설치 없이, 코드 한 줄부터 시작해 보세요.</p>
+<div class="notice">🌐 <strong>처음 불러올 때 인터넷 연결이 필요해요.</strong> Pyodide를 통해 브라우저에서 파이썬을 실행합니다. 다시 열거나 추가 패키지를 불러올 때도 인터넷이 필요할 수 있어요.</div>
+<div class="workspace">
+<section class="panel" aria-label="파이썬 코드 편집기"><div class="toolbar"><div><span class="title">코드 편집기</span><span class="filename">practice.py</span></div><button class="primary" id="run" disabled>▶ 실행</button></div><div class="editor"><div id="numbers" class="numbers" aria-hidden="true">1</div><div class="code-area"><pre id="highlight" aria-hidden="true"></pre><textarea id="code" aria-label="파이썬 코드" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off"></textarea></div></div><div class="foot">Tab 들여쓰기 · Ctrl / ⌘ + Enter 실행</div></section>
+<section class="panel" aria-label="실행 결과"><div class="toolbar"><span class="title">실행 결과</span><button id="clear">지우기</button></div><div class="output-wrap" id="output-wrap"><pre id="output" aria-label="파이썬 실행 출력"></pre></div><div class="foot" id="result-status" role="status">준비가 끝나면 실행 버튼을 눌러 주세요.</div></section>
+</div>
+<p class="tips"><strong>입력이 필요할 땐?</strong> <code>input()</code>을 만나면 브라우저 입력창이 열립니다. 값을 입력하고 확인을 눌러 주세요. 취소하면 입력을 종료합니다.<br>실행할 때마다 결과와 변수를 새로 시작합니다. 무한 반복으로 응답이 없으면 페이지를 새로고침해 주세요.</p>
+</main>
+<script type="module">
+const $ = id => document.getElementById(id);
+const code = $('code'), highlight = $('highlight'), numbers = $('numbers');
+const initial = '# 나만의 첫 파이썬 프로그램\nname = input("이름을 입력해 주세요: ")\nprint(f"안녕하세요, {name}님!")\n\n# 반복문도 연습해 보세요\nfor i in range(1, 6):\n    print("★" * i)\n';
+try { code.value = localStorage.getItem('python-notebook-code') ?? initial; } catch { code.value = initial; }
+const escapeHTML = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function render() {
+    const pattern = /#[^\n]*|(?:[fFrRbBuU]{1,2})?(?:"""[\s\S]*?(?:"""|$)|'''[\s\S]*?(?:'''|$)|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*')|\b(?:False|None|True|and|as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield)\b|\b(?:print|input|range|len|str|int|float|list|dict|sum)\b|\b\d+(?:\.\d+)?\b/g;
+    let html = '', last = 0;
+    for (const match of code.value.matchAll(pattern)) {
+        const token = match[0];
+        const type = token.startsWith('#') ? 'comment' : /["']/.test(token) ? 'str' : /^\d/.test(token) ? 'num' : /^(print|input|range|len|str|int|float|list|dict|sum)$/.test(token) ? 'fn' : 'kw';
+        html += escapeHTML(code.value.slice(last, match.index)) + '<span class="'+type+'">'+escapeHTML(token)+'</span>';
+        last = match.index + token.length;
+    }
+    highlight.innerHTML = html + escapeHTML(code.value.slice(last)) + '\n';
+    numbers.textContent = Array.from({length:code.value.split('\n').length}, (_,i)=>i+1).join('\n');
+    syncScroll();
+}
+function syncScroll(){ highlight.scrollTop = code.scrollTop; highlight.scrollLeft = code.scrollLeft; numbers.scrollTop = code.scrollTop; }
+code.addEventListener('input',()=>{render();try{localStorage.setItem('python-notebook-code',code.value);}catch{}});
+code.addEventListener('scroll',syncScroll);
+code.addEventListener('keydown',event=>{
+    if(event.key === 'Tab') {event.preventDefault();code.setRangeText('    ',code.selectionStart,code.selectionEnd,'end');code.dispatchEvent(new Event('input'));}
+    if(event.key === 'Enter' && (event.ctrlKey || event.metaKey)){event.preventDefault();$('run').click();}
+});
+render();
+let pyodide, running = false, outputCount = 0;
+function append(text, type='') {
+    if(outputCount >= 200000) return;
+    const room = 200000-outputCount;
+    const span = document.createElement('span');span.className=type;span.textContent=text.slice(0,room);$('output').append(span);
+    outputCount += text.length;
+    if(outputCount >= 200000) $('output').append('\n[출력이 많아 이후 내용은 생략합니다.]\n');
+    $('output-wrap').scrollTop = $('output-wrap').scrollHeight;
+}
+function clearOutput(){ $('output').textContent='';outputCount=0; }
+$('clear').onclick=clearOutput;
+$('retry').onclick=()=>location.reload();
+try {
+    const { loadPyodide } = await import('https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.mjs');
+    pyodide = await loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v314.0.7/full/'});
+    const stdoutDecoder = new TextDecoder(), stderrDecoder = new TextDecoder();
+    pyodide.setStdout({write:buffer=>{append(stdoutDecoder.decode(buffer,{stream:true}));return buffer.length;}});
+    pyodide.setStderr({write:buffer=>{append(stderrDecoder.decode(buffer,{stream:true}),'error');return buffer.length;}});
+    pyodide.setStdin({stdin:()=>{
+        $('status').textContent='● 입력 대기';
+        const lines = $('output').textContent.split('\n');
+        const answer = window.prompt(lines[lines.length-1] || 'input()에 전달할 값을 입력해 주세요.');
+        $('status').textContent='● 실행 중';
+        if(answer !== null) append(answer+'\n','input-echo');
+        return answer;
+    }});
+    $('loading').hidden=true;$('run').disabled=false;$('status').textContent='● 실행 준비 완료';
+} catch(error) {
+    $('spinner').hidden=true;$('loading-title').textContent='파이썬을 불러오지 못했어요';
+    $('loading-detail').textContent='인터넷 연결과 CDN 접속 상태를 확인한 뒤 다시 불러와 주세요. '+error.message;
+    $('retry').hidden=false;$('status').textContent='● 연결 오류';
+}
+$('run').onclick=async()=>{
+    if(!pyodide || running) return;
+    running=true;$('run').disabled=true;code.readOnly=true;clearOutput();
+    $('status').textContent='● 실행 중';$('result-status').textContent='코드를 실행하고 있습니다…';
+    const source=code.value;
+    let globals;
+    try {
+        await new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
+        await pyodide.loadPackagesFromImports(source);
+        globals=pyodide.runPython('{"__name__": "__main__"}');
+        const result=await pyodide.runPythonAsync(source,{globals});
+        if(result && typeof result.destroy==='function') result.destroy();
+        $('result-status').textContent='실행을 마쳤습니다.';
+    } catch(error) { append(String(error)+'\n','error');$('result-status').textContent='오류 메시지를 확인하고 코드를 수정해 보세요.'; }
+    finally {globals?.destroy();running=false;code.readOnly=false;$('run').disabled=false;$('status').textContent='● 실행 준비 완료';}
+};
+</script>
+</body>
+</html>

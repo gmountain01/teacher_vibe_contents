@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>정렬 알고리즘 실험실</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f1f5fb;color:#17243b;font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif}main{max-width:1000px;margin:40px auto;padding:28px;background:white;border:1px solid #dce4ef;border-radius:22px;box-shadow:0 12px 36px #2439560b}h1{margin:0 0 8px;font-size:30px}.intro{margin:0;color:#526178;line-height:1.7}.stats{display:flex;gap:14px;margin:26px 0;flex-wrap:wrap}.stat{background:#f0f5fc;border-radius:12px;padding:14px 22px;flex:1;min-width:140px}.stat strong{font-size:28px;display:block;margin-top:3px;color:#254f99}.legend{display:flex;flex-wrap:wrap;gap:18px;font-size:14px;color:#47566d}.legend span{display:flex;align-items:center;gap:7px}.dot{width:14px;height:14px;border-radius:4px;display:inline-block}.normal{background:#638ee2}.compare{background:#f7d34b}.swap{background:#fb963e}.sorted{background:#55bc88}.chart{height:340px;display:flex;align-items:stretch;gap:clamp(5px,2vw,20px);padding:40px 12px 0;border-bottom:2px solid #cad4e3;margin:18px 0 0}.column{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative;padding-bottom:32px}.bar{width:100%;max-width:78px;border-radius:8px 8px 0 0;position:relative;min-height:12px}.value{position:absolute;top:-29px;width:100%;text-align:center;font-size:20px;font-weight:750}.index{position:absolute;bottom:5px;color:#64748b;font-size:15px}.axis{font-size:13px;color:#64748b;text-align:center;margin:8px 0 22px}.message{background:#f3f6fb;border-left:4px solid #638ee2;border-radius:8px;padding:18px;font-size:18px;line-height:1.6;min-height:66px}.controls{display:flex;justify-content:center;gap:12px;margin-top:22px}button{border:1px solid #cbd5e1;border-radius:10px;padding:12px 27px;font:inherit;font-weight:700;cursor:pointer;background:white;color:#243650}button.primary{background:#285fc4;color:white;border-color:#285fc4}button:disabled{opacity:.4;cursor:default}button:focus-visible{outline:3px solid #9ebfff;outline-offset:3px}.hint{text-align:center;font-size:13px;color:#64748b;margin:16px 0 0}@media(max-width:600px){main{margin:12px;padding:18px}h1{font-size:25px}.chart{height:290px;padding-left:0;padding-right:0}.value{font-size:17px}.stat{padding:12px}.message{font-size:16px}button{padding:12px 20px}}
+main{max-width:1250px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:28px}.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0}.tabs button[aria-selected="true"]{background:#285fc4;color:white}.candidate{background:#a579e1}.prefix{background:#b9dcfa}.bar.candidate.compare{box-shadow:inset 0 0 0 4px #f7d34b}.card{background:#f3f6fb;border:1px solid #dce4ef;border-radius:16px;padding:22px;margin-top:26px;align-self:start}.card h2{font-size:22px;margin-top:0}.card h3{font-size:16px;margin-top:24px}.card p,.card li{line-height:1.8}.card ol{padding-left:22px}.card li{margin-bottom:12px}[hidden]{display:none!important}@media(max-width:900px){.layout{grid-template-columns:1fr}.card{margin-top:0}}
+</style>
+</head>
+<body>
+<main>
+<h1>정렬 알고리즘 실험실</h1>
+<p class="intro">같은 숫자를 세 가지 방법으로 비교하며 작은 수부터 큰 수 순서로 정렬해 보세요.<br>‘다음’을 누르면 비교 한 번 또는 교환 한 번이 진행됩니다.</p>
+<div class="tabs" role="tablist" aria-label="정렬 방법"><button id="tab-bubble" role="tab" aria-controls="experiment" data-method="bubble">버블 정렬</button><button id="tab-selection" role="tab" aria-controls="experiment" data-method="selection">선택 정렬</button><button id="tab-insertion" role="tab" aria-controls="experiment" data-method="insertion">삽입 정렬</button></div><div class="layout"><section id="experiment" role="tabpanel" aria-labelledby="tab-bubble"><div class="stats"><div class="stat">비교 횟수<strong id="comparisons">0</strong></div><div class="stat">교환 횟수<strong id="swaps">0</strong></div></div>
+<div class="legend"><span><i class="dot normal"></i>정렬 중</span><span><i class="dot compare"></i>비교</span><span><i class="dot swap"></i>교환</span><span><i class="dot sorted"></i>위치 확정</span><span id="candidateLegend" hidden><i class="dot candidate"></i>최솟값 후보 (노란 테두리: 비교 중)</span><span id="prefixLegend" hidden><i class="dot prefix"></i>순서가 맞춰진 앞부분</span></div>
+<div id="chart" class="chart" role="img" aria-label="정렬할 숫자 막대"></div>
+<p class="axis">위치 번호 (0부터 시작)</p>
+<div id="message" class="message" role="status" aria-live="polite"></div>
+<div class="controls"><button id="previous" type="button">이전</button><button id="next" class="primary" type="button">다음</button><button id="reset" type="button">처음으로</button></div>
+<p class="hint" id="progress"></p>
+</section><aside class="card" id="explanation" aria-live="polite"></aside></div></main>
+<script>
+'use strict';
+const initial = [42,18,65,30,8,54,23,76];
+const descriptions={
+bubble:{name:'버블 정렬',summary:'이웃한 두 수를 비교하여 큰 수를 오른쪽으로 보냅니다.',analogy:'옆 친구와 키를 비교하며 자리를 바꾸면 가장 큰 친구가 맨 뒤로 이동해요.',steps:['왼쪽부터 이웃한 두 수를 비교합니다.','왼쪽 수가 더 크면 두 수를 교환합니다.','오른쪽 위치를 확정하고 남은 구간에서 반복합니다.']},
+selection:{name:'선택 정렬',summary:'남은 구간에서 최솟값을 찾아 맨 앞에 놓습니다.',analogy:'숫자 카드를 끝까지 살펴 가장 작은 카드를 고른 뒤, 정리할 자리의 맨 앞에 놓는다고 생각해 보세요.',steps:['남은 구간의 맨 앞 수를 최솟값 후보로 정합니다.','뒤의 수를 하나씩 비교하며 더 작은 수로 후보를 바꿉니다.','끝까지 살펴본 뒤 후보와 맨 앞 수를 교환하고 위치를 확정합니다.']},
+insertion:{name:'삽입 정렬',summary:'새 수를 정돈된 앞부분의 알맞은 자리로 옮깁니다.',analogy:'손에 든 카드를 정리하듯 새 카드를 왼쪽 카드와 비교하며 알맞은 자리에 끼워 넣어요.',steps:['순서가 맞춰진 앞부분 바로 다음 수를 고릅니다.','왼쪽 수와 비교하고 왼쪽이 더 크면 이웃끼리 교환합니다.','알맞은 자리까지 반복하고 정돈된 앞부분을 한 칸 늘립니다.']}
+};
+function buildFrames(method){
+ const frames=[],values=[...initial];let comparisons=0,swaps=0;
+ const range=(a,b)=>Array.from({length:Math.max(0,b-a)},(_,i)=>a+i);
+ function record(kind,pair,message,fixed=[],candidate=-1,prefix=0){frames.push({values:[...values],comparisons,swaps,kind,pair:[...pair],message,fixed:[...fixed],candidate,prefix});}
+ record('normal',[],'‘다음’을 눌러 정렬을 시작하세요.',[],method==='selection'?0:-1,method==='insertion'?1:0);
+ if(method==='bubble'){
+  for(let end=values.length-1;end>0;end--){
+   for(let j=0;j<end;j++){
+    const left=values[j],right=values[j+1],exchange=left>right,last=j===end-1;
+    let fixed=range(last&&!exchange?end:end+1,values.length);
+    if(end===1&&last&&!exchange)fixed.unshift(0);
+    comparisons++;
+    record('compare',[j,j+1],`${left}와 ${right} 비교: ${exchange?'왼쪽이 더 크므로 다음 단계에서 교환합니다.':'순서가 맞으므로 교환하지 않습니다.'}`,fixed);
+    if(exchange){
+     [values[j],values[j+1]]=[values[j+1],values[j]];swaps++;
+     fixed=range(last?end:end+1,values.length);if(end===1&&last)fixed.unshift(0);
+     record('swap',[j,j+1],`${left}와 ${right}의 위치를 교환했습니다.`,fixed);
+    }
+   }
+  }
+ }else if(method==='selection'){
+  for(let start=0;start<values.length-1;start++){
+   let min=start;
+   for(let j=start+1;j<values.length;j++){
+    const oldIndex=min,old=values[min],v=values[j];comparisons++;
+    if(v<old)min=j;
+    const last=j===values.length-1,noSwap=last&&min===start;
+    const fixed=range(0,noSwap?start+1:start);
+    if(noSwap&&start===values.length-2)fixed.push(values.length-1);
+    record('compare',[oldIndex,j],`${old}와 ${v} 비교: ${v<old?`${v}을(를) 새 최솟값 후보로 정합니다.`:`최솟값 후보 ${old}을(를) 유지합니다.`}${last?(noSwap?' 이미 맨 앞에 있어 교환하지 않습니다.':' 끝까지 살폈으므로 다음 단계에서 맨 앞 수와 교환합니다.'):''}`,fixed,min);
+   }
+   if(min!==start){
+    const left=values[start],small=values[min];[values[start],values[min]]=[values[min],values[start]];swaps++;
+    record('swap',[start,min],`남은 구간을 모두 살펴본 뒤 최솟값 ${small}와 맨 앞 수 ${left}의 위치를 교환했습니다.`,range(0,start===values.length-2?values.length:start+1));
+   }
+   if(start<values.length-2)frames[frames.length-1].candidate=start+1;
+  }
+ }else{
+  for(let i=1;i<values.length;i++){
+   let j=i;
+   while(j>0){
+    const left=values[j-1],right=values[j],exchange=left>right;comparisons++;
+    record('compare',[j-1,j],`${left}와 ${right} 비교: ${exchange?'왼쪽이 더 크므로 다음 단계에서 이웃끼리 교환합니다.':'알맞은 위치이므로 앞부분의 정리를 마칩니다.'}`,[],-1,exchange?i:i+1);
+    if(!exchange)break;
+    [values[j-1],values[j]]=[values[j],values[j-1]];swaps++;j--;
+    record('swap',[j,j+1],`${right}와 ${left}를 이웃끼리 교환하여 ${right}을(를) 왼쪽으로 한 칸 옮겼습니다.`,[],-1,j===0?i+1:i);
+   }
+  }
+ }
+ frames[frames.length-1].message+=' 오름차순 정렬이 완료되었습니다.';
+ frames[frames.length-1].fixed=range(0,values.length);frames[frames.length-1].candidate=-1;
+ return frames;
+}
+let method='bubble',frames=buildFrames(method);
+let current=0;
+const chart=document.getElementById('chart');
+function render(){
+  const frame=frames[current];
+  chart.replaceChildren();
+  frame.values.forEach((value,index)=>{
+    const column=document.createElement('div');column.className='column';
+    const bar=document.createElement('div');
+    // 확정된 위치는 같은 단계의 비교·교환 강조보다 우선합니다.
+    const active=frame.pair.includes(index);
+    const color=active&&frame.kind==='swap'?'swap':index===frame.candidate?'candidate'+(active&&frame.kind==='compare'?' compare':''):active?frame.kind:frame.fixed.includes(index)?'sorted':index<frame.prefix?'prefix':'normal';
+    bar.className=`bar ${color}`;bar.style.height=`${value/80*245}px`;
+    const label=document.createElement('span');label.className='value';label.textContent=value;
+    const position=document.createElement('span');position.className='index';position.textContent=index;
+    bar.append(label);column.append(bar,position);chart.append(column);
+  });
+  chart.setAttribute('aria-label',frame.values.map((v,i)=>`위치 ${i}: ${v}`).join(', '));
+  document.getElementById('comparisons').textContent=frame.comparisons;
+  document.getElementById('swaps').textContent=frame.swaps;
+  document.getElementById('message').textContent=frame.message;
+  document.getElementById('previous').disabled=current===0;
+  document.getElementById('next').disabled=current===frames.length-1;
+  document.getElementById('progress').textContent=`${current} / ${frames.length-1} 단계`;
+}
+document.getElementById('previous').addEventListener('click',()=>{if(current>0){current--;render();}});
+document.getElementById('next').addEventListener('click',()=>{if(current<frames.length-1){current++;render();}});
+document.getElementById('reset').addEventListener('click',()=>{current=0;render();});
+function selectMethod(next){
+ method=next;frames=buildFrames(method);current=0;
+ document.querySelectorAll('[role="tab"]').forEach(tab=>{const selected=tab.dataset.method===method;tab.setAttribute('aria-selected',selected);tab.tabIndex=selected?0:-1;});
+ document.getElementById('experiment').setAttribute('aria-labelledby','tab-'+method);
+ document.getElementById('candidateLegend').hidden=method!=='selection';
+ document.getElementById('prefixLegend').hidden=method!=='insertion';
+ const info=descriptions[method];
+ document.getElementById('explanation').innerHTML=`<h2>${info.name}</h2><p>${info.summary}</p><h3>이렇게 생각해 보세요</h3><p>${info.analogy}</p><h3>움직이는 순서 3단계</h3><ol>${info.steps.map(step=>`<li>${step}</li>`).join('')}</ol>`;
+ render();
+}
+const tabs=[...document.querySelectorAll('[role="tab"]')];
+tabs.forEach((tab,index)=>{
+ tab.addEventListener('click',()=>selectMethod(tab.dataset.method));
+ tab.addEventListener('keydown',event=>{let next=index;if(event.key==='ArrowRight')next=(index+1)%tabs.length;else if(event.key==='ArrowLeft')next=(index+tabs.length-1)%tabs.length;else if(event.key==='Home')next=0;else if(event.key==='End')next=tabs.length-1;else return;event.preventDefault();selectMethod(tabs[next].dataset.method);tabs[next].focus();});
+});
+selectMethod('bubble');
+</script>
+</body>
+</html>

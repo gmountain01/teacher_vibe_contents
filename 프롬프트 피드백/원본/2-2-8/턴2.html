@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>우리 반 칭찬 포인트 보드</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f4f7fc;color:#20304b;font-family:"Malgun Gothic",sans-serif}header{padding:32px 4vw 22px;background:#fff;border-bottom:1px solid #dce4ef}h1{font-size:clamp(30px,4vw,52px);margin:0 0 12px}header p{font-size:21px;margin:0;color:#5b6980}.toolbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:22px}button{font:inherit;cursor:pointer}.manage{background:#263f70;color:white;border:0;border-radius:12px;padding:14px 22px;font-weight:700;font-size:20px}#status{font-size:17px;color:#56677e}main{padding:28px 4vw 50px}.board{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}.card{position:relative;min-height:240px;border:3px solid #dbe5f4;border-radius:24px;background:white;padding:24px 14px;color:#233c63;box-shadow:0 5px 0 #e0e7f1;touch-action:manipulation;transition:transform .12s,background .12s}.card:hover{background:#edf5ff;border-color:#96b9f2}.card:active{transform:scale(.96)}.card:focus-visible,button:focus-visible,textarea:focus-visible{outline:5px solid #f3ad24;outline-offset:4px}.name{display:block;font-size:clamp(28px,3vw,42px);font-weight:800;overflow-wrap:anywhere}.score{display:block;font-size:72px;line-height:1.3;font-weight:900;color:#2565c6;font-variant-numeric:tabular-nums}.unit{font-size:22px;color:#6d7c91}.hint{display:block;margin-top:10px;font-size:18px;color:#667a98}.pop{animation:pop .25s ease}@keyframes pop{50%{background:#e0f7eb;transform:translateY(-5px)}}.empty{text-align:center;padding:65px 15px;font-size:26px;color:#65748b}.editor{max-width:760px;margin:0 auto 28px;background:#fff;padding:26px;border:1px solid #dae3ef;border-radius:20px}.editor h2{margin:0 0 12px;font-size:28px}.editor p{font-size:18px;line-height:1.6}textarea{width:100%;min-height:210px;resize:vertical;padding:16px;border:2px solid #b8c7dc;border-radius:12px;font:22px/1.65 "Malgun Gothic",sans-serif}.actions{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}.secondary{border:1px solid #c2ccda;background:white;color:#40536e;border-radius:12px;padding:12px 22px;font-size:20px}#error{color:#b33232;font-size:18px} [hidden]{display:none!important}@media(max-width:520px){.board{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{min-height:200px;padding:20px 8px}.name{font-size:26px}.score{font-size:60px}header p{font-size:18px}}
+    .breakdown{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-top:14px}.breakdown span{font-size:16px;background:#edf3fc;border-radius:8px;padding:5px 8px;overflow-wrap:anywhere}dialog{width:min(650px,92vw);max-height:90vh;overflow:auto;border:0;border-radius:24px;padding:30px;color:#20304b}dialog::backdrop{background:#182a48aa}dialog h2{font-size:32px;margin:0 0 12px}dialog p{font-size:20px}.reason-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:24px 0}.reason-button{border:2px solid #adc7ee;border-radius:16px;background:#edf5ff;color:#244f8d;padding:22px 10px;font-size:26px;font-weight:bold;overflow-wrap:anywhere}#reason-error{color:#b33232}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌟 우리 반 칭찬 포인트 보드</h1>
+    <p>학생 카드를 누르고 칭찬 이유를 고르면 1점이 올라가요!</p>
+    <div class="toolbar"><button class="manage" id="manage" type="button">학생 명단 입력 · 수정</button><button class="secondary" id="settings" type="button">칭찬 이유 설정</button><span id="status" role="status"></span></div>
+  </header>
+  <main>
+    <section class="editor" id="editor" hidden>
+      <h2>우리 반 학생 명단</h2>
+      <p id="instructions">학생 이름을 한 줄에 한 명씩 입력하세요. 쉼표로 구분해도 됩니다.<br>기존 이름을 그대로 두면 점수가 유지됩니다. 동명이인은 ‘김민수(1)’, ‘김민수(2)’처럼 구분해 주세요.</p>
+      <textarea id="names" aria-label="학생 명단" aria-describedby="instructions" placeholder="김민수&#10;이서연&#10;박지우"></textarea>
+      <p id="error" role="alert" hidden></p>
+      <div class="actions"><button class="manage" id="save" type="button">명단 적용하기</button><button class="secondary" id="cancel" type="button">닫기</button></div>
+    </section>
+    <div class="empty" id="empty">학생 명단을 입력하면<br>이곳에 칭찬 카드가 나타나요. ✨</div>
+    <section class="board" id="board" aria-label="학생별 칭찬 포인트"></section>
+  </main>
+  <dialog id="settings-dialog" aria-labelledby="settings-title">
+    <h2 id="settings-title">칭찬 이유 설정</h2>
+    <p>한 줄에 하나씩, 최대 8개까지 입력하세요.<br>목록을 바꿔도 기존 점수와 이유별 기록은 유지됩니다.</p>
+    <textarea id="reason-input" aria-label="칭찬 이유 목록"></textarea>
+    <p id="reason-error" role="alert" hidden></p>
+    <div class="actions"><button class="manage" id="save-reasons" type="button">설정 저장</button><button class="secondary" id="close-settings" type="button">취소</button></div>
+  </dialog>
+  <dialog id="choice-dialog" aria-labelledby="choice-title">
+    <h2 id="choice-title">칭찬 이유 선택</h2><p>이유를 누르면 칭찬 포인트가 1점 올라갑니다.</p>
+    <div class="reason-buttons" id="reason-buttons"></div>
+    <button class="secondary" id="close-choice" type="button">취소</button>
+  </dialog>
+  <script>
+    'use strict';
+    const KEY='class-praise-point-board-v1';
+    const board=document.getElementById('board'), editor=document.getElementById('editor'), names=document.getElementById('names'), status=document.getElementById('status'), error=document.getElementById('error');
+    const REASONS_KEY=KEY+'-reasons';
+    let reasons=['배려','협력','노력','발표','약속 지킴','정리정돈'];
+    const settingsDialog=document.getElementById('settings-dialog'), choiceDialog=document.getElementById('choice-dialog'), reasonInput=document.getElementById('reason-input'), reasonError=document.getElementById('reason-error');
+    function validReasons(value){return Array.isArray(value)&&value.length>0&&value.length<=8&&value.every(r=>typeof r==='string'&&r.trim()===r&&r.length>0)&&new Set(value).size===value.length;}
+    let students=[], storageAvailable=true;
+    try{
+      const raw=localStorage.getItem(KEY);
+      if(raw!==null){
+        const data=JSON.parse(raw);
+        if(!Array.isArray(data)||!data.every(s=>s&&typeof s.name==='string'&&s.name.trim()&&Number.isSafeInteger(s.points)&&s.points>=0)||new Set(data.map(s=>s.name)).size!==data.length)throw new Error('invalid');
+        students=data.map(s=>({...s,counts:Object.fromEntries(Object.entries(s.counts||{}).filter(([r,n])=>r&&Number.isSafeInteger(n)&&n>=0))}));
+      }
+      localStorage.setItem(KEY,JSON.stringify(students));
+    }catch(e){storageAvailable=false;}
+    try{const saved=JSON.parse(localStorage.getItem(REASONS_KEY));if(validReasons(saved))reasons=saved;}catch(e){storageAvailable=false;}
+    function showStatus(){status.textContent=storageAvailable?'✓ 이 브라우저에 자동 저장됩니다':'⚠ 저장을 사용할 수 없습니다. 이 창을 닫으면 변경한 점수가 사라질 수 있습니다.';}
+    function persist(){try{localStorage.setItem(KEY,JSON.stringify(students));storageAvailable=true;}catch(e){storageAvailable=false;}showStatus();}
+    function render(){
+      board.replaceChildren();document.getElementById('empty').hidden=students.length>0;
+      students.forEach(student=>{
+        const card=document.createElement('button');card.type='button';card.className='card';
+        const name=document.createElement('span');name.className='name';name.textContent=student.name;
+        const score=document.createElement('span');score.className='score';score.textContent=student.points;
+        const unit=document.createElement('span');unit.className='unit';unit.textContent='칭찬 포인트';
+        const hint=document.createElement('span');hint.className='hint';hint.textContent='누르고 칭찬 이유 선택 ✨';
+        card.setAttribute('aria-label',student.name+' '+student.points+'점, 칭찬 이유 선택');
+        const breakdown=document.createElement('span');breakdown.className='breakdown';
+        const counts=student.counts||{};
+        [...new Set([...reasons,...Object.keys(counts)])].forEach(reason=>{
+          const item=document.createElement('span');item.textContent=reason+' '+(Object.hasOwn(counts,reason)?counts[reason]:0);breakdown.append(item);
+        });
+        const previous=student.points-Object.values(counts).reduce((sum,n)=>sum+n,0);
+        if(previous>0){const item=document.createElement('span');item.textContent='이유 미지정 '+previous;breakdown.append(item);}
+        card.append(name,score,unit,breakdown,hint);
+        card.addEventListener('click',()=>openChoice(student));board.append(card);
+      });
+    }
+    function openChoice(student){
+      document.getElementById('choice-title').textContent=student.name+' · 칭찬 이유';
+      const buttons=document.getElementById('reason-buttons');buttons.replaceChildren();
+      reasons.forEach(reason=>{
+        const button=document.createElement('button');button.type='button';button.className='reason-button';button.textContent=reason+' +1';
+        button.addEventListener('click',()=>{
+          if(!choiceDialog.open||student.points>=Number.MAX_SAFE_INTEGER)return;
+          student.counts=student.counts||{};
+          Object.defineProperty(student.counts,reason,{value:(Object.hasOwn(student.counts,reason)?student.counts[reason]:0)+1,writable:true,enumerable:true,configurable:true});
+          student.points+=1;persist();choiceDialog.close();render();
+          const card=board.children[students.indexOf(student)];if(card){card.focus();card.classList.add('pop');}
+        });buttons.append(button);
+      });choiceDialog.showModal();
+    }
+    document.getElementById('close-choice').addEventListener('click',()=>choiceDialog.close());
+    document.getElementById('settings').addEventListener('click',()=>{reasonInput.value=reasons.join('\n');reasonError.hidden=true;settingsDialog.showModal();});
+    document.getElementById('close-settings').addEventListener('click',()=>settingsDialog.close());
+    document.getElementById('save-reasons').addEventListener('click',()=>{
+      const next=reasonInput.value.split(/\r?\n/).map(r=>r.trim()).filter(Boolean);
+      if(!validReasons(next)){reasonError.textContent='서로 다른 칭찬 이유를 1개 이상, 최대 8개까지 입력해 주세요.';reasonError.hidden=false;return;}
+      reasons=next;
+      try{localStorage.setItem(REASONS_KEY,JSON.stringify(reasons));storageAvailable=true;}catch(e){storageAvailable=false;}
+      showStatus();render();settingsDialog.close();
+    });
+    function openEditor(){names.value=students.map(s=>s.name).join('\n');error.hidden=true;editor.hidden=false;names.focus();}
+    document.getElementById('manage').addEventListener('click',openEditor);
+    document.getElementById('cancel').addEventListener('click',()=>{editor.hidden=true;document.getElementById('manage').focus();});
+    document.getElementById('save').addEventListener('click',()=>{
+      const list=names.value.split(/[\r\n,，]+/).map(n=>n.trim()).filter(Boolean);
+      if(!list.length){error.textContent='학생 이름을 한 명 이상 입력해 주세요.';error.hidden=false;return;}
+      if(new Set(list).size!==list.length){error.textContent='같은 이름이 있습니다. 동명이인은 번호 등을 붙여 구분해 주세요.';error.hidden=false;return;}
+      const removed=students.filter(s=>!list.includes(s.name));
+      if(removed.length&&!confirm('명단에서 빠진 학생 '+removed.length+'명의 카드와 저장된 점수가 삭제됩니다. 명단을 적용할까요?'))return;
+      const previous=new Map(students.map(s=>[s.name,s]));
+      students=list.map(name=>previous.get(name)??{name,points:0,counts:{}});persist();render();editor.hidden=true;
+    });
+    showStatus();render();if(!students.length)openEditor();
+  </script>
+</body>
+</html>

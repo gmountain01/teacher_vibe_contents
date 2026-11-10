@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>진급 반 인계 카드</title>
+<style>
+:root{font-family:"Malgun Gothic",system-ui,sans-serif;color:#23352f;background:#f3f6f2;font-size:15px}*{box-sizing:border-box}body{margin:0}header,main,footer{max-width:1120px;margin:auto;padding:24px}header{padding-top:38px}h1{font-size:30px;letter-spacing:-1px;margin:8px 0}p{line-height:1.7;margin:8px 0}.eyebrow{font-size:12px;font-weight:bold;letter-spacing:2px;color:#43745d}.intro{color:#596960}.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:white;border:1px solid #d8e3da;border-radius:14px;padding:18px;margin-top:22px}button,.file-button{font:inherit;border:1px solid #c9d6cd;border-radius:8px;padding:10px 14px;background:white;color:#294e3c;cursor:pointer}button:hover,.file-button:hover{background:#edf4ed}button.primary{background:#285d45;color:white;border-color:#285d45}input,textarea{font:inherit;color:inherit;border:1px solid #c8d5cc;border-radius:7px;background:#fff;padding:10px;max-width:100%}input:focus,textarea:focus,button:focus-visible,.file-button:focus-within{outline:3px solid #b9d8c5;outline-offset:2px}#count{width:84px}#status{font-size:13px;color:#38604a;min-height:22px;margin-top:12px}.warning{color:#9b3424!important}.hint{font-size:13px;color:#647268}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.card{background:white;border:1px solid #d5e0d7;border-radius:16px;padding:24px;break-inside:avoid}.card-top{display:flex;gap:14px;align-items:center;margin-bottom:22px}.number{background:#e8f0e9;color:#285d45;font-weight:bold;padding:10px 13px;border-radius:10px;white-space:nowrap}.name{display:flex;align-items:center;gap:10px;flex:1}.name input{width:100%;min-width:0}.field{display:block;margin-top:18px;font-weight:bold;font-size:14px}.field small{font-weight:normal;color:#647268}textarea{display:block;width:100%;resize:vertical;margin-top:8px;line-height:1.65;font-size:14px;min-height:82px}fieldset{border:0;padding:0;margin:0}legend{font-weight:bold;font-size:14px;margin-bottom:10px}.checks{display:flex;gap:8px;flex-wrap:wrap}.check{display:flex;align-items:center;gap:6px;border:1px solid #dbe4dd;border-radius:7px;padding:8px;font-size:13px;cursor:pointer}.check:has(input:checked){background:#e9f3eb;border-color:#6c9a7a}.check input{accent-color:#285d45;width:16px;height:16px;margin:0}.empty{padding:65px 25px;text-align:center;background:#fff;border:1px dashed #c5d4c9;border-radius:16px;color:#647268}main{padding-top:0}footer{font-size:12px;color:#647268;padding-top:0}.file-button input{position:absolute;width:1px;height:1px;opacity:0}#summary{font-size:14px;margin:0 0 14px;color:#596960}details{margin:14px 0;font-size:13px;color:#596960}summary{cursor:pointer} @media(max-width:760px){.cards{grid-template-columns:1fr}header,main,footer{padding-left:16px;padding-right:16px}h1{font-size:26px}.card{padding:19px}}@media print{body{background:white}.toolbar,.intro,details,#status,footer,.eyebrow{display:none}header{padding:0 0 12px}main{padding:0}.cards{display:block}.card{margin-bottom:18px;border-radius:0;page-break-after:always}.card:last-child{page-break-after:auto}textarea{resize:none;border:0;padding:0;overflow:hidden}input{border:0}.check{border:0}h1{font-size:22px}@page{size:A4;margin:15mm}}
+.progress-panel{margin-top:18px;padding:16px;border-radius:12px;background:#e8f0e9;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.progress-panel strong{font-size:20px}.progress-panel progress{flex:1;min-width:100px;accent-color:#285d45}.progress-panel small{color:#596960}.card-top{flex-wrap:wrap;margin-bottom:10px}.completion{font-size:12px;white-space:nowrap;border-radius:20px;background:#f0f2ef;color:#69756d;padding:6px 10px}.completion.done{background:#dcefe2;color:#245838}.card-note{font-size:13px;color:#48624f;background:#f2f6f1;padding:9px 11px;border-radius:8px;margin:0 0 18px}.phrases{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.phrases button{font-size:12px;padding:7px 9px;text-align:left;line-height:1.5;background:#f6f9f5}.phrase-hint{font-size:12px;color:#647268}@media print{.phrases,.phrase-hint{display:none}.progress-panel{padding:8px;margin:8px 0}.progress-panel progress{display:none}}
+</style>
+</head>
+<body>
+<header>
+<div class="eyebrow">다음 담임에게 전하는 기록</div>
+<h1>진급 반 인계 카드</h1>
+<div class="progress-panel" aria-live="polite"><strong id="progressText">작성됨 0/0명</strong><progress id="progressBar" max="1" value="0" aria-label="카드 작성 진행률"></progress><small>이름 + 글 항목 1개 이상 입력 시 작성됨</small></div>
+<p class="intro">학생 한 명마다, 도움이 되는 사실과 방법을 짧게 남겨 주세요.<br>인터넷 연결 없이 이 파일을 크롬에서 열어 사용할 수 있습니다.</p>
+<div class="toolbar">
+<label for="count"><b>학생 수</b></label><input id="count" type="number" min="0" max="300" step="1" value="0" inputmode="numeric"><span>명</span>
+<button class="primary" id="apply">카드 만들기 / 수 변경</button>
+<button id="backup">백업 파일 저장</button>
+<label class="file-button">백업 불러오기<input id="restore" type="file" accept=".json,application/json"></label>
+<button id="print">인쇄 / PDF 저장</button>
+</div>
+<div id="status" role="status" aria-live="polite"></div>
+<details><summary>자동 저장과 개인정보 보관 안내</summary><p>입력 내용은 이 컴퓨터의 현재 크롬 프로필에 자동 저장됩니다. 창을 닫아도 같은 프로필에서 같은 위치의 HTML 파일을 열면 이어서 작성할 수 있습니다. 시크릿 모드, 브라우저 데이터 삭제, 파일 이동·이름 변경, 다른 컴퓨터에서는 기존 기록이 보이지 않거나 사라질 수 있습니다. 사용을 마칠 때는 반드시 ‘백업 파일 저장’으로 따로 보관해 주세요.</p><p>외부 서버로 전송하지 않습니다. 공용 컴퓨터 사용을 피하고, 건강·학부모 관련 내용은 인계에 필요한 최소한만 적어 주세요. HTML 파일만 전달하면 입력 내용은 전달되지 않습니다. 백업 파일과 인쇄물에는 학생 정보가 포함되므로 학교의 보관·전달 기준에 따라 관리해 주세요.</p></details>
+</header>
+<main><p id="summary"></p><div id="cards" class="cards"></div></main>
+<footer>체크는 지원이 필요한 사항을 알리는 표시입니다. 올해 특이사항은 해석이나 평가를 덧붙이지 않고 날짜와 관찰한 사실만 기록합니다.</footer>
+<script>
+'use strict';
+const KEY='class-handover-cards-v1';
+const checkLabels=['앞자리 필요','급식 유의','복약','보건 연계','자리 분리 희망 있음'];
+const fields=[['strength','잘하는 것·맡았던 역할'],['learning','도움이 필요한 과목과 효과 있던 방법'],['guidance','효과 있었던 생활지도 방법'],['parents','학부모 소통 유의점'],['events','올해 특이사항']];
+const phrases={
+strength:['정리 도구 관리를 맡기면 사용 후 제자리에 정리함','학급 도서 담당을 맡아 대출 기록을 작성함','모둠 활동에서 발표 자료 정리를 맡음'],
+learning:['수학: 풀이 순서를 한 단계씩 나누어 안내하면 해결함','국어: 핵심 낱말에 표시하며 읽으면 내용을 파악함','영어: 그림과 낱말을 함께 제시하면 의미를 이해함'],
+guidance:['칭찬을 먼저 하면 안내한 행동을 실천함','할 일을 한 번에 하나씩 안내하면 시작함','개별적으로 짧게 이야기하면 약속한 행동을 실천함'],
+parents:['연락 시 관찰한 사실과 지원 방법을 함께 전달함','통화 전 문자로 가능한 시간을 확인함','학교에서 시도한 방법과 이후 변화를 함께 안내함'],
+events:['____.__.__. 학급 도서 담당을 맡음','____.__.__. 학부모와 상담함','____.__.__. 교내 행사에 참여함']
+};
+const cards=document.getElementById('cards'), count=document.getElementById('count'), status=document.getElementById('status');
+let state={version:1,count:0,students:[]};
+function blank(){return {name:'',checks:Array(5).fill(false),strength:'',learning:'',guidance:'',parents:'',events:''}}
+function message(text,error=false){status.textContent=text;status.classList.toggle('warning',error)}
+function valid(data){return data&&data.version===1&&Number.isInteger(data.count)&&data.count>=0&&data.count<=300&&Array.isArray(data.students)&&data.students.length>=data.count&&data.students.length<=300&&data.students.every(s=>s&&typeof s.name==='string'&&Array.isArray(s.checks)&&s.checks.length===5&&s.checks.every(x=>typeof x==='boolean')&&fields.every(([key])=>typeof s[key]==='string')&&s.events.split('\n').length<=3)}
+function isComplete(s){return Boolean(s.name.trim()&&fields.some(([key])=>s[key].trim()))}
+function updateProgress(){const completed=state.students.slice(0,state.count).filter(isComplete).length;document.getElementById('progressText').textContent=`작성됨 ${completed}/${state.count}명`;const bar=document.getElementById('progressBar');bar.max=state.count||1;bar.value=completed;cards.querySelectorAll('.completion').forEach((badge,i)=>{const done=isComplete(state.students[i]);badge.textContent=done?'작성됨':'작성 중';badge.classList.toggle('done',done)})}
+function save(){updateProgress();try{localStorage.setItem(KEY,JSON.stringify(state));message('자동 저장됨 · '+new Date().toLocaleTimeString('ko-KR')+' · 이 크롬에 보관 중');return true}catch(e){message('자동 저장을 사용할 수 없습니다. 창을 닫기 전에 ‘백업 파일 저장’을 눌러 주세요.',true);return false}}
+function grow(el){el.style.height='auto';el.style.height=Math.max(82,el.scrollHeight+2)+'px'}
+function render(){
+ count.value=state.count;cards.replaceChildren();
+ document.getElementById('summary').textContent=state.count?`전체 ${state.count}명 · 번호순 인계 카드`:'';
+ if(!state.count){const p=document.createElement('div');p.className='empty';p.textContent='학생 수를 입력하고 ‘카드 만들기’를 눌러 시작하세요.';cards.append(p);return}
+ for(let i=0;i<state.count;i++){
+ const s=state.students[i],card=document.createElement('section');card.className='card';card.setAttribute('aria-label',`${i+1}번 학생 인계 카드`);
+ const top=document.createElement('div');top.className='card-top';const badge=document.createElement('span');badge.className='number';badge.textContent=`${i+1}번`;top.append(badge);
+ const nameLabel=document.createElement('label');nameLabel.className='name';nameLabel.append('이름');const name=document.createElement('input');name.type='text';name.value=s.name;name.autocomplete='off';name.addEventListener('input',()=>{s.name=name.value;save()});nameLabel.append(name);top.append(nameLabel);const completion=document.createElement('span');completion.className='completion';top.append(completion);card.append(top);const note=document.createElement('p');note.className='card-note';note.textContent='평가어 대신 사실과 방법만 적어 주세요';card.append(note);
+ const fs=document.createElement('fieldset'),legend=document.createElement('legend');legend.textContent='배려 체크';fs.append(legend);const checks=document.createElement('div');checks.className='checks';
+ checkLabels.forEach((text,j)=>{const label=document.createElement('label');label.className='check';const box=document.createElement('input');box.type='checkbox';box.checked=s.checks[j];box.addEventListener('change',()=>{s.checks[j]=box.checked;save()});label.append(box,document.createTextNode(text));checks.append(label)});fs.append(checks);card.append(fs);
+ fields.forEach(([key,title])=>{const label=document.createElement('label');label.className='field';label.append(title);if(key==='events'){const small=document.createElement('small');small.textContent=' (날짜·사실만, 3줄)';label.append(small)}const area=document.createElement('textarea');area.rows=key==='events'?3:2;area.value=s[key];area.id=`student-${i}-${key}`;if(key==='events')area.placeholder='예: 03.12. 학급 도서 담당을 맡음\n날짜와 사실을 한 줄에 하나씩 입력\n최대 3줄';area.addEventListener('input',()=>{if(key==='events'&&area.value.split('\n').length>3){area.value=area.value.split('\n').slice(0,3).join('\n')}s[key]=area.value;grow(area);save()});label.append(area);card.append(label);
+ const buttons=document.createElement('div');buttons.className='phrases';buttons.setAttribute('role','group');buttons.setAttribute('aria-label',title+' 자주 쓰는 문구');phrases[key].forEach(phrase=>{const button=document.createElement('button');button.type='button';button.textContent=phrase;button.setAttribute('aria-controls',area.id);button.addEventListener('click',()=>{const current=area.value.trimEnd();if(key==='events'&&current&&current.split('\n').length>=3){message('올해 특이사항은 최대 3줄입니다. 기존 내용을 수정한 뒤 추가해 주세요.',true);area.focus();return}area.value=current?current+'\n'+phrase:phrase;s[key]=area.value;grow(area);save();area.focus();area.setSelectionRange(area.value.length,area.value.length)});buttons.append(button)});card.append(buttons);if(key==='events'){const hint=document.createElement('p');hint.className='phrase-hint';hint.textContent='실제 날짜와 사실에 맞게 고쳐 주세요. 최대 3줄입니다.';card.append(hint)}
+ });
+ cards.append(card);
+ }updateProgress();requestAnimationFrame(()=>cards.querySelectorAll('textarea').forEach(grow));
+}
+document.getElementById('apply').addEventListener('click',()=>{const n=Number(count.value);if(count.value===''||!Number.isInteger(n)||n<0||n>300){message('학생 수는 0~300 사이의 정수로 입력해 주세요.',true);return}while(state.students.length<n)state.students.push(blank());state.count=n;render();if(save()&&state.students.length>n)message('저장됨 · 줄인 번호의 기록은 보관 중입니다. 학생 수를 다시 늘리면 복원됩니다.')});
+document.getElementById('backup').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='진급_반_인계_백업_'+new Date().toLocaleDateString('sv-SE')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message('백업 파일 다운로드를 요청했습니다. 다운로드 폴더를 확인해 주세요.')});
+document.getElementById('restore').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>10000000)throw Error();const data=JSON.parse(await file.text());if(!valid(data))throw Error();if(!confirm('현재 기록을 백업 파일의 내용으로 바꿉니다. 현재 내용이 필요하면 취소 후 먼저 백업해 주세요. 불러올까요?'))return;state=data;render();save()}catch(err){message('올바른 인계 카드 백업 파일이 아닙니다. 현재 기록은 그대로 유지됩니다.',true)}finally{e.target.value=''}});
+document.getElementById('print').addEventListener('click',()=>window.print());
+window.addEventListener('beforeprint',()=>cards.querySelectorAll('textarea').forEach(grow));
+try{const raw=localStorage.getItem(KEY);if(raw){const loaded=JSON.parse(raw);if(!valid(loaded))throw Error();state=loaded}render();save()}catch(e){render();message('저장된 기록을 읽을 수 없습니다. 백업 파일을 불러오거나 새로 작성한 내용을 백업해 주세요.',true)}
+</script>
+</body>
+</html>

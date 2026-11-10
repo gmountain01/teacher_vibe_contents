@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>문단 번호 읽기판</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f6f8; color: #192330; font-family: "맑은 고딕", sans-serif; }
+    main { max-width: 1080px; margin: 0 auto; padding: 36px 24px 64px; }
+    h1 { margin: 0 0 24px; font-size: 32px; }
+    label { display: block; margin-bottom: 10px; font-size: 20px; font-weight: bold; }
+    .안내 { margin: 0 0 14px; font-size: 18px; line-height: 1.6; }
+    textarea { display: block; width: 100%; min-height: 220px; padding: 18px; border: 1px solid #8994a2; border-radius: 8px; background: white; color: inherit; font: inherit; font-size: 20px; line-height: 1.7; resize: vertical; }
+    textarea:focus { outline: 3px solid #a9cafa; border-color: #245da4; }
+    h2 { margin: 36px 0 16px; font-size: 24px; }
+    .문단 { margin-bottom: 24px; padding: 24px; border: 1px solid #d9dfe6; border-radius: 10px; background: white; }
+    .문단번호 { margin-bottom: 14px; color: #245da4; font-size: 40px; font-weight: bold; }
+    .문장 { display: flex; width: 100%; gap: 18px; margin: 12px 0; padding: 8px 10px; border: 0; border-radius: 6px; background: transparent; color: inherit; font-family: inherit; font-size: 32px; line-height: 1.7; text-align: left; cursor: pointer; }
+    .문장[aria-pressed="true"] { background: #ffeb70; }
+    .문장:focus-visible { outline: 3px solid #245da4; outline-offset: 2px; }
+    .문장번호 { flex: 0 0 auto; min-width: 1.8em; color: #526174; font-weight: bold; }
+    .문장내용 { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .요약이름 { margin: 24px 0 10px; font-size: 20px; }
+    .요약입력 { display: block; width: 100%; padding: 12px 14px; border: 1px solid #8994a2; border-radius: 6px; background: white; color: inherit; font-family: inherit; font-size: 22px; }
+    .요약입력:focus { outline: 3px solid #a9cafa; border-color: #245da4; }
+    .빈안내 { color: #526174; font-size: 22px; line-height: 1.7; }
+    .인쇄버튼 { padding: 12px 20px; border: 0; border-radius: 6px; background: #245da4; color: white; font-family: inherit; font-size: 20px; cursor: pointer; }
+    .인쇄버튼:disabled { background: #687586; cursor: default; }
+    .인쇄버튼:focus-visible { outline: 3px solid #245da4; outline-offset: 3px; }
+    #인쇄영역 { display: none; }
+    @page { size: A4; margin: 16mm; }
+    @media print {
+      body { background: white; color: black; }
+      main { display: none; }
+      #인쇄영역 { display: block; }
+      #인쇄영역 h1 { font-size: 20pt; margin-bottom: 8mm; }
+      .정리표 { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 12pt; line-height: 1.6; }
+      .정리표 th, .정리표 td { border: 1px solid black; padding: 3mm; vertical-align: top; white-space: pre-wrap; overflow-wrap: anywhere; }
+      .정리표 th:first-child { width: 14%; }
+      .정리표 th:nth-child(2), .정리표 th:nth-child(3) { width: 43%; }
+      .정리표 thead { display: table-header-group; }
+      .정리표 tr { break-inside: avoid; }
+    }
+    @media (max-width: 600px) { main { padding: 24px 16px 40px; } .문단 { padding: 18px; } .문장 { font-size: 28px; gap: 10px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>문단 번호 읽기판</h1>
+    <label for="원문">읽을 글</label>
+    <p class="안내" id="입력안내">문장은 한 줄에 하나씩 쓰고, 문단 사이에는 빈 줄을 넣어 주세요. 글을 붙여 넣으면 아래에 번호가 붙습니다.</p>
+    <textarea id="원문" aria-describedby="입력안내" placeholder="첫 번째 문단의 첫 문장입니다.&#10;첫 번째 문단의 둘째 문장입니다.&#10;&#10;두 번째 문단의 첫 문장입니다."></textarea>
+    <h2>번호를 붙인 글</h2>
+    <button type="button" id="표인쇄" class="인쇄버튼" disabled>표로 모아 인쇄하기</button>
+    <p class="안내">문단마다 중심 문장을 하나씩 눌러 주세요. 고른 문장은 노란색으로 표시됩니다.</p>
+    <div id="읽기판"><p class="빈안내">위에 글을 입력해 주세요.</p></div>
+  </main>
+  <section id="인쇄영역" aria-label="문단별 정리표">
+    <h1>문단별 중심 문장과 요약</h1>
+    <table class="정리표">
+      <thead><tr><th scope="col">문단 번호</th><th scope="col">중심 문장</th><th scope="col">한 줄 요약</th></tr></thead>
+      <tbody id="인쇄표본문"></tbody>
+    </table>
+  </section>
+  <script>
+    const 입력 = document.getElementById('원문');
+    const 읽기판 = document.getElementById('읽기판');
+    const 인쇄버튼 = document.getElementById('표인쇄');
+
+    function 인쇄표만들기() {
+      const 표본문 = document.getElementById('인쇄표본문');
+      표본문.replaceChildren();
+      읽기판.querySelectorAll('.문단').forEach(문단 => {
+        const 선택문장 = 문단.querySelector('.문장[aria-pressed="true"] .문장내용');
+        const 행 = document.createElement('tr');
+        const 내용들 = [
+          문단.querySelector('.문단번호').textContent,
+          선택문장 ? 선택문장.textContent : '선택하지 않음',
+          문단.querySelector('.요약입력').value.trim() || '작성하지 않음'
+        ];
+        내용들.forEach(내용 => {
+          const 칸 = document.createElement('td');
+          칸.textContent = 내용;
+          행.append(칸);
+        });
+        표본문.append(행);
+      });
+    }
+
+    인쇄버튼.addEventListener('click', () => {
+      인쇄표만들기();
+      window.print();
+    });
+    window.addEventListener('beforeprint', 인쇄표만들기);
+
+    function 문단번호(번호) {
+      if (번호 <= 20) return String.fromCodePoint(0x2460 + 번호 - 1);
+      if (번호 <= 35) return String.fromCodePoint(0x3251 + 번호 - 21);
+      if (번호 <= 50) return String.fromCodePoint(0x32b1 + 번호 - 36);
+      return 번호 + '⃝';
+    }
+
+    function 보여주기() {
+      const 문단들 = [];
+      let 문장들 = [];
+      for (const 줄 of 입력.value.replace(/\r\n?/g, '\n').split('\n')) {
+        if (줄.trim()) {
+          문장들.push(줄.trim());
+        } else if (문장들.length) {
+          문단들.push(문장들);
+          문장들 = [];
+        }
+      }
+      if (문장들.length) 문단들.push(문장들);
+      인쇄버튼.disabled = 문단들.length === 0;
+      읽기판.replaceChildren();
+      if (!문단들.length) {
+        const 안내 = document.createElement('p');
+        안내.className = '빈안내';
+        안내.textContent = '위에 글을 입력해 주세요.';
+        읽기판.append(안내);
+        return;
+      }
+      문단들.forEach((문장들, 문단순서) => {
+        const 문단 = document.createElement('section');
+        문단.className = '문단';
+        문단.setAttribute('aria-label', (문단순서 + 1) + '번 문단');
+        const 번호 = document.createElement('div');
+        번호.className = '문단번호';
+        번호.textContent = 문단번호(문단순서 + 1);
+        문단.append(번호);
+        let 선택문장 = null;
+        문장들.forEach((내용, 문장순서) => {
+          const 문장 = document.createElement('button');
+          문장.type = 'button';
+          문장.className = '문장';
+          문장.setAttribute('aria-pressed', 'false');
+          문장.addEventListener('click', () => {
+            if (선택문장) 선택문장.setAttribute('aria-pressed', 'false');
+            문장.setAttribute('aria-pressed', 'true');
+            선택문장 = 문장;
+          });
+          const 번호 = document.createElement('span');
+          번호.className = '문장번호';
+          번호.textContent = String(문장순서 + 1);
+          const 글 = document.createElement('span');
+          글.className = '문장내용';
+          글.textContent = 내용;
+          문장.append(번호, 글);
+          문단.append(문장);
+        });
+        const 요약이름 = document.createElement('label');
+        요약이름.className = '요약이름';
+        요약이름.htmlFor = '문단요약-' + 문단순서;
+        요약이름.textContent = '한 줄 요약';
+        const 요약입력 = document.createElement('input');
+        요약입력.type = 'text';
+        요약입력.id = 요약이름.htmlFor;
+        요약입력.className = '요약입력';
+        요약입력.placeholder = '이 문단의 내용을 한 줄로 요약해 주세요.';
+        문단.append(요약이름, 요약입력);
+        읽기판.append(문단);
+      });
+    }
+    입력.addEventListener('input', 보여주기);
+  </script>
+</body>
+</html>

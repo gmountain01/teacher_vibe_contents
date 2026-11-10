@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>단원 끝, 나의 배움 기록</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f3f6fb;color:#25314b;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6}main{max-width:620px;margin:auto;padding:28px 20px 40px}.preview{display:inline-block;padding:7px 12px;border:1px solid #d9c794;border-radius:30px;background:#fff8e5;color:#796022;font-size:12px;font-weight:700}.eyebrow{margin:28px 0 6px;color:#5969ad;font-size:13px;font-weight:750;letter-spacing:.08em}h1{margin:0;font-size:29px;letter-spacing:-1.2px;line-height:1.35}.intro{margin:12px 0 24px;color:#64708a;font-size:14px}.card{padding:24px;background:white;border:1px solid #e4e9f2;border-radius:22px;box-shadow:0 8px 28px #24386206}.section-title{margin:0 0 20px;font-size:17px}.field{margin-bottom:22px}label,legend{display:block;margin-bottom:8px;font-size:14px;font-weight:700}input,textarea{width:100%;padding:13px 14px;border:1px solid #d7deeb;border-radius:11px;background:#fff;color:#25314b;font:inherit;font-size:16px}textarea{min-height:108px;resize:vertical}input:focus,textarea:focus{outline:3px solid #e1e6ff;border-color:#6976ca}input::placeholder,textarea::placeholder{color:#9aa3b6}fieldset{padding:0;border:0;margin:0 0 24px}.scores{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.score{position:relative;margin:0;text-align:center;cursor:pointer}.score input{position:absolute;opacity:0;width:1px;height:1px}.score span{display:flex;align-items:center;justify-content:center;min-height:53px;border:1px solid #d7deeb;border-radius:12px;font-size:18px;background:#fafbfe}.score input:checked+span{color:#fff;background:#596ac5;border-color:#596ac5;box-shadow:0 3px 10px #596ac52b}.score input:focus-visible+span{outline:3px solid #b7c3ff}.scale{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#7b8599}.divider{height:1px;background:#edf0f6;margin:26px 0}.hint{font-size:12px;color:#7b8599;margin:6px 0 0}.required{font-size:12px;color:#7b8599;font-weight:400}button{width:100%;min-height:52px;padding:13px;border:0;border-radius:12px;background:#596ac5;color:#fff;font:inherit;font-weight:700;cursor:pointer}button:hover{background:#4859b3}.footnote{text-align:center;color:#7b8599;font-size:12px;margin:13px 0 0}.complete{text-align:center}.check{display:grid;place-items:center;width:64px;height:64px;margin:4px auto 18px;border-radius:50%;background:#edf5ef;color:#43815a;font-size:30px}.complete h2{margin:0;font-size:24px}.complete p{color:#64708a;font-size:14px}.summary{text-align:left;background:#f6f8fc;border-radius:12px;padding:16px;margin:24px 0}dl{margin:0}dt{font-size:12px;color:#7b8599;margin-top:14px}dt:first-child{margin-top:0}dd{margin:3px 0 0;overflow-wrap:anywhere;white-space:pre-wrap;font-size:14px}[hidden]{display:none!important}@media(max-width:400px){main{padding:20px 16px 32px}.card{padding:20px}h1{font-size:26px}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="preview" id="mode">미리보기 · 실제로 제출되지 않음</div>
+  <header>
+    <p class="eyebrow">MY LEARNING NOTE</p>
+    <h1>단원 끝,<br>나의 배움 기록</h1>
+    <p class="intro">이번 단원에서 배운 나를 돌아보세요.<br>솔직한 기록이 다음 배움의 시작이 됩니다.</p>
+  </header>
+  <section class="card" id="entry">
+    <h2 class="section-title">나의 자기평가 <span class="required">모든 항목 필수</span></h2>
+    <form id="evaluation">
+      <div class="field"><label for="student">학번</label><input id="student" name="student" inputmode="numeric" autocomplete="off" placeholder="예: 20315" required maxlength="30"></div>
+      <div class="field"><label for="subject">과목명</label><input id="subject" name="subject" value="과학" placeholder="예: 과학" required maxlength="80"></div>
+      <div class="field"><label for="unit">단원명</label><input id="unit" name="unit" value="생물과 환경" placeholder="예: 생물과 환경" required maxlength="120"><p class="hint">과목과 단원은 예시입니다. 자유롭게 바꿔 보세요.</p></div>
+      <fieldset><legend>이번 단원을 얼마나 이해했나요?</legend><div class="scores">
+        <label class="score"><input type="radio" name="understanding" value="1" required aria-label="이해도 1점"><span>1</span></label>
+        <label class="score"><input type="radio" name="understanding" value="2" aria-label="이해도 2점"><span>2</span></label>
+        <label class="score"><input type="radio" name="understanding" value="3" aria-label="이해도 3점"><span>3</span></label>
+        <label class="score"><input type="radio" name="understanding" value="4" aria-label="이해도 4점"><span>4</span></label>
+        <label class="score"><input type="radio" name="understanding" value="5" aria-label="이해도 5점"><span>5</span></label>
+      </div><div class="scale"><span>1점 · 아직 어려워요</span><span>5점 · 잘 설명할 수 있어요</span></div></fieldset>
+      <div class="divider"></div>
+      <div class="field"><label for="best">가장 잘한 점</label><textarea id="best" name="best" placeholder="예: 모둠 활동에서 내 생각을 근거와 함께 설명했어요." required maxlength="2000"></textarea></div>
+      <div class="field"><label for="hard">어려웠던 점</label><textarea id="hard" name="hard" placeholder="예: 먹이 그물과 먹이 사슬의 차이가 헷갈렸어요." required maxlength="2000"></textarea></div>
+      <div class="field"><label for="goal">다음 학습 목표</label><textarea id="goal" name="goal" placeholder="예: 헷갈린 개념을 그림으로 정리하고 친구에게 설명해 볼 거예요." required maxlength="2000"></textarea></div>
+      <p id="status" role="status" aria-live="polite"></p><button type="submit" id="submit">자기평가 제출하기 →</button>
+      <p class="footnote" id="notice">로컬 미리보기에서는 실제 제출되지 않습니다.</p>
+    </form>
+  </section>
+  <section class="card complete" id="done" hidden aria-labelledby="done-title" tabindex="-1">
+    <div class="check" aria-hidden="true">✓</div>
+    <h2 id="done-title">배움 기록을 마쳤어요!</h2>
+    <p>나의 성장을 돌아본 시간을 응원해요.<br><span id="result-description">아래는 제출 완료 화면의 예시입니다.</span></p>
+    <div class="summary"><dl id="summary"></dl></div>
+    <p id="result-notice">미리보기 · 실제로 제출되지 않음</p>
+    <button type="button" id="edit">새 자기평가 작성하기</button>
+  </section>
+</main>
+<script>
+  const form=document.getElementById('evaluation');
+  const entry=document.getElementById('entry');
+  const done=document.getElementById('done');
+  const status=document.getElementById('status');
+  const button=document.getElementById('submit');
+  const live=typeof google!=='undefined' && google.script && google.script.run;
+  let busy=false, pending=null;
+  if(live){
+    document.getElementById('mode').textContent='구글 시트 제출';
+    document.getElementById('notice').textContent='제출하면 선생님의 구글 시트에 저장됩니다.';
+  }
+  function unlock(){
+    busy=false;
+    for(const element of form.elements) element.disabled=false;
+    form.removeAttribute('aria-busy');
+  }
+  function failure(error){
+    unlock();status.style.color='#b32f3d';
+    status.textContent='실패 · 저장을 확인하지 못했어요. 입력 내용은 그대로입니다. 연결을 확인하고 다시 보내 주세요.';
+    if(error && error.message) status.textContent+=' '+error.message;
+    button.textContent='다시 보내기';
+  }
+  function success(result,payload){
+    if(!result || result.ok!==true){failure();return;}
+    unlock();
+    const summary=document.getElementById('summary');summary.replaceChildren();
+    for(const [key,title] of [['student','학번'],['subject','과목명'],['unit','단원명'],['understanding','이해도'],['best','가장 잘한 점'],['hard','어려웠던 점'],['goal','다음 학습 목표']]){
+      const term=document.createElement('dt');term.textContent=title;
+      const detail=document.createElement('dd');detail.textContent=payload[key]+(key==='understanding'?' / 5점':'');summary.append(term,detail);
+    }
+    document.getElementById('done-title').textContent=live?'성공 · 구글 시트에 저장했어요!':'미리보기 제출을 마쳤어요!';
+    document.getElementById('result-description').textContent=live?'자기평가가 선생님께 전달되었어요.':'아래는 제출 완료 화면의 예시입니다.';
+    document.getElementById('result-notice').textContent=live?'제출한 기록은 구글 시트에 저장되었습니다.':'미리보기 · 실제로 제출되지 않음';
+    pending=null;entry.hidden=true;done.hidden=false;done.focus();window.scrollTo({top:0,behavior:'smooth'});
+  }
+  form.addEventListener('submit',event=>{
+    event.preventDefault();if(busy)return;
+    for(const field of form.querySelectorAll('input:not([type=radio]),textarea')){
+      if(!field.value.trim()){field.setCustomValidity('내용을 입력해 주세요.');field.reportValidity();return;}
+    }
+    const payload=Object.fromEntries(new FormData(form));
+    const signature=JSON.stringify(payload);
+    if(!pending || pending.signature!==signature){
+      pending={signature,id:typeof crypto.randomUUID==='function'?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)};
+    }
+    payload.requestId=pending.id;
+    busy=true;form.setAttribute('aria-busy','true');
+    for(const element of form.elements) element.disabled=true;
+    status.style.color='#596ac5';status.textContent=live?'전송 중 · 저장 결과를 확인하고 있어요…':'미리보기 제출 중…';
+    button.textContent='제출 중…';
+    if(!live){success({ok:true},payload);return;}
+    try{
+      google.script.run.withSuccessHandler(result=>success(result,payload)).withFailureHandler(failure).submitEvaluation(payload);
+    }catch(error){failure();}
+  });
+  form.addEventListener('input',event=>event.target.setCustomValidity(''));
+  document.getElementById('edit').addEventListener('click',()=>{
+    form.reset();status.textContent='';button.textContent='자기평가 제출하기 →';
+    done.hidden=true;entry.hidden=false;document.getElementById('student').focus();
+  });
+</script>
+</body>
+</html>

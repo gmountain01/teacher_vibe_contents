@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 사용 내역 카드</title>
+  <style>
+    :root { font-family: "맑은 고딕", "Apple SD Gothic Neo", sans-serif; color: #233832; background: #f3f5f1; font-synthesis: none; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { max-width: 1160px; margin: auto; padding: 48px 28px 64px; }
+    .eyebrow { margin: 0 0 12px; color: #537766; font-size: 13px; font-weight: 700; letter-spacing: .08em; }
+    h1 { margin: 0; font-size: clamp(28px, 4vw, 38px); letter-spacing: -.05em; }
+    .intro { margin: 14px 0 34px; color: #63716a; font-size: 15px; line-height: 1.8; }
+    .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+    .panel { background: #fff; border: 1px solid #dde4dc; border-radius: 18px; padding: 28px; }
+    h2 { margin: 0 0 24px; font-size: 19px; letter-spacing: -.03em; }
+    .field { margin-bottom: 22px; }
+    label, legend { display: block; margin-bottom: 9px; font-size: 14px; font-weight: 700; }
+    input[type="text"], textarea { width: 100%; border: 1px solid #cad5cd; border-radius: 9px; padding: 12px 13px; font: inherit; font-size: 14px; color: #233832; background: #fff; }
+    textarea { min-height: 90px; resize: vertical; line-height: 1.7; }
+    input::placeholder, textarea::placeholder { color: #89958e; }
+    input:focus-visible, textarea:focus-visible { outline: 3px solid #c4dfcf; border-color: #46765b; }
+    fieldset { border: 0; margin: 0 0 24px; padding: 0; min-width: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: 10px; }
+    .choice { display: flex; align-items: center; gap: 8px; margin: 0; padding: 12px 15px; border: 1px solid #d9e1da; border-radius: 9px; cursor: pointer; font-weight: 400; }
+    .choice:has(input:checked) { background: #edf5ee; border-color: #60896d; }
+    input[type="radio"] { accent-color: #386349; width: 16px; height: 16px; margin: 0; }
+    .help { margin: -3px 0 10px; color: #758078; font-size: 12px; line-height: 1.6; }
+    .field:last-child { margin-bottom: 0; }
+    [hidden] { display: none !important; }
+    .preview { position: sticky; top: 28px; }
+    .preview-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+    .preview-heading h2 { margin: 0; font-size: 15px; }
+    .preview-heading span { color: #748078; font-size: 12px; }
+    .card { background: #fff; border: 1px solid #ccd9ce; border-top: 6px solid #466d54; border-radius: 4px 4px 14px 14px; padding: 30px; box-shadow: 0 12px 30px #23383208; }
+    .card h3 { font-size: 26px; margin: 0 0 24px; letter-spacing: -.04em; }
+    .identity { display: grid; grid-template-columns: 1fr 1.5fr; gap: 18px; padding-bottom: 22px; border-bottom: 1px solid #e1e7e0; }
+    .caption { display: block; color: #6c7d70; font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+    .value { margin: 0; font-size: 15px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .empty { color: #97a198; font-weight: 400; }
+    .status { display: inline-block; margin: 22px 0 0; background: #eff4ee; color: #45654e; border-radius: 6px; padding: 8px 12px; font-size: 13px; }
+    .entry { margin-top: 24px; }
+    .entry .caption { margin-bottom: 7px; }
+    .unselected { margin: 22px 0 0; font-size: 14px; color: #8a958c; line-height: 1.8; }
+    @media (max-width: 760px) { main { padding: 28px 18px 40px; } .layout { grid-template-columns: 1fr; gap: 26px; } .panel, .card { padding: 23px; } .preview { position: static; } }
+    .print-button { margin-top: 18px; border: 0; border-radius: 9px; background: #386349; color: #fff; padding: 13px 20px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .print-button:hover { background: #294e36; }
+    .print-button:focus-visible { outline: 3px solid #a7cbb5; outline-offset: 3px; }
+    #print-sheet { display: none; }
+    #print-sheet.measuring { display: grid; position: absolute; top: 0; left: 0; visibility: hidden; }
+    #print-sheet { width: 190mm; height: 276mm; grid-template-columns: repeat(2, 92mm); grid-template-rows: repeat(2, 135mm); gap: 6mm; }
+    .print-slot { border: 1px solid #6c7d70; overflow: hidden; }
+    #print-sheet .card { width: calc(92mm - 2px); padding: 5mm; border: 0; border-top: 1.2mm solid #466d54; border-radius: 0; box-shadow: none; transform-origin: top left; }
+    #print-sheet .card h3 { font-size: 17px; margin-bottom: 12px; }
+    #print-sheet .identity { gap: 10px; padding-bottom: 10px; }
+    #print-sheet .caption { font-size: 10px; margin-bottom: 4px; }
+    #print-sheet .value { font-size: 12px; line-height: 1.6; }
+    #print-sheet .status { font-size: 11px; margin-top: 10px; padding: 5px 8px; }
+    #print-sheet .entry { margin-top: 12px; }
+    #print-sheet .unselected { font-size: 12px; margin-top: 12px; }
+    @page { size: A4 portrait; margin: 10mm; }
+    @media print {
+      :root, body { background: #fff; }
+      body > main { display: none !important; }
+      #print-sheet, #print-sheet.measuring { display: grid; position: static; visibility: visible; }
+      #print-sheet { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">나의 과제 · 나의 기록</p>
+    <h1>AI 사용 내역 카드</h1>
+    <p class="intro">과제를 하며 AI를 어떻게 활용했는지 적어 보세요.<br>입력한 내용이 옆의 카드에 바로 담깁니다.</p>
+    <div class="layout">
+      <section class="panel" aria-labelledby="form-title">
+        <h2 id="form-title">사용 내역 적기</h2>
+        <form autocomplete="off" onsubmit="return false">
+          <div class="field"><label for="student">이름</label><input id="student" type="text" placeholder="이름을 적어 주세요"></div>
+          <div class="field"><label for="assignment">과제 이름</label><input id="assignment" type="text" placeholder="어떤 과제인가요?"></div>
+          <fieldset>
+            <legend>이 과제에 AI를 사용했나요?</legend>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="used" value="yes">사용했어요</label>
+              <label class="choice"><input type="radio" name="used" value="no">사용하지 않았어요</label>
+            </div>
+          </fieldset>
+          <div id="details" hidden>
+            <div class="field"><label for="ai">어떤 AI를 사용했나요?</label><input id="ai" type="text" placeholder="사용한 AI 이름을 적어 주세요"></div>
+            <div class="field"><label for="question">무엇을 물어보았나요?</label><textarea id="question" placeholder="AI에게 한 질문이나 요청을 적어 주세요"></textarea></div>
+            <div class="field"><label for="unchanged">그대로 쓴 것은 무엇인가요?</label><p class="help">그대로 쓴 내용이 없다면 ‘없음’이라고 적어 주세요.</p><textarea id="unchanged" placeholder="AI의 답변 중 그대로 사용한 부분"></textarea></div>
+            <div class="field"><label for="edited">내가 고친 것은 무엇인가요?</label><p class="help">고친 내용이 없다면 ‘없음’이라고 적어 주세요.</p><textarea id="edited" placeholder="내가 수정하거나 보완한 부분"></textarea></div>
+          </div>
+        </form>
+      </section>
+      <section class="preview" aria-labelledby="preview-title">
+        <div class="preview-heading"><h2 id="preview-title">과제에 붙일 카드</h2><span>입력하면 바로 반영돼요</span></div>
+        <article class="card" aria-label="AI 사용 내역 카드 미리보기">
+          <h3>AI 사용 내역 카드</h3>
+          <div class="identity">
+            <div><span class="caption">이름</span><p id="out-student" class="value empty">이름</p></div>
+            <div><span class="caption">과제 이름</span><p id="out-assignment" class="value empty">과제 이름</p></div>
+          </div>
+          <p id="status" class="status" hidden></p>
+          <p id="prompt" class="unselected">AI 사용 여부를 선택해 주세요.</p>
+          <div id="card-details" hidden>
+            <div class="entry"><span class="caption">사용한 AI</span><p id="out-ai" class="value empty">아직 적지 않았어요.</p></div>
+            <div class="entry"><span class="caption">AI에게 물어본 내용</span><p id="out-question" class="value empty">아직 적지 않았어요.</p></div>
+            <div class="entry"><span class="caption">그대로 쓴 내용</span><p id="out-unchanged" class="value empty">아직 적지 않았어요.</p></div>
+            <div class="entry"><span class="caption">내가 고친 내용</span><p id="out-edited" class="value empty">아직 적지 않았어요.</p></div>
+          </div>
+        </article>
+        <button type="button" class="print-button" id="print-button">카드만 인쇄하기 · 한 장에 4장</button>
+      </section>
+    </div>
+  </main>
+  <div id="print-sheet" aria-hidden="true"></div>
+  <script>
+    function preparePrint() {
+      const sheet = document.getElementById('print-sheet');
+      sheet.replaceChildren();
+      sheet.classList.add('measuring');
+      for (let i = 0; i < 4; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'print-slot';
+        const card = document.querySelector('.preview .card').cloneNode(true);
+        card.removeAttribute('aria-label');
+        card.querySelectorAll('[id]').forEach(element => element.removeAttribute('id'));
+        slot.append(card);
+        sheet.append(slot);
+        // 긴 내용도 잘리지 않도록 카드 전체를 인쇄 영역 안에 맞춥니다.
+        const scale = Math.min(1, slot.clientHeight / card.getBoundingClientRect().height);
+        card.style.transform = `scale(${scale})`;
+      }
+      sheet.classList.remove('measuring');
+    }
+    window.addEventListener('beforeprint', preparePrint);
+    document.getElementById('print-button').addEventListener('click', () => window.print());
+    const fields = ['student', 'assignment', 'ai', 'question', 'unchanged', 'edited'];
+    const placeholders = { student: '이름', assignment: '과제 이름' };
+    fields.forEach(id => {
+      const input = document.getElementById(id);
+      const output = document.getElementById('out-' + id);
+      input.addEventListener('input', () => {
+        const value = input.value.trim();
+        output.textContent = value || placeholders[id] || '아직 적지 않았어요.';
+        output.classList.toggle('empty', !value);
+      });
+    });
+    document.querySelectorAll('input[name="used"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        const used = radio.value === 'yes';
+        document.getElementById('details').hidden = !used;
+        document.getElementById('card-details').hidden = !used;
+        document.getElementById('prompt').hidden = true;
+        const status = document.getElementById('status');
+        status.hidden = false;
+        status.textContent = used ? 'AI를 사용했어요' : 'AI를 사용하지 않았어요';
+      });
+    });
+  </script>
+</body>
+</html>

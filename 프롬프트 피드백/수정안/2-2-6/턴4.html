@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>청소 구역 점검판</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fb;color:#24324a;font-family:"맑은 고딕",sans-serif}main{max-width:1000px;margin:0 auto;padding:44px 24px}header{text-align:center}h1{margin:0 0 12px;font-size:32px}header p{color:#65738a;margin:0 0 30px}.controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:28px}button{font:inherit;cursor:pointer;border:1px solid #d6deea;background:white;color:#46546d;padding:13px 20px;border-radius:12px;font-weight:700}button[aria-pressed="true"]{background:#315cce;color:white;border-color:#315cce;box-shadow:0 4px 12px #315cce25}button:focus-visible{outline:3px solid #ebae37;outline-offset:3px}.card{background:white;border:1px solid #e1e7f0;border-radius:24px;padding:28px;box-shadow:0 10px 35px #24324a08}.room-top{display:flex;justify-content:center;margin-bottom:20px}.board{background:#344e49;color:#fff;border:5px solid #c2ad88;border-radius:5px;padding:10px;width:50%;text-align:center;letter-spacing:8px}.layout{display:grid;grid-template-columns:30px 1fr 30px;gap:12px;align-items:stretch}.side{display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;color:#748299;letter-spacing:8px;font-size:14px}.windows{border-left:5px solid #b9d8f5}.corridor{border-right:5px solid #d9dfe8}.room{display:grid;gap:10px;min-height:450px;border:2px solid #d3dce9;border-radius:14px;padding:12px;background:#fafbfd}.zone{border:1px solid #00000012;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;min-height:120px;text-align:center;padding:12px;color:#26364e}.zone strong{font-size:21px}.zone span{font-size:13px;opacity:.75}.room-bottom{text-align:center;font-size:13px;color:#748299;margin-top:16px}.legend{text-align:center;color:#65738a;font-size:14px;margin:24px 0 0}.status{display:inline-block;background:#edf2fc;border-radius:20px;padding:7px 15px;color:#315cce;margin-bottom:18px;font-size:13px;font-weight:700}@media(max-width:600px){main{padding:28px 14px}h1{font-size:26px}.card{padding:18px 10px}.layout{grid-template-columns:18px 1fr 18px;gap:5px}.room{min-height:390px;gap:6px;padding:7px}.zone{padding:6px}.zone strong{font-size:16px}.zone span{font-size:11px}button{padding:12px 13px;font-size:13px}.board{width:65%}}
+.zone .students{font-size:clamp(22px,3vw,34px);font-weight:800;opacity:1;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.4}.zone .hint{font-size:12px;font-weight:400}.outside{margin-top:24px}.outside h2{font-size:20px;margin:0 0 14px}.add-form{display:flex;gap:10px;margin-bottom:16px}.add-form input{flex:1;min-width:0;padding:12px;border:1px solid #cbd5e3;border-radius:10px;font:inherit}.outside-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}.outside-empty{font-size:14px;color:#748299}.zone:hover{box-shadow:0 3px 12px #24324a18}.instructions{text-align:center;color:#65738a;font-size:14px}
+.progress{text-align:center;font-size:36px;font-weight:800;color:#225b48;margin:20px}.zone-wrap{display:flex;flex-direction:column;gap:5px;min-width:0}.zone-wrap .zone{width:100%;flex:1}.zone.done{background:#b9ebcd!important;border:2px solid #389665}.zone time{font-size:12px}.edit-button{padding:5px;font-size:12px}.history{margin-top:24px}.history li{margin:8px 0;overflow-wrap:anywhere}
+.zone.done{background:#fff0b8!important;border:2px solid #d9ae36}.zone.pass{background:#b9ebcd!important;border:2px solid #389665}.zone.retry{background:#ffd0d0!important;border:2px solid #d44d4d}.review-controls{display:flex;gap:6px}.review-controls button{flex:1;padding:8px;font-size:14px}.pass-button{color:#16723c}.retry-button{color:#b32323}.teacher-note{text-align:center;color:#65738a}#print-sheet{display:none}#print-sheet table{width:100%;border-collapse:collapse;table-layout:fixed}#print-sheet th,#print-sheet td{border:1px solid #555;padding:7px;overflow-wrap:anywhere}#print-sheet th:first-child{width:55%}#print-sheet h1{font-size:22px}#print-sheet p{font-size:12px}@page{size:A4 portrait;margin:12mm}@media print{html,body{background:white;margin:0;padding:0}body>main{display:none!important}#print-sheet{display:block!important;width:700px;color:#000;font-size:13px;transform-origin:top left}#print-sheet tr{break-inside:avoid}}
+</style>
+</head>
+<body>
+<main>
+<header><div class="status">우리 반을 깨끗하게</div><h1>청소 구역 점검판</h1><p>분할 방식을 선택해 우리 교실의 청소 구역을 나누어 보세요.</p></header>
+<div id="progress" class="progress" role="status"></div><p id="save-message" hidden></p>
+<div class="controls"><button id="teacher" type="button" aria-pressed="false">선생님</button><button id="print" type="button">인쇄</button></div>
+<p id="teacher-note" class="teacher-note">학생 모드 · 구역을 눌러 청소 완료를 알려 주세요.</p>
+<nav class="controls" aria-label="청소 구역 분할 방식">
+<button type="button" data-mode="rows" aria-pressed="true">앞, 중간, 뒤 3분할</button>
+<button type="button" data-mode="cols" aria-pressed="false">창가, 가운데, 복도 3분할</button>
+<button type="button" data-mode="six" aria-pressed="false">6분할</button>
+</nav>
+<section class="card" aria-label="교실 평면도">
+<div class="room-top"><div class="board">칠판 · 앞</div></div>
+<div class="layout"><div class="side windows">창가</div><div id="room" class="room" aria-live="polite"></div><div class="side corridor">복도</div></div>
+<div class="room-bottom">교실 뒤</div>
+</section>
+<p class="legend" id="description"></p>
+<p class="instructions">자기 구역을 누르면 청소 끝! 이름은 칸 아래의 담당 수정 버튼으로 입력하세요.</p>
+<section class="card outside" aria-labelledby="outside-title">
+<h2 id="outside-title">교실 밖 청소 구역</h2>
+<form id="add-outside" class="add-form">
+<input id="outside-name" aria-label="추가할 교실 밖 구역 이름" placeholder="구역 이름 (예: 복도, 신발장)" maxlength="60" required>
+<button type="submit">구역 추가</button>
+</form>
+<div id="outside-grid" class="outside-grid" aria-live="polite"></div>
+<p id="outside-empty" class="outside-empty">구역 이름을 적어 추가해 주세요.</p>
+</section>
+<details class="card history"><summary>지난 청소 기록</summary><div id="history"></div></details>
+</main>
+<section id="print-sheet" aria-label="최근 5일 구역별 점검 집계"></section>
+<script>
+const colors=['#dcecfb','#e0f2e5','#fff0cf','#fce0e3','#e9e2fa','#d8f1f1'];
+const room=document.getElementById('room');
+function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+let state={date:today(),mode:'rows',assignments:{rows:[],cols:[],six:[]},outside:[],completed:{},history:{}};
+try{const saved=JSON.parse(localStorage.getItem('cleaning-board'));if(saved)state=saved}catch(e){}
+const assignments=state.assignments;
+const outsideZones=state.outside;
+state.judgments=state.judgments||{};state.zoneCatalog=state.zoneCatalog||{};
+let teacherMode=false;
+function save(){try{localStorage.setItem('cleaning-board',JSON.stringify(state))}catch(e){const message=document.getElementById('save-message');message.hidden=false;message.textContent='브라우저 저장을 사용할 수 없어 현재 화면에서만 기록이 유지됩니다.'}}
+function timeText(t){return new Date(t).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})}
+function rollover(){if(state.date===today())return false;state.history[state.date]={zones:state.currentZones||[],completed:{...state.completed},judgments:{...state.judgments}};state.date=today();state.completed={};state.judgments={};save();return true}
+let zoneIndex=0;
+function makeZone(name,students,color,onEdit){
+ const id=zoneIndex<100?`${state.mode}-${zoneIndex++}`:`outside-${zoneIndex++-100}`;
+ const wrap=document.createElement('div');wrap.className='zone-wrap';
+ const zone=document.createElement('button');zone.type='button';zone.className='zone';zone.style.background=color;
+ const title=document.createElement('strong');title.textContent=name;
+ const people=document.createElement('span');people.className='students';people.textContent=students||'담당 미지정';
+ const done=state.completed[id];
+ const judgment=state.judgments[id];
+ const hint=document.createElement('span');hint.className='hint';hint.textContent=judgment?(judgment.status==='pass'?'✓ 통과':'↻ 다시'):done?'✓ 청소 끝 · 선생님 확인 대기':'눌러서 청소 완료';
+ if(done)zone.classList.add('done');
+ if(judgment)zone.classList.add(judgment.status);
+ zone.setAttribute('aria-label',`${name}, 담당 학생: ${students||'미지정'}, ${hint.textContent}`);
+ zone.append(title,people,hint);
+ if(done){const time=document.createElement('time');time.dateTime=done;time.textContent=`완료 ${timeText(done)}`;zone.append(time)}
+ if(judgment){const time=document.createElement('time');time.dateTime=judgment.at;time.textContent=`점검 ${timeText(judgment.at)}`;zone.append(time)}
+ zone.addEventListener('click',()=>{rollover();if(!teacherMode){if(!state.completed[id])state.completed[id]=new Date().toISOString()}save();render(state.mode)});
+ const edit=document.createElement('button');edit.type='button';edit.className='edit-button';edit.textContent='담당 수정';edit.setAttribute('aria-label',`${name} 담당 수정`);edit.addEventListener('click',onEdit);
+ wrap.append(zone,edit);
+ if(teacherMode){const controls=document.createElement('div');controls.className='review-controls';[['pass','통과'],['retry','다시']].forEach(([status,label])=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.className=status+'-button';button.setAttribute('aria-label',`${name} ${label}`);button.setAttribute('aria-pressed',String(judgment?.status===status));button.addEventListener('click',()=>{if(!teacherMode)return;rollover();state.judgments[id]={status,at:new Date().toISOString()};state.zoneCatalog[id]={name,students:students||''};save();render(state.mode)});controls.append(button)});wrap.append(controls)}
+ return wrap;
+}
+function editStudents(name,current,save){
+ const value=window.prompt(`${name} 담당 학생 이름을 입력하세요.\n여러 명은 쉼표로 구분해 주세요.`,current||'');
+ if(value!==null){rollover();save(value.trim());}
+}
+function render(mode){
+ rollover();state.mode=mode;zoneIndex=0;
+ const names=mode==='rows'?['앞 구역','중간 구역','뒤 구역']:mode==='cols'?['창가 구역','가운데 구역','복도 구역']:['앞 · 창가 쪽','앞 · 복도 쪽','중간 · 창가 쪽','중간 · 복도 쪽','뒤 · 창가 쪽','뒤 · 복도 쪽'];
+ room.style.gridTemplateColumns=mode==='rows'?'1fr':mode==='cols'?'repeat(3, 1fr)':'repeat(2, 1fr)';
+ room.style.gridTemplateRows=mode==='cols'?'1fr':'repeat(3, 1fr)';
+ room.replaceChildren(...names.map((name,i)=>makeZone(name,assignments[mode][i],colors[i],()=>editStudents(name,assignments[mode][i],value=>{assignments[mode][i]=value;render(mode)}))));
+ document.querySelectorAll('[data-mode]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.mode===mode)));
+ document.getElementById('description').textContent=mode==='six'?'앞·중간·뒤를 창가 쪽과 복도 쪽으로 나눈 6개 구역입니다.':mode==='rows'?'칠판을 기준으로 앞, 중간, 뒤의 3개 구역입니다.':'창가에서 복도 방향으로 나눈 3개 구역입니다.';
+ state.currentZones=names.map((name,i)=>({id:`${mode}-${i}`,name,students:assignments[mode][i]||''})).concat(outsideZones.map((item,i)=>({id:`outside-${i}`,name:item.name,students:item.students})));
+ state.currentZones.forEach(z=>{state.zoneCatalog[z.id]={name:z.name,students:z.students}});
+ renderOutside();
+ document.getElementById('progress').textContent=`오늘 ${state.currentZones.filter(z=>state.completed[z.id]).length}/${state.currentZones.length} 구역 완료`;
+ renderHistory();save();
+}
+document.querySelectorAll('[data-mode]').forEach(button=>button.addEventListener('click',()=>render(button.dataset.mode)));
+function renderOutside(){
+ zoneIndex=100;
+ document.getElementById('outside-grid').replaceChildren(...outsideZones.map((item,i)=>makeZone(item.name,item.students,colors[i%colors.length],()=>editStudents(item.name,item.students,value=>{item.students=value;render(state.mode)}))));
+ document.getElementById('outside-empty').hidden=outsideZones.length>0;
+}
+document.getElementById('add-outside').addEventListener('submit',event=>{
+ event.preventDefault();const input=document.getElementById('outside-name');const name=input.value.trim();
+ if(!name){input.value='';input.reportValidity();return}
+ rollover();outsideZones.push({name,students:''});input.value='';render(state.mode);input.focus();
+});
+function renderHistory(){
+ const container=document.getElementById('history');container.replaceChildren();
+ const dates=Object.keys(state.history).sort().reverse();
+ if(!dates.length)container.textContent='날짜가 바뀌면 지난 기록이 여기에 보관됩니다.';
+ dates.forEach(date=>{const record=state.history[date];const article=document.createElement('article');const heading=document.createElement('h3');heading.textContent=`${date} · ${record.zones.filter(z=>record.completed[z.id]).length}/${record.zones.length} 구역 완료`;const list=document.createElement('ul');const zones=new Map(record.zones.map(z=>[z.id,z]));Object.keys(record.judgments||{}).forEach(id=>{if(!zones.has(id))zones.set(id,{id,...state.zoneCatalog[id]})});zones.forEach(z=>{const li=document.createElement('li');const j=record.judgments?.[z.id];li.textContent=`${z.name} / ${z.students||'담당 미지정'} — ${j?(j.status==='pass'?'통과':'다시')+' · '+timeText(j.at):record.completed[z.id]?'청소 끝 · '+timeText(record.completed[z.id]):'미완료'}`;list.append(li)});article.append(heading,list);container.append(article)});
+}
+document.getElementById('teacher').addEventListener('click',()=>{teacherMode=!teacherMode;document.getElementById('teacher').setAttribute('aria-pressed',String(teacherMode));document.getElementById('teacher').textContent=teacherMode?'선생님 · 켜짐':'선생님';document.getElementById('teacher-note').textContent=teacherMode?'선생님 모드 · 각 구역 아래에서 통과 또는 다시를 선택하세요.':'학생 모드 · 구역을 눌러 청소 완료를 알려 주세요.';render(state.mode)});
+function buildPrint(){
+ if(rollover())render(state.mode);
+ const dates=[];for(let i=4;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);dates.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)}
+ const counts=new Map();const add=id=>{if(!counts.has(id))counts.set(id,{name:state.zoneCatalog[id]?.name||id,pass:0,retry:0})};
+ state.currentZones.forEach(z=>add(z.id));
+ dates.forEach(date=>{const record=date===state.date?{zones:state.currentZones,judgments:state.judgments}:state.history[date];if(!record)return;record.zones.forEach(z=>{add(z.id);counts.get(z.id).name=z.name});Object.entries(record.judgments||{}).forEach(([id,j])=>{add(id);if(j.status==='pass'||j.status==='retry')counts.get(id)[j.status]++})});
+ const sheet=document.getElementById('print-sheet');sheet.replaceChildren();sheet.style.zoom='1';const heading=document.createElement('h1');heading.textContent='구역별 청소 점검 집계';const note=document.createElement('p');note.textContent=`${dates[0]} ~ ${dates[4]} (오늘 포함 5일) · 하루 마지막 판정 1회 집계 · 점검 없는 날 제외`;
+ const table=document.createElement('table');const head=table.createTHead().insertRow();['청소 구역','통과 횟수','다시 횟수'].forEach(label=>{const th=document.createElement('th');th.scope='col';th.textContent=label;head.append(th)});const body=table.createTBody();counts.forEach(item=>{const row=body.insertRow();[item.name,item.pass,item.retry].forEach(value=>{row.insertCell().textContent=value})});sheet.append(heading,note,table);
+ sheet.style.display='block';const height=sheet.scrollHeight;sheet.style.zoom=String(Math.min(1,1010/height));sheet.style.display='';
+}
+document.getElementById('print').addEventListener('click',()=>{buildPrint();window.print()});
+window.addEventListener('beforeprint',buildPrint);
+setInterval(()=>{if(rollover())render(state.mode)},1000);
+window.addEventListener('focus',()=>{if(rollover())render(state.mode)});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&rollover())render(state.mode)});
+render(state.mode);
+</script>
+</body>
+</html>

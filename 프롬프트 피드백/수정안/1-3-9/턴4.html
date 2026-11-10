@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시간탐사대: 선사시대</title>
+<script>
+// ✏️ 탐사도감 편집: imageUrl에 그림 주소, sourceUrl에 자료 주소를 나중에 넣으세요.
+// era와 stage는 0부터 셉니다. 해당 조사의 행동·근거를 모두 맞히면 열립니다.
+const ARTIFACTS = [
+  {
+    "id": "handaxe",
+    "era": 0,
+    "stage": 0,
+    "name": "주먹도끼",
+    "description": "돌을 깨뜨려 날을 만든 구석기의 대표적인 뗀석기예요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "scraper",
+    "era": 0,
+    "stage": 0,
+    "name": "긁개",
+    "description": "동물의 가죽 등을 손질하는 데 사용한 뗀석기예요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "point",
+    "era": 0,
+    "stage": 1,
+    "name": "찌르개",
+    "description": "끝을 뾰족하게 만들어 찌르는 데 이용한 돌도구예요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "chopper",
+    "era": 0,
+    "stage": 1,
+    "name": "찍개",
+    "description": "돌에 날을 만들어 찍거나 자르는 데 사용했어요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "blade",
+    "era": 0,
+    "stage": 2,
+    "name": "돌날",
+    "description": "길쭉하게 떼어 낸 돌 조각으로 정교한 도구를 만들었어요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "pottery",
+    "era": 1,
+    "stage": 0,
+    "name": "빗살무늬 토기",
+    "description": "빗살 같은 무늬를 새긴 신석기의 대표적인 토기예요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "axe",
+    "era": 1,
+    "stage": 0,
+    "name": "간돌도끼",
+    "description": "돌을 갈아 만든 도끼로 나무를 다듬는 등에 사용했어요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "sickle",
+    "era": 1,
+    "stage": 1,
+    "name": "돌낫",
+    "description": "농경에 사용한 돌로 만든 도구예요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "net",
+    "era": 1,
+    "stage": 1,
+    "name": "그물추",
+    "description": "그물이 물에 가라앉도록 달았던 추로 고기잡이를 보여 줘요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "spindle",
+    "era": 1,
+    "stage": 2,
+    "name": "가락바퀴",
+    "description": "실을 뽑는 데 사용해 신석기 사람들의 옷 만들기를 알려 줘요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "harvest",
+    "era": 2,
+    "stage": 0,
+    "name": "반달 돌칼",
+    "description": "곡식의 이삭을 거둘 때 사용한 청동기 시대의 농기구예요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "plainpot",
+    "era": 2,
+    "stage": 0,
+    "name": "민무늬 토기",
+    "description": "무늬가 없거나 적으며 청동기 시대에 널리 사용된 토기예요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "dagger",
+    "era": 2,
+    "stage": 1,
+    "name": "비파형 동검",
+    "description": "몸체가 비파를 닮은 청동검으로 청동기 문화를 보여 줘요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "mirror",
+    "era": 2,
+    "stage": 1,
+    "name": "거친무늬 거울",
+    "description": "뒷면에 거친 기하학 무늬가 있는 청동 거울이에요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "dolmen",
+    "era": 2,
+    "stage": 2,
+    "name": "고인돌",
+    "description": "큰 돌을 이용한 무덤으로 지배자의 힘을 추론하는 유적이에요.",
+    "imageUrl": "",
+    "sourceUrl": ""
+  }
+];
+
+// ✏️ 조사 예시 9개: 이곳에서 상황(text), 행동(actions), 근거(evidence), 학습 포인트(point)를 수정하세요.
+// actions와 evidence의 첫 항목이 정답입니다. 표시할 때 정답 위치를 고르게 섞습니다.
+const ERAS = [
+  {
+    "name": "구석기",
+    "icon": "🪨",
+    "intro": "돌을 깨뜨려 도구를 만들고 자연을 따라 이동해요.",
+    "keywords": [
+      "뗀석기",
+      "이동 생활",
+      "동굴",
+      "사냥과 채집"
+    ],
+    "stages": [
+      {
+        "title": "사냥 도구 만들기",
+        "investigations": [
+          {
+            "title": "사냥 도구 만들기",
+            "text": "구석기 야영지에서 고기를 손질할 도구가 필요해요.",
+            "actions": [
+              "돌을 깨뜨려 날카로운 도구를 만든다.",
+              "철제 칼을 대장간에서 만든다.",
+              "돌은 장식품으로만 사용했다고 판단한다."
+            ],
+            "evidence": [
+              "날을 떼어 낸 뗀석기가 구석기 유적에서 발견된다.",
+              "철제 갑옷이 구석기 사냥을 증명한다.",
+              "돌의 색만으로 사용 목적을 확정한다."
+            ],
+            "point": "구석기에는 뗀석기를 사냥과 고기 손질 등에 이용했어요."
+          }
+        ]
+      },
+      {
+        "title": "먹거리를 찾아 이동",
+        "investigations": [
+          {
+            "title": "먹거리를 찾아 이동",
+            "text": "구석기 야영지 주변의 열매와 사냥감이 줄었어요.",
+            "actions": [
+              "무리와 함께 먹거리가 있는 곳으로 이동한다.",
+              "논을 만들어 벼농사만 짓는다.",
+              "같은 곳에서 기다리면 먹거리가 반드시 늘어난다고 믿는다."
+            ],
+            "evidence": [
+              "사냥과 채집에 의존하며 계절과 먹거리에 따라 이동했다.",
+              "벼농사가 구석기 생활의 중심이었다.",
+              "동굴 하나만 있으면 식량은 언제나 충분하다."
+            ],
+            "point": "구석기 사람들은 사냥과 채집을 하며 먹거리를 따라 이동했어요."
+          }
+        ]
+      },
+      {
+        "title": "추운 밤의 야영지",
+        "investigations": [
+          {
+            "title": "추운 밤의 야영지",
+            "text": "구석기 탐사대가 추운 밤을 보내려 해요.",
+            "actions": [
+              "불을 이용하고 무리와 함께 추위를 견딘다.",
+              "전기 난방기를 켠다.",
+              "동굴은 모두 항상 따뜻하다고 단정한다."
+            ],
+            "evidence": [
+              "구석기 유적의 불 사용 흔적은 불을 활용한 생활을 보여 준다.",
+              "전선이 구석기 난방을 증명한다.",
+              "돌 크기만으로 당시 기온을 정확히 알 수 있다."
+            ],
+            "point": "불은 추위를 견디고 음식을 익히며 맹수를 피하는 데 도움이 되었어요."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "신석기",
+    "icon": "🌾",
+    "intro": "농경을 시작하고 한곳에 머무는 생활이 늘어나요.",
+    "keywords": [
+      "간석기",
+      "빗살무늬 토기",
+      "농경",
+      "움집"
+    ],
+    "stages": [
+      {
+        "title": "먹거리를 담는 그릇",
+        "investigations": [
+          {
+            "title": "먹거리를 담는 그릇",
+            "text": "신석기 마을에 먹거리를 담고 조리할 그릇이 필요해요.",
+            "actions": [
+              "흙을 빚어 구운 토기를 사용한다.",
+              "플라스틱 밀폐 용기를 만든다.",
+              "무늬 있는 그릇은 모두 왕의 물건이라고 판단한다."
+            ],
+            "evidence": [
+              "신석기 집터에서 빗살무늬 토기가 출토된다.",
+              "플라스틱 조각이 신석기 제작 기술을 증명한다.",
+              "그릇 무늬만으로 소유자의 신분을 확정한다."
+            ],
+            "point": "신석기 사람들은 빗살무늬 토기 등을 저장과 조리에 이용했어요."
+          }
+        ]
+      },
+      {
+        "title": "마을의 먹거리 계획",
+        "investigations": [
+          {
+            "title": "마을의 먹거리 계획",
+            "text": "신석기 마을에서 먹거리를 마련하려 해요.",
+            "actions": [
+              "조와 피를 기르면서 사냥과 채집도 이어 간다.",
+              "트랙터로 밭을 간다.",
+              "농경이 시작됐으니 사냥은 전부 사라졌다고 말한다."
+            ],
+            "evidence": [
+              "곡물 흔적과 사냥·고기잡이 도구가 여러 생계 활동을 보여 준다.",
+              "기계 부품이 신석기 농업을 증명한다.",
+              "씨앗 한 알로 모든 사람이 농사만 지었다고 확정한다."
+            ],
+            "point": "신석기에는 농경이 시작되었지만 사냥·채집·고기잡이도 중요했어요."
+          }
+        ]
+      },
+      {
+        "title": "마을의 집 짓기",
+        "investigations": [
+          {
+            "title": "마을의 집 짓기",
+            "text": "신석기 사람들이 머물 집을 지으려 해요.",
+            "actions": [
+              "땅을 파고 기둥과 지붕을 세워 움집을 짓는다.",
+              "철근 콘크리트 아파트를 짓는다.",
+              "집터 하나로 마을 인구를 정확히 백 명으로 정한다."
+            ],
+            "evidence": [
+              "움집 바닥과 기둥 구멍, 화덕 흔적이 발견된다.",
+              "엘리베이터 흔적이 신석기 주거를 증명한다.",
+              "기둥 구멍 하나로 주민 이름을 알 수 있다."
+            ],
+            "point": "움집 집터와 화덕은 신석기 정착 생활을 복원하는 단서예요."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "청동기",
+    "icon": "🗡️",
+    "intro": "농업이 발달하고 재산과 권력의 차이가 생겨나요.",
+    "keywords": [
+      "청동기",
+      "벼농사",
+      "고인돌",
+      "계급"
+    ],
+    "stages": [
+      {
+        "title": "추수 도구 고르기",
+        "investigations": [
+          {
+            "title": "추수 도구 고르기",
+            "text": "청동기 마을에서 곡식 이삭을 거둘 도구가 필요해요.",
+            "actions": [
+              "반달 돌칼 같은 돌로 만든 농기구를 사용한다.",
+              "전동 수확기를 조립한다.",
+              "청동기가 생겼으니 모든 돌도구를 버린다."
+            ],
+            "evidence": [
+              "청동기 유적에서도 반달 돌칼 같은 석기가 출토된다.",
+              "모터 부품이 청동기 추수를 증명한다.",
+              "청동검 하나로 농기구도 전부 청동이었다고 확정한다."
+            ],
+            "point": "청동은 주로 무기와 의례용 도구에 쓰였고 돌로 만든 농기구도 사용했어요."
+          }
+        ]
+      },
+      {
+        "title": "커다란 무덤 조사",
+        "investigations": [
+          {
+            "title": "커다란 무덤 조사",
+            "text": "청동기 시대의 커다란 고인돌을 발견했어요.",
+            "actions": [
+              "큰 돌을 옮긴 노동력과 지배자의 힘을 생각한다.",
+              "현대식 굴착기로 옮겼다고 설명한다.",
+              "크기만 보고 묻힌 사람의 이름을 확정한다."
+            ],
+            "evidence": [
+              "거대한 덮개돌은 많은 사람의 노동을 조직했을 가능성을 보여 준다.",
+              "굴착기 운전석이 고인돌 축조의 증거다.",
+              "돌 색만으로 무덤 주인의 이름을 알 수 있다."
+            ],
+            "point": "고인돌은 노동력의 조직과 지배자의 권력을 추론하는 자료예요."
+          }
+        ]
+      },
+      {
+        "title": "달라진 마을 사회",
+        "investigations": [
+          {
+            "title": "달라진 마을 사회",
+            "text": "청동기 마을의 무덤마다 크기와 껴묻거리가 달라요.",
+            "actions": [
+              "재산과 권력의 차이가 있었을 가능성을 조사한다.",
+              "스마트폰 소유 여부로 계급을 나눈다.",
+              "모든 사람이 반드시 똑같은 권력을 가졌다고 단정한다."
+            ],
+            "evidence": [
+              "무덤 규모와 껴묻거리 차이는 사회적 지위 차이를 추론할 단서다.",
+              "휴대전화 기록이 청동기 신분을 알려 준다.",
+              "토기 하나로 모든 주민의 재산을 정확히 알 수 있다."
+            ],
+            "point": "농업 생산의 증가와 함께 재산과 권력의 차이가 커지고 계급이 나타났어요."
+          }
+        ]
+      }
+    ]
+  }
+];
+</script>
+<style>
+:root{font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;color:#21382f;background:#f5f3eb;line-height:1.65}*{box-sizing:border-box}body{margin:0}header{background:#173e34;color:#fff;padding:45px 22px 64px}header>div,main,footer{max-width:1060px;margin:auto}.eyebrow{font-size:13px;letter-spacing:2px;color:#bce0bd;font-weight:700}h1{font-size:clamp(29px,5vw,46px);margin:8px 0}header p{color:#d6e6dc;margin:8px 0}main{padding:0 20px 35px}.status{margin-top:-25px;background:#fff;border:1px solid #dce3d8;border-radius:16px;padding:18px 22px;display:flex;justify-content:space-between;gap:14px;align-items:center;box-shadow:0 6px 22px #173e3410}.status strong{color:#285e43}h2{font-size:23px;margin:30px 0 14px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:#fff;border:1px solid #dde2d7;border-radius:20px;padding:23px;display:flex;flex-direction:column;position:relative}.card.current{border:2px solid #448463}.icon{font-size:40px}.card h3{font-size:25px;margin:8px 0}.card p{margin:0 0 15px;color:#5b6860;min-height:53px}.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}.tag{font-size:13px;background:#eef3e8;border-radius:8px;padding:4px 9px}.count{font-weight:700;font-size:14px;margin-top:auto}.track{height:6px;background:#e8ede4;border-radius:8px;margin:10px 0 18px;overflow:hidden}.fill{height:100%;background:#4b8762}button{font:inherit;font-weight:700;min-height:50px;border:0;border-radius:12px;padding:12px 18px;cursor:pointer;background:#246347;color:white}button:hover:not(:disabled){background:#194c35}button:focus-visible{outline:3px solid #e2a332;outline-offset:3px}button:disabled{background:#e8ebe5;color:#748074;cursor:not-allowed}.secondary{background:#e9efe5;color:#244f38}.secondary:hover:not(:disabled){background:#d7e3d1}.stage-list{display:grid;gap:12px}.stage{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;gap:15px}.panel{background:white;padding:25px;border:1px solid #dce3d8;border-radius:20px;margin-top:20px}.panel h2{margin:12px 0}.muted{color:#69756c;font-size:14px}.investigation{padding:20px 0;border-top:1px solid #e3e8de}.investigation h3{margin:0 0 10px;font-size:19px}.investigation p{margin:0 0 15px}.investigation button{width:100%}.badge{font-size:13px;color:#3c6948;background:#edf4e8;padding:5px 10px;border-radius:20px}.notice{padding:16px;background:#edf5e9;border-radius:12px;margin-top:18px}footer{padding:0 20px 28px;display:flex;gap:15px;align-items:center;justify-content:space-between;font-size:13px;color:#6c756b}footer button{font-size:13px;min-height:46px}dialog{border:0;border-radius:18px;padding:25px;max-width:360px;width:90%;color:#21382f}dialog::backdrop{background:#10251e88}.actions{display:flex;gap:10px}.actions button{flex:1}[hidden]{display:none!important}@media(max-width:700px){header{padding-top:30px}.cards{grid-template-columns:1fr}.card p{min-height:0}.card{padding:22px}.status{align-items:flex-start;flex-direction:column;gap:4px}.panel{padding:20px}.stage{align-items:flex-start;flex-direction:column;gap:4px}footer{align-items:flex-start;flex-direction:column}button{min-height:54px}}
+.resources{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;background:white;border-radius:16px;padding:20px;margin-top:20px}.resources label{display:block;font-weight:700}progress{width:100%;height:20px;accent-color:#448463}.choices{display:grid;gap:10px}.choices button{text-align:left}.error{background:#fff0df;color:#794410;padding:18px;border-radius:12px;margin-top:15px}.error button{margin-top:12px}.step{font-weight:700;margin:20px 0 12px}@media(max-width:700px){.resources{grid-template-columns:1fr;gap:10px}}.codex-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.filters{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.filters button[aria-pressed="true"]{background:#246347;color:white}.artifact-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.artifact{border:1px solid #dce3d8;border-radius:16px;padding:16px;display:flex;flex-direction:column;min-width:0}.artifact.locked{background:#f0f1ec;color:#71776f}.artifact-art{height:130px;border-radius:12px;background:#edf1e7;display:grid;place-items:center;overflow:hidden;text-align:center;color:#6b7769}.artifact-art img{width:100%;height:100%;object-fit:contain}.question{font-size:52px;font-weight:800}.artifact h3{margin:12px 0 6px}.artifact p{font-size:14px;margin:8px 0}.artifact button{margin-top:auto}.new{background:#ffde8a;color:#684300;font-size:12px;padding:3px 8px;border-radius:20px;font-weight:800}.artifact-top{display:flex;align-items:center;justify-content:space-between;min-height:29px;gap:5px}.source-slot{border:1px dashed #b8c5af;border-radius:8px;padding:8px;margin:10px 0;font-size:13px;overflow-wrap:anywhere}.artifact a{color:#24593c}.artifact button{width:100%}@media(max-width:700px){.artifact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){.artifact-grid{grid-template-columns:1fr}}.bonus-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.puzzle-box{border:1px solid #dce3d8;border-radius:14px;padding:18px}.puzzle-row{padding:14px 0;border-top:1px solid #dce3d8}.puzzle-row label,.feature-card label{display:block;font-weight:700;margin-bottom:10px}.puzzle-row button{margin-top:8px}select{width:100%;min-height:54px;padding:10px;border:1px solid #a5b99e;border-radius:10px;font:inherit;background:white;color:#21382f}.feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.feature-card{padding:16px;border:1px solid #dce3d8;border-radius:12px}.feature-card label{min-height:64px}.feature-card.correct{background:#edf5e9;border-color:#448463}.feature-card.wrong{border:2px solid #b57735}#summary li{margin-bottom:20px}@media(max-width:700px){.bonus-grid,.feature-grid{grid-template-columns:1fr}.feature-card label{min-height:0}}</style>
+</head>
+<body>
+<header><div><span class="eyebrow">HISTORY EXPLORER · 중학교 역사</span><h1>시간탐사대: 선사시대</h1><p>흔적을 조사하고, 시대의 비밀을 하나씩 발견해 보세요.</p></div></header>
+<main>
+<div class="status" role="status" aria-live="polite"><strong id="total"></strong><span id="guide" class="muted"></span></div>
+<div class="resources" aria-label="탐사대 현황"><div><label for="food">🌾 식량 70 / 100</label><progress id="food" max="100" value="70">70%</progress></div><div><label for="community">🤝 공동체 70 / 100</label><progress id="community" max="100" value="70">70%</progress></div><div role="status" aria-live="polite"><strong>🔎 역사 증거 점수</strong><div id="score">0 / 270</div></div></div><section aria-labelledby="era-heading"><h2 id="era-heading">탐사할 시대를 선택하세요</h2><div id="cards" class="cards"></div></section>
+<section id="detail" class="panel" hidden aria-labelledby="detail-heading"></section>
+<section id="codex" class="panel" aria-labelledby="codex-heading"><div class="codex-head"><h2 id="codex-heading">📖 탐사도감</h2><strong id="discovered-count" role="status" aria-live="polite"></strong></div><p class="muted">조사의 행동과 근거를 모두 맞히면 유물·유적 카드가 열려요. NEW 카드는 확인 버튼을 누르면 읽음으로 기록됩니다.</p><div id="codex-filters" class="filters" role="group" aria-label="시대별 거르기"></div><div id="artifact-grid" class="artifact-grid"></div></section><section id="bonus" class="panel" aria-labelledby="bonus-heading"></section><section id="final-mission" class="panel" aria-labelledby="final-heading"></section><section id="summary" class="panel" aria-labelledby="summary-heading" hidden></section></main>
+<footer><span id="save-note">탐사 기록은 이 브라우저에 자동 저장됩니다.</span><button class="secondary" id="reset">탐사 기록 초기화</button></footer>
+<dialog id="reset-dialog"><h3>탐사를 처음부터 시작할까요?</h3><p>완료한 모든 조사 기록과 탐사도감, 별, 퍼즐, 최종 미션, 오답 기록이 지워집니다.</p><div class="actions"><button class="secondary" id="cancel-reset">취소</button><button id="confirm-reset">초기화</button></div></dialog>
+<script>
+const KEY='prehistoric-time-explorers-v2';
+let done=new Set(), selectedEra=null, selectedStage=null;
+try{const saved=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(saved)){for(let e=0;e<3;e++)for(let s=0;s<3;s++)for(let i=0;i<3;i++){const k=`${e}-${s}-${i}`;if(saved.includes(k))done.add(k);}}}catch{document.getElementById('save-note').textContent='자동 저장을 사용할 수 없어 이번 탐사 동안만 기록됩니다.';}
+let phase='action', feedback='';
+const SEEN_KEY=KEY+'-codex-seen';
+let seen=new Set(),codexFilter='all';
+try{const stored=JSON.parse(localStorage.getItem(SEEN_KEY)||'[]');if(Array.isArray(stored))seen=new Set(stored.filter(id=>ARTIFACTS.some(a=>a.id===id)));}catch{}
+const artifactOpen=a=>done.has(`${a.era}-${a.stage}-0`);
+function saveSeen(){try{localStorage.setItem(SEEN_KEY,JSON.stringify([...seen]));}catch{document.getElementById('save-note').textContent='자동 저장을 사용할 수 없어 이번 탐사 동안만 기록됩니다.';}}
+function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function assetUrl(value){try{const u=new URL(value,location.href);return value&&['http:','https:','file:'].includes(u.protocol)?escapeHtml(u.href):'';}catch{return '';}}
+function renderCodex(){
+ const found=ARTIFACTS.filter(artifactOpen).length;
+ document.getElementById('discovered-count').textContent=`발견 ${found} / 15`;
+ document.getElementById('codex-filters').innerHTML=['all','0','1','2'].map(f=>`<button class="secondary" data-filter="${f}" aria-pressed="${codexFilter===f}">${f==='all'?'전체':ERAS[Number(f)].name}</button>`).join('');
+ document.getElementById('artifact-grid').innerHTML=ARTIFACTS.filter(a=>codexFilter==='all'||a.era===Number(codexFilter)).map(a=>{
+ const open=artifactOpen(a),fresh=open&&!seen.has(a.id),img=assetUrl(a.imageUrl),source=assetUrl(a.sourceUrl);
+ return `<article class="artifact ${open?'':'locked'}"><div class="artifact-top"><span class="badge">${ERAS[a.era].name}</span>${fresh?'<span class="new">NEW</span>':''}</div><div class="artifact-art">${open?(img?`<img src="${img}" alt="${escapeHtml(a.name)}" loading="lazy">`:'<span>그림 자리<br><small>이미지 준비 중</small></span>'):'<span class="question" aria-label="미발견">?</span>'}</div><h3>${open?escapeHtml(a.name):'미발견 카드'}</h3><p>${open?escapeHtml(a.description):`🔒 ${ERAS[a.era].name} 스테이지 ${a.stage+1} 조사 완료 시 발견`}</p>${open?`<div class="source-slot">${source?`<a href="${source}" target="_blank" rel="noopener noreferrer">자료 보기 ↗</a>`:'자료 주소 자리 · 추후 추가'}</div><button class="secondary" data-seen="${a.id}" ${fresh?'':'disabled'}>${fresh?'카드 확인 · NEW 지우기':'✓ 확인한 카드'}</button>`:''}</article>`;
+ }).join('');
+}
+const stageDone=(e,s)=>ERAS[e].stages[s].investigations.every((_,i)=>done.has(`${e}-${s}-${i}`));
+const eraDone=e=>ERAS[e].stages.every((_,s)=>stageDone(e,s));
+const eraOpen=e=>e===0||ERAS.slice(0,e).every((_,n)=>eraDone(n));
+const stageOpen=(e,s)=>eraOpen(e)&&(s===0||ERAS[e].stages.slice(0,s).every((_,n)=>stageDone(e,n)));
+function save(){try{localStorage.setItem(KEY,JSON.stringify([...done]));}catch{document.getElementById('save-note').textContent='자동 저장을 사용할 수 없어 이번 탐사 동안만 기록됩니다.';}}
+function render(){
+ const completed=ERAS.reduce((n,e,ei)=>n+e.stages.filter((_,s)=>stageDone(ei,s)).length,0);
+ document.getElementById('score').textContent=`${completed*30} / 270`;
+ document.getElementById('total').textContent=`전체 ${completed} / 9 스테이지 완료`;
+ document.getElementById('guide').textContent=completed===9?'🎉 모든 시대의 탐사를 마쳤습니다!':'행동 선택 → 근거 선택 → 증거 +30';
+ document.getElementById('cards').innerHTML=ERAS.map((e,ei)=>{const open=eraOpen(ei),n=e.stages.filter((_,s)=>stageDone(ei,s)).length;return `<article class="card ${selectedEra===ei?'current':''}"><span class="icon" aria-hidden="true">${e.icon}</span><h3>${e.name}</h3><p>${e.intro}</p><div class="tags">${e.keywords.map(k=>`<span class="tag">${k}</span>`).join('')}</div><span class="count">${n} / 3 스테이지 완료</span><div class="track"><div class="fill" style="width:${n/3*100}%"></div></div><button data-era="${ei}" ${open?'':'disabled'}>${open?(n===3?'✓ 다시 탐사하기':'탐사 시작 →'):`🔒 ${ERAS[ei-1].name} 완료 후 열림`}</button></article>`}).join('');
+ renderDetail();
+ renderCodex();
+ renderMissions();
+}
+function renderDetail(){
+ const el=document.getElementById('detail');el.hidden=selectedEra===null;if(selectedEra===null)return;
+ const e=ERAS[selectedEra];
+ if(selectedStage===null){el.innerHTML=`<span class="badge">${e.name} 탐사 지도</span><h2 id="detail-heading">세 개의 스테이지를 탐사하세요</h2><p class="muted">각 스테이지에서 행동과 근거를 모두 맞혀 보세요. 식량과 공동체는 70에서 시작하며 이 예시에서는 고정됩니다.</p><div class="stage-list">${e.stages.map((s,si)=>`<button class="stage ${stageDone(selectedEra,si)?'secondary':''}" data-stage="${si}" ${stageOpen(selectedEra,si)?'':'disabled'}><span>${si+1}. ${s.title}</span><span>${stageDone(selectedEra,si)?'✓ 완료 · 다시 보기':stageOpen(selectedEra,si)?`${s.investigations.filter((_,i)=>done.has(`${selectedEra}-${si}-${i}`)).length} / 1 조사 완료 →`:'🔒 앞 스테이지 완료 필요'}</span></button>`).join('')}</div>${eraDone(selectedEra)?`<div class="notice">🎉 ${e.name} 탐사 완료! ${selectedEra<2?'다음 시대가 열렸어요.':'모든 시대를 탐사한 시간탐사대원입니다!'}</div>`:''}`;return;}
+
+ const s=e.stages[selectedStage],c=s.investigations[0],complete=stageDone(selectedEra,selectedStage),n=selectedEra*3+selectedStage;
+ const evidence=phase==='evidence',items=evidence?c.evidence:c.actions;
+ // 행동 A/B/C와 근거 1/2/3에 정답이 각각 세 번씩 배치됩니다.
+ const position=evidence?(n*2+1)%3:n%3,order=[1,2];order.splice(position,0,0);
+ el.innerHTML=`<button class="secondary" id="back">← 스테이지 목록</button><h2 id="detail-heading">${e.name} · ${selectedStage+1}. ${s.title}</h2><article class="investigation"><p>${c.text}</p>${complete?`<div class="notice" role="status"><strong>✓ 조사 완료 · 증거 +30 획득</strong><p>학습 포인트: ${c.point}</p><p>📖 탐사도감에 ${ARTIFACTS.filter(a=>a.era===selectedEra&&a.stage===selectedStage).map(a=>a.name).join(', ')} 카드가 열렸어요. <a href="#codex">도감 보기 ↓</a></p><small>이미 기록한 조사입니다. 다시 열어도 점수가 추가되지 않습니다.</small></div>`:`<div class="step">${evidence?'2. 행동을 뒷받침하는 근거를 고르세요':'1. 시대에 맞는 행동을 고르세요'}</div>${evidence?`<p class="badge">✓ 선택한 행동: ${c.actions[0]}</p>`:''}<div class="choices">${order.map((original,i)=>`<button data-choice="${original}" ${feedback?'disabled':''}>${evidence?i+1:['A','B','C'][i]}. ${items[original]}</button>`).join('')}</div>${feedback?`<div class="error" role="alert">${feedback}<button id="retry" class="secondary">다시 선택</button></div>`:''}`}</article>${complete?`<button id="next" style="width:100%">${selectedStage<2?'다음 스테이지로 →':selectedEra<2?'다음 시대로 →':'전체 탐사 결과 보기 →'}</button>`:''}`;
+}
+function resetChoice(){phase='action';feedback='';}
+document.addEventListener('click',ev=>{
+ const b=ev.target.closest('button');if(!b||b.disabled)return;
+ if(b.dataset.filter!==undefined){codexFilter=b.dataset.filter;renderCodex();document.querySelector('[data-filter="'+codexFilter+'"]').focus({preventScroll:true});return;}
+ if(b.dataset.seen!==undefined){const a=ARTIFACTS.find(a=>a.id===b.dataset.seen);if(a&&artifactOpen(a)){seen.add(a.id);saveSeen();renderCodex();document.getElementById('codex-heading').tabIndex=-1;document.getElementById('codex-heading').focus({preventScroll:true});}return;}
+ if(b.dataset.era!==undefined){const e=Number(b.dataset.era);if(!eraOpen(e))return;selectedEra=e;selectedStage=null;resetChoice();render();showDetail();}
+ if(b.dataset.stage!==undefined){const s=Number(b.dataset.stage);if(!stageOpen(selectedEra,s))return;selectedStage=s;resetChoice();renderDetail();showDetail();}
+ if(b.dataset.choice!==undefined){
+  if(selectedEra===null||selectedStage===null||!stageOpen(selectedEra,selectedStage)||stageDone(selectedEra,selectedStage)||feedback)return;
+  const choice=Number(b.dataset.choice);
+  if(choice!==0){const mk=`${selectedEra}-${selectedStage}`;missions.mistakes[mk]=(missions.mistakes[mk]||0)+1;saveMissions();feedback=phase==='evidence'?'근거가 부족합니다: 행동을 직접 뒷받침하는 유물이나 생활 흔적을 찾아보세요.':choice===1?'시대착오 발견: 선택한 기술이나 생활 방식은 이 시대에 해당하지 않아요.':'근거가 부족합니다: 주어진 흔적만으로 그렇게 단정할 수 없어요.';renderDetail();document.getElementById('retry').focus({preventScroll:true});}
+  else if(phase==='action'){phase='evidence';renderDetail();document.querySelector('[data-choice]').focus({preventScroll:true});}
+  else{const key=`${selectedEra}-${selectedStage}-0`;if(!done.has(key)){done.add(key);save();}render();document.getElementById('next').focus({preventScroll:true});}
+ }
+ if(b.id==='retry'){feedback='';renderDetail();document.querySelector('[data-choice]').focus({preventScroll:true});}
+ if(b.id==='back'){selectedStage=null;resetChoice();renderDetail();showDetail();}
+ if(b.id==='next'){if(selectedStage<2)selectedStage++;else if(selectedEra<2){selectedEra++;selectedStage=null;}else{selectedEra=null;selectedStage=null;}resetChoice();render();if(selectedEra!==null)showDetail();else document.getElementById('era-heading').scrollIntoView({behavior:'smooth'});}
+});
+function showDetail(){document.getElementById('detail').scrollIntoView({behavior:'smooth',block:'start'});const h=document.getElementById('detail-heading');h.tabIndex=-1;h.focus({preventScroll:true});}
+const resetDialog=document.getElementById('reset-dialog');
+document.getElementById('reset').onclick=()=>resetDialog.showModal();
+document.getElementById('cancel-reset').onclick=()=>resetDialog.close();
+document.getElementById('confirm-reset').onclick=()=>{missions=emptyMissions();puzzleMessage="";finalMessage="";saveMissions();done.clear();seen.clear();codexFilter='all';saveSeen();selectedEra=null;selectedStage=null;resetChoice();save();render();resetDialog.close();};
+// 보너스 자료: 정답 위치와 최종 분류 카드는 여기서 수정하세요.
+const TIME_TASKS=[{q:'구석기에 없는 것은?',options:['뗀석기','전기 난방기','채집'],answer:1},{q:'신석기에 없는 것은?',options:['트랙터','움집','빗살무늬 토기'],answer:0},{q:'청동기에 없는 것은?',options:['반달 돌칼','고인돌','스마트폰'],answer:2}];
+const MATCH_TASKS=[{name:'주먹도끼',era:0},{name:'빗살무늬 토기',era:1},{name:'비파형 동검',era:2},{name:'긁개',era:0},{name:'가락바퀴',era:1},{name:'반달 돌칼',era:2}];
+const FEATURES=[{text:'뗀석기를 대표 도구로 사용',era:0},{text:'빗살무늬 토기를 널리 사용',era:1},{text:'비파형 동검으로 권위를 드러냄',era:2},{text:'사냥·채집 중심으로 이동 생활',era:0},{text:'고인돌로 지배자의 힘을 추론',era:2},{text:'조·피 농경을 시작',era:1},{text:'농업 생산 증가와 함께 계급 발생',era:2},{text:'전곡리 주먹도끼로 대표되는 문화',era:0},{text:'움집 마을의 정착 생활 확대',era:1},{text:'가락바퀴와 뼈바늘로 실과 옷 만들기',era:1},{text:'반달 돌칼로 이삭을 거두는 농업',era:2},{text:'돌을 깨뜨려 주먹도끼·찍개 제작',era:0}];
+const MISSION_KEY=KEY+'-bonus';
+function emptyMissions(){return {time:[],match:[],mistakes:{},answers:Array(12).fill(''),finished:false};}
+let missions=emptyMissions(),puzzleMessage='',finalMessage='';
+try{let x=JSON.parse(localStorage.getItem(MISSION_KEY)||'null');if(x){
+ missions.time=Array.isArray(x.time)?[...new Set(x.time.filter(i=>Number.isInteger(i)&&i>=0&&i<3))]:[];
+ missions.match=Array.isArray(x.match)?[...new Set(x.match.filter(i=>Number.isInteger(i)&&i>=0&&i<6))]:[];
+ if(x.mistakes)for(let e=0;e<3;e++)for(let t=0;t<3;t++){let k=e+'-'+t,n=x.mistakes[k];if(Number.isSafeInteger(n)&&n>0)missions.mistakes[k]=n;}
+ if(Array.isArray(x.answers))missions.answers=FEATURES.map((_,i)=>['0','1','2'].includes(x.answers[i])?x.answers[i]:'');
+ missions.finished=x.finished===true&&FEATURES.every((c,i)=>String(c.era)===missions.answers[i]);
+}}catch{}
+function saveMissions(){try{localStorage.setItem(MISSION_KEY,JSON.stringify(missions));}catch{document.getElementById('save-note').textContent='자동 저장을 사용할 수 없어 이번 탐사 동안만 기록됩니다.';}}
+const stars=()=>Number(missions.time.length===3)+Number(missions.match.length===6);
+const finalReady=()=>ERAS.every((_,e)=>eraDone(e))&&stars()===2;
+function eraOptions(value){return '<option value="">시대 선택</option>'+ERAS.map((e,i)=>`<option value="${i}" ${String(i)===value?'selected':''}>${e.name}</option>`).join('');}
+function renderMissions(){
+ const i=TIME_TASKS.findIndex((_,n)=>!missions.time.includes(n)),q=TIME_TASKS[i];
+ document.getElementById('bonus').innerHTML=`<h2 id="bonus-heading">🧩 보너스 탐사 <span class="badge">⭐ ${stars()} / 2</span></h2><p>각 퍼즐을 처음 완성할 때 별 1개씩 받아요. 다시 열어도 별은 중복되지 않아요.</p><div class="bonus-grid"><article class="puzzle-box"><h3>시대착오 찾기 · ${missions.time.length} / 3</h3>${q?`<p>${q.q}</p><div class="choices">${q.options.map((o,n)=>`<button class="secondary" data-time-answer="${n}" data-time-id="${i}">${['A','B','C'][n]}. ${o}</button>`).join('')}</div>`:'<p class="notice">✓ 완성 · ⭐ 별 1개 획득</p>'}</article><article class="puzzle-box"><h3>유물 연결 퍼즐 · ${missions.match.length} / 6</h3><p>각 유물을 대표 시대와 연결하세요.</p>${[4,0,2,1,5,3].map(n=>`<div class="puzzle-row"><label for="match-${n}">${MATCH_TASKS[n].name}</label>${missions.match.includes(n)?`<span class="badge">✓ ${ERAS[MATCH_TASKS[n].era].name}</span>`:`<select id="match-${n}">${eraOptions('')}</select><button class="secondary" data-match-id="${n}">연결 확인</button>`}</div>`).join('')}${missions.match.length===6?'<p class="notice">✓ 완성 · ⭐ 별 1개 획득</p>':''}</article></div><p id="puzzle-message" role="status" aria-live="polite">${puzzleMessage}</p>`;
+ const ready=finalReady();
+ document.getElementById('final-mission').innerHTML=`<h2 id="final-heading">🏁 최종 미션 · 특징 카드 12장</h2>${ready?`<p>특징 카드를 세 시대로 분류하세요. 각 시대에 4장씩 해당합니다.</p><div class="feature-grid">${FEATURES.map((c,n)=>{let checked=finalMessage||missions.finished,ok=missions.answers[n]===String(c.era);return `<div class="feature-card ${checked?(ok?'correct':'wrong'):''}"><label for="feature-${n}">${n+1}. ${c.text}</label><select id="feature-${n}" data-feature="${n}" ${missions.finished?'disabled':''}>${eraOptions(missions.answers[n])}</select>${checked?`<small>${ok?'✓ 정확한 분류':'다시 생각해 보세요'}</small>`:''}</div>`;}).join('')}</div>${missions.finished?'<p class="notice">🎉 12장 분류 완료! <a href="#summary">탐사 정리 보기 ↓</a></p>':'<button id="check-features" style="width:100%;margin-top:18px">12장 분류 확인</button>'}<p id="final-message" role="status" aria-live="polite">${finalMessage}</p>`:`<p>🔒 조사 9개와 두 보너스 퍼즐을 모두 완료하면 열려요.</p><p>조사 ${ERAS.reduce((v,e,ei)=>v+e.stages.filter((_,si)=>stageDone(ei,si)).length,0)} / 9 · 시대착오 ${missions.time.length} / 3 · 유물 연결 ${missions.match.length} / 6</p>`}`;
+ const summary=document.getElementById('summary');summary.hidden=!(ready&&missions.finished);if(summary.hidden)return;
+ const review=Object.entries(missions.mistakes).filter(([,n])=>n>0).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,3);
+ summary.innerHTML=`<h2 id="summary-heading">🎉 시간탐사대 탐사 정리</h2><p class="notice">역사 증거 270점 · ⭐ 별 ${stars()}개 · 유물 ${ARTIFACTS.filter(artifactOpen).length} / 15 발견 · 특징 카드 12 / 12</p>${ERAS.map(e=>`<p><strong>${e.name}</strong> · ${e.keywords.join(' · ')}</p>`).join('')}<h3>나의 다시 볼 개념</h3><p class="muted">행동·근거 선택의 오답 횟수가 많은 조사 최대 3개입니다. 같은 횟수면 탐사 순서로 표시합니다.</p>${review.length?`<ol>${review.map(([k,n])=>{const [e,t]=k.split('-').map(Number),c=ERAS[e].stages[t].investigations[0];return `<li><strong>${ERAS[e].name} · ${c.title}</strong> <span class="badge">오답 ${n}회</span><p>${c.point}</p><button class="secondary" data-review-id="${k}">조사 다시 보기</button></li>`;}).join('')}</ol>`:'<p>기록된 오답이 없어요. 핵심 낱말을 한 번 더 살펴보세요.</p>'}<a href="#era-heading">시대 탐사 지도로 돌아가기 ↑</a>`;
+}
+document.addEventListener('change',ev=>{const el=ev.target;if(el.dataset.feature!==undefined&&finalReady()&&!missions.finished){missions.answers[Number(el.dataset.feature)]=el.value;saveMissions();}});
+document.addEventListener('click',ev=>{
+ const b=ev.target.closest('button');if(!b||b.disabled)return;
+ if(b.dataset.timeAnswer!==undefined){const i=Number(b.dataset.timeId);if(missions.time.includes(i))return;if(Number(b.dataset.timeAnswer)===TIME_TASKS[i].answer){missions.time.push(i);puzzleMessage=missions.time.length===3?'⭐ 처음 완성! 별 1개 획득':'✓ 시대착오를 찾았어요. 다음 문제로 도전!';saveMissions();}else puzzleMessage='시대착오를 다시 찾아보세요. 해당 시대에 없던 기술을 고르세요.';renderMissions();}
+ if(b.dataset.matchId!==undefined){const i=Number(b.dataset.matchId);if(missions.match.includes(i))return;const value=document.getElementById('match-'+i).value;if(value==='')puzzleMessage='시대를 먼저 선택하세요.';else if(Number(value)===MATCH_TASKS[i].era){missions.match.push(i);puzzleMessage=missions.match.length===6?'⭐ 처음 완성! 별 1개 획득':'✓ 유물 연결 성공!';saveMissions();}else puzzleMessage='근거가 부족합니다. 유물과 시대의 핵심 낱말을 다시 생각해 보세요.';renderMissions();}
+ if(b.id==='check-features'&&finalReady()&&!missions.finished){const count=FEATURES.filter((c,n)=>missions.answers[n]===String(c.era)).length;if(count===12){missions.finished=true;finalMessage='모든 특징을 정확히 분류했어요!';saveMissions();renderMissions();const h=document.getElementById('summary-heading');h.tabIndex=-1;h.focus({preventScroll:true});document.getElementById('summary').scrollIntoView({behavior:'smooth'});}else{finalMessage=count+' / 12장 정답입니다. 표시된 카드를 다시 분류하고 확인하세요.';renderMissions();document.getElementById('final-message').scrollIntoView({behavior:'smooth',block:'nearest'});}}
+ if(b.dataset.reviewId!==undefined){const [e,t]=b.dataset.reviewId.split('-').map(Number);selectedEra=e;selectedStage=t;resetChoice();render();showDetail();}
+});
+render();
+</script>
+</body>
+</html>

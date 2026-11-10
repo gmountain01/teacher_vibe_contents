@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>수업 전광판</title>
+<style>
+:root{font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;color:#edf4ff;background:#101b30}*{box-sizing:border-box}body{margin:0;min-height:100vh}main{max-width:1000px;margin:auto;padding:48px 24px}header{margin-bottom:32px}.eyebrow{color:#7dd3c0;font-size:14px;font-weight:700;letter-spacing:.15em}h1{font-size:36px;margin:10px 0}p{color:#aebed6;line-height:1.7}.panel{background:#1a2942;border:1px solid #33455f;border-radius:24px;padding:32px}label{display:block;font-weight:700;margin:0 0 10px}input,textarea{width:100%;background:#111e33;border:1px solid #50617a;border-radius:12px;color:#fff;font:inherit;padding:15px;margin-bottom:24px}textarea{min-height:210px;resize:vertical;line-height:1.8}input:focus,textarea:focus{outline:2px solid #7dd3c0}button{border:0;border-radius:12px;padding:14px 22px;font:inherit;font-weight:700;cursor:pointer;background:#7dd3c0;color:#102d2a}button.secondary{background:#2c405e;color:#eaf2ff}.actions{display:flex;gap:12px;flex-wrap:wrap}.hint{font-size:14px;margin:-12px 0 24px}.error{color:#ffb5b5;white-space:pre-line;margin-bottom:20px}.board{text-align:center}.board h2{font-size:clamp(32px,6vw,72px);margin:28px 0 0;overflow-wrap:anywhere}.lesson{color:#b5c5dd;font-size:22px;overflow-wrap:anywhere}.timer{font-size:clamp(80px,19vw,190px);font-weight:800;line-height:1.25;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:#8ce3ce;margin:16px 0}.next{font-size:clamp(20px,3vw,30px);color:#c0cfe3;overflow-wrap:anywhere}.count{display:inline-block;border:1px solid #50617a;border-radius:30px;padding:8px 22px;color:#c6d6ec;font-size:22px;margin-top:24px}.board .actions{justify-content:center;margin-top:32px}progress{width:100%;height:8px;accent-color:#7dd3c0;margin-top:32px}[hidden]{display:none!important}.done{padding:55px 0;font-size:clamp(38px,7vw,76px);font-weight:800;color:#8ce3ce}@media(max-width:600px){main{padding:24px 16px}.panel{padding:24px 18px}h1{font-size:30px}}
+</style>
+</head>
+<body>
+<main>
+<header><div class="eyebrow">CLASSROOM BOARD</div><h1>수업 전광판</h1><p id="intro">활동의 순서와 남은 시간을 한눈에 확인해요.</p></header>
+<section id="setup" class="panel">
+<form id="form" novalidate>
+<label for="title">수업 이름</label><input id="title" placeholder="예: 함께 만드는 우리 반 약속" maxlength="150">
+<label for="activities">활동과 시간</label><textarea id="activities" spellcheck="false" placeholder="생각하기, 3분&#10;모둠 나누기, 7분&#10;발표 준비, 1분 30초&#10;마무리, 30초">생각하기, 3분
+모둠 나누기, 7분
+발표하기, 5분
+마무리, 1분 30초</textarea>
+<p class="hint">한 줄에 ‘활동 이름, 시간’을 적어 주세요. 시간은 3분, 30초, 1분 30초처럼 입력할 수 있어요. 빈 줄은 건너뜁니다.</p>
+<div id="errors" class="error" role="alert" hidden></div>
+<button type="submit">수업 시작 →</button>
+</form></section>
+<section id="board" class="panel board" hidden aria-label="수업 진행 화면">
+<div id="lesson" class="lesson"></div><div id="running"><h2 id="activity"></h2><div id="timer" class="timer" role="timer" aria-label="남은 시간"></div><div id="next" class="next"></div></div>
+<div id="finished" class="done" hidden role="status">수업 활동 끝</div>
+<div id="count" class="count"></div><progress id="progress" value="0" max="1" aria-label="전체 수업 진행률"></progress>
+<div class="actions"><button id="pause" type="button">일시 정지</button><button id="skip" class="secondary" type="button">다음 활동</button><button id="edit" class="secondary" type="button">설정으로</button></div>
+</section>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+let activities=[],index=0,deadline=0,remaining=0,paused=false,ticker=null,total=0;
+function formatDuration(seconds){const m=Math.floor(seconds/60),s=seconds%60;return (m?m+'분':'')+(m&&s?' ':'')+(s?s+'초':'');}
+function stop(){clearInterval(ticker);ticker=null;}
+function finish(){stop();$('running').hidden=true;$('finished').hidden=false;$('pause').hidden=true;$('skip').hidden=true;$('count').textContent=activities.length+' / '+activities.length;$('progress').value=total;}
+function render(){const seconds=Math.max(0,Math.ceil(remaining/1000));$('timer').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');const elapsed=activities.slice(0,index).reduce((sum,a)=>sum+a.seconds,0)+activities[index].seconds-remaining/1000;$('progress').value=Math.max(0,elapsed);}
+function showActivity(){const a=activities[index];$('activity').textContent=a.name;$('count').textContent=(index+1)+' / '+activities.length;const next=activities[index+1];$('next').textContent=next?'다음: '+next.name+' · '+formatDuration(next.seconds):'마지막 활동입니다';render();}
+function tick(){if(paused)return;const now=Date.now();while(index<activities.length&&now>=deadline){index++;if(index===activities.length){finish();return;}deadline+=activities[index].seconds*1000;remaining=Math.max(0,deadline-now);showActivity();}remaining=Math.max(0,deadline-now);render();}
+$('form').addEventListener('submit',event=>{event.preventDefault();const parsed=[],errors=[];if(!$('title').value.trim())errors.push('수업 이름을 입력해 주세요.');$('activities').value.split(/\r?\n/).forEach((line,i)=>{if(!line.trim())return;const match=line.match(/^\s*([^,]+?)\s*,\s*(?:(\d+)\s*분\s*(?:(\d+)\s*초)?|(\d+)\s*초)\s*$/);if(!match){errors.push((i+1)+'번째 줄: ‘활동 이름, 3분’ 형식으로 입력해 주세요.');return;}const seconds=Number(match[2]||0)*60+Number(match[3]||match[4]||0);if(!Number.isSafeInteger(seconds*1000)||seconds<=0){errors.push((i+1)+'번째 줄: 시간은 0초보다 큰 값으로 입력해 주세요.');return;}parsed.push({name:match[1].trim(),seconds});});if(!parsed.length&&!errors.length)errors.push('활동을 한 줄 이상 입력해 주세요.');const sum=parsed.reduce((s,a)=>s+a.seconds,0);if(!Number.isSafeInteger(sum*1000)||sum*1000>Number.MAX_SAFE_INTEGER-Date.now())errors.push('전체 활동 시간이 너무 깁니다. 시간을 줄여 주세요.');$('errors').textContent=errors.join('\n');$('errors').hidden=!errors.length;if(errors.length)return;stop();activities=parsed;total=sum;index=0;paused=false;remaining=activities[0].seconds*1000;deadline=Date.now()+remaining;$('lesson').textContent=$('title').value.trim();$('setup').hidden=true;$('intro').hidden=true;$('board').hidden=false;$('running').hidden=false;$('finished').hidden=true;$('pause').hidden=false;$('skip').hidden=false;$('pause').textContent='일시 정지';$('progress').max=total;showActivity();ticker=setInterval(tick,100);});
+$('pause').addEventListener('click',()=>{if(!paused){tick();if(index>=activities.length)return;paused=true;}else{deadline=Date.now()+remaining;paused=false;}$('pause').textContent=paused?'계속하기':'일시 정지';});
+$('skip').addEventListener('click',()=>{index++;if(index>=activities.length){finish();return;}remaining=activities[index].seconds*1000;deadline=Date.now()+remaining;showActivity();});
+$('edit').addEventListener('click',()=>{stop();$('board').hidden=true;$('setup').hidden=false;$('intro').hidden=false;});
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>우리 반 아침 안내판</title>
+<style>
+:root{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#183b3a;background:#f4f6ee}*{box-sizing:border-box}body{margin:0}main{max-width:1400px;margin:auto;padding:40px 5vw}header{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:3px solid #dce5d8;padding-bottom:24px}.eyebrow{font-weight:700;color:#568078;letter-spacing:.12em;font-size:18px}h1{font-size:clamp(30px,4vw,56px);margin:10px 0 0}button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:13px 20px;background:#205d53;color:white;font-weight:700}button.secondary{background:#e3ebe2;color:#234f47}.welcome{margin:28px 0 22px;font-size:24px;color:#527068}.schedule{display:grid;gap:12px}.lesson{display:flex;align-items:center;gap:32px;background:white;padding:18px 30px;border-radius:18px;border:1px solid #e2e8dd;box-shadow:0 4px 12px #1d453905}.period{font-size:clamp(22px,2.5vw,34px);color:#638078;min-width:110px}.subject{font-size:clamp(34px,4vw,56px);font-weight:800;overflow-wrap:anywhere}.empty{text-align:center;background:white;border-radius:20px;padding:65px 20px;font-size:28px;line-height:1.7}footer{margin-top:24px;color:#6a7d72;font-size:15px}dialog{border:0;border-radius:22px;padding:28px;width:min(900px,95vw);max-height:90vh;color:#183b3a;box-shadow:0 20px 80px #0003}dialog::backdrop{background:#123b3a77}h2{margin:0 0 10px;font-size:28px}.hint{color:#60766d;line-height:1.6}.table-wrap{overflow:auto;margin:22px 0}table{border-collapse:collapse;width:100%;min-width:610px}th,td{padding:7px;text-align:center}th{color:#426b61}input{width:100%;min-width:80px;font:inherit;padding:12px 8px;border:1px solid #ccd9cf;border-radius:8px;color:#183b3a;background:#fafcf8}input:focus{outline:3px solid #b4d8c8}td:first-child{white-space:nowrap}.actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}.status{color:#a03628;min-height:24px}@media(max-width:600px){main{padding:24px 5vw}header{align-items:flex-start;flex-direction:column}.lesson{padding:18px;gap:14px}.period{min-width:76px}.welcome{font-size:20px}}
+.lesson.changed{background:#fff1cd;border:2px solid #e7b750}.period{background:#edf3ed;padding:10px 12px;color:#426b61}.period:hover{background:#dbe9de}.changed .period{background:#f7d887;color:#70480c}.change-label{margin-left:auto;font-size:18px;font-weight:700;color:#8b5a0e}#today-editor{width:min(500px,95vw)}#today-subject{margin:12px 0}button:focus-visible{outline:3px solid #cb9424;outline-offset:4px}
+.morning{background:#e2eee5;border:2px solid #bfd6c5;border-radius:20px;padding:22px 30px;margin-bottom:20px}.morning-head{display:flex;align-items:center;justify-content:space-between;gap:16px}.morning h2{font-size:28px;margin:0}.morning ol{margin:18px 0 0;padding-left:1.5em;font-size:clamp(26px,3vw,40px);font-weight:700;line-height:1.5;overflow-wrap:anywhere}.morning.featured{background:#fff5d9;border-color:#e8c466;padding:30px}.morning.featured ol{font-size:clamp(42px,5.5vw,78px)}.morning.featured h2{font-size:clamp(28px,3vw,40px)}.morning-empty{font-size:22px;color:#60766d;margin-bottom:0}#tasks-editor{width:min(650px,95vw)}textarea{width:100%;font:inherit;font-size:22px;line-height:1.6;border:1px solid #ccd9cf;border-radius:10px;padding:14px;resize:vertical}textarea:focus{outline:3px solid #b4d8c8}.time-setting{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:20px 0}.time-setting input{width:160px}@media(max-width:600px){.morning{padding:18px}.morning-head{align-items:flex-start;flex-direction:column}.change-label{font-size:14px}}
+</style>
+</head>
+<body>
+<main>
+<header><div><div class="eyebrow">우리 반 아침 안내판</div><h1 id="date"></h1></div><button id="edit">시간표 설정</button></header>
+<p class="welcome">좋은 아침이에요! 오늘의 배움을 함께 준비해요.</p>
+<section id="morning" class="morning" aria-labelledby="morning-title"><div class="morning-head"><h2 id="morning-title">0교시 아침 자습</h2><button id="edit-tasks" class="secondary">오늘 할 일 입력</button></div><div id="morning-tasks"></div></section>
+<section id="schedule" class="schedule" aria-label="오늘의 시간표"></section>
+<footer>교시를 누르면 오늘 과목을 바꿀 수 있습니다. · 노란색은 오늘 변경한 교시입니다.<br>시간표는 이 브라우저에 저장됩니다. · 오늘 변경은 다음 날 자동으로 사라집니다.</footer>
+</main>
+<dialog id="editor" aria-labelledby="editor-title">
+<form id="form">
+<h2 id="editor-title">우리 반 주간 시간표</h2>
+<div class="time-setting"><label for="first-start">1교시 시작 시각</label><input id="first-start" type="time" required></div>
+<p class="hint">월~금 과목을 한 번 입력해 주세요. 매일 오늘 요일의 시간표가 자동으로 표시됩니다.<br>사용하지 않는 교시는 비워 두세요.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">교시</th><th scope="col">월요일</th><th scope="col">화요일</th><th scope="col">수요일</th><th scope="col">목요일</th><th scope="col">금요일</th></tr></thead><tbody id="inputs"></tbody></table></div>
+<p id="status" class="status" role="status"></p>
+<div class="actions"><button type="button" class="secondary" id="cancel">취소</button><button type="submit">저장하고 안내판 보기</button></div>
+</form>
+</dialog>
+<dialog id="today-editor" aria-labelledby="today-title">
+<form id="today-form">
+<h2 id="today-title">오늘 과목 변경</h2>
+<p class="hint" id="base-subject"></p>
+<label for="today-subject">오늘 수업할 과목</label>
+<input id="today-subject" maxlength="40" required autocomplete="off">
+<p class="hint">오늘만 적용되며, 기초 시간표는 그대로 유지됩니다.</p>
+<p id="today-status" class="status" role="status"></p>
+<div class="actions"><button type="button" class="secondary" id="today-reset">원래 과목으로</button><button type="button" class="secondary" id="today-cancel">취소</button><button type="submit">오늘만 변경</button></div>
+</form>
+</dialog>
+<dialog id="tasks-editor" aria-labelledby="tasks-title"><form id="tasks-form"><h2 id="tasks-title">오늘 아침 할 일</h2><p class="hint">한 줄에 하나씩, 최대 3줄까지 입력해 주세요.<br>오늘 할 일은 다음 날 자동으로 비워집니다.</p><label for="tasks-text">오늘 할 일 (최대 3줄)</label><textarea id="tasks-text" rows="3" maxlength="300" placeholder="책상 정리하기&#10;알림장 확인하기&#10;조용히 책 읽기"></textarea><p id="tasks-status" class="status" role="status"></p><div class="actions"><button type="button" class="secondary" id="tasks-cancel">취소</button><button type="submit">저장</button></div></form></dialog>
+<script>
+(()=>{
+'use strict';
+const KEY='class-morning-timetable-v1';
+const TODAY_KEY='class-morning-timetable-today-v1';
+const dateKey=(date=new Date())=>`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+const START_KEY='class-morning-first-start-v1',TASKS_KEY='class-morning-tasks-v1';
+let firstStart='09:00',morningTasks={date:dateKey(),lines:[]};
+try{const saved=localStorage.getItem(START_KEY);if(saved&&/^([01]\d|2[0-3]):[0-5]\d$/.test(saved))firstStart=saved;const tasks=JSON.parse(localStorage.getItem(TASKS_KEY));if(tasks&&tasks.date===dateKey()&&Array.isArray(tasks.lines))morningTasks={date:tasks.date,lines:tasks.lines.filter(line=>typeof line==='string').slice(0,3)};else localStorage.removeItem(TASKS_KEY);}catch(e){}
+function renderMorning(){const now=new Date();if(morningTasks.date!==dateKey(now)){morningTasks={date:dateKey(now),lines:[]};try{localStorage.removeItem(TASKS_KEY);}catch(e){}document.getElementById('tasks-editor').close();}const [hours,minutes]=firstStart.split(':').map(Number);const before=now.getHours()*60+now.getMinutes()<hours*60+minutes;const section=document.getElementById('morning');section.classList.toggle('featured',before);document.getElementById('morning-title').textContent=`0교시 아침 자습${before?' · '+firstStart+'까지':''}`;const content=document.getElementById('morning-tasks');content.replaceChildren();if(morningTasks.lines.length){const list=document.createElement('ol');morningTasks.lines.forEach(line=>{const item=document.createElement('li');item.textContent=line;list.append(item);});content.append(list);}else{const text=document.createElement('p');text.className='morning-empty';text.textContent='오늘 아침 할 일을 입력해 주세요.';content.append(text);}}
+let changes={date:dateKey(),subjects:{}};
+try{const saved=JSON.parse(localStorage.getItem(TODAY_KEY));if(saved&&saved.date===dateKey()&&saved.subjects&&typeof saved.subjects==='object'&&!Array.isArray(saved.subjects))changes=saved;else localStorage.removeItem(TODAY_KEY);}catch(e){}
+const days=['일','월','화','수','목','금','토'];
+let timetable=Array.from({length:5},()=>Array(8).fill(''));
+try{const saved=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(saved)&&saved.length===5)timetable=timetable.map((day,d)=>day.map((_,p)=>typeof saved[d]?.[p]==='string'?saved[d][p]:''));}catch(e){}
+const board=document.getElementById('schedule'),editor=document.getElementById('editor');
+let lastDate='';
+function render(){
+ const now=new Date();lastDate=now.toDateString();
+ renderMorning();
+ if(changes.date!==dateKey(now)){changes={date:dateKey(now),subjects:{}};try{localStorage.removeItem(TODAY_KEY);}catch(e){}document.getElementById('today-editor').close();}
+ document.getElementById('date').textContent=`${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 ${days[now.getDay()]}요일`;
+ board.replaceChildren();
+ const weekday=now.getDay();
+ if(weekday===0||weekday===6){empty('오늘은 주말이에요.','편안하고 즐거운 하루 보내세요!');return;}
+ const lessons=timetable[weekday-1];
+ lessons.forEach((base,index)=>{const subject=typeof changes.subjects[index]==='string'?changes.subjects[index]:base;if(!subject.trim())return;const changed=subject!==base;const row=document.createElement('div');row.className='lesson'+(changed?' changed':'');const period=document.createElement('button');period.type='button';period.className='period';period.textContent=`${index+1}교시`;period.setAttribute('aria-label',`${index+1}교시 ${subject}, 오늘 과목 변경`);period.onclick=()=>openToday(index);const name=document.createElement('span');name.className='subject';name.textContent=subject;row.append(period,name);if(changed){const badge=document.createElement('span');badge.className='change-label';badge.textContent='오늘 변경';row.append(badge);}board.append(row);});
+ if(!board.children.length)empty('오늘 시간표가 아직 없어요.','위의 ‘시간표 설정’에서 과목을 입력해 주세요.');
+}
+function empty(title,detail){const box=document.createElement('div');box.className='empty';const strong=document.createElement('strong');strong.textContent=title;const sub=document.createElement('div');sub.textContent=detail;box.append(strong,sub);board.append(box);}
+const todayEditor=document.getElementById('today-editor'),todaySubject=document.getElementById('today-subject');
+let selectedPeriod=0,editingDate='';
+function openToday(index){render();const day=new Date().getDay();if(day===0||day===6)return;selectedPeriod=index;editingDate=dateKey();const base=timetable[day-1][index];document.getElementById('today-title').textContent=`${index+1}교시 오늘 과목 변경`;document.getElementById('base-subject').textContent=`기초 시간표: ${base||'미입력'}`;todaySubject.value=typeof changes.subjects[index]==='string'?changes.subjects[index]:base;document.getElementById('today-status').textContent='';todayEditor.showModal();todaySubject.focus();todaySubject.select();}
+function saveToday(reset){if(editingDate!==dateKey()){todayEditor.close();render();return;}const value=todaySubject.value.trim();if(!reset&&!value){todaySubject.setCustomValidity('과목을 입력해 주세요.');todaySubject.reportValidity();return;}const base=timetable[new Date().getDay()-1][selectedPeriod];if(reset||value===base)delete changes.subjects[selectedPeriod];else changes.subjects[selectedPeriod]=value;render();try{localStorage.setItem(TODAY_KEY,JSON.stringify(changes));todayEditor.close();}catch(e){document.getElementById('today-status').textContent='오늘 변경은 반영되었습니다. 브라우저 저장이 제한되어 창을 닫으면 사라질 수 있습니다.';}}
+todaySubject.oninput=()=>todaySubject.setCustomValidity('');
+document.getElementById('today-form').onsubmit=event=>{event.preventDefault();saveToday(false);};
+document.getElementById('today-reset').onclick=()=>saveToday(true);
+document.getElementById('today-cancel').onclick=()=>todayEditor.close();
+const inputs=document.getElementById('inputs');
+for(let p=0;p<8;p++){const row=document.createElement('tr');const label=document.createElement('th');label.scope='row';label.textContent=`${p+1}교시`;row.append(label);for(let d=0;d<5;d++){const cell=document.createElement('td');const input=document.createElement('input');input.id=`subject-${d}-${p}`;input.maxLength=40;input.setAttribute('aria-label',`${days[d+1]}요일 ${p+1}교시 과목`);cell.append(input);row.append(cell);}inputs.append(row);}
+document.getElementById('edit').onclick=()=>{for(let d=0;d<5;d++)for(let p=0;p<8;p++)document.getElementById(`subject-${d}-${p}`).value=timetable[d][p];document.getElementById('first-start').value=firstStart;document.getElementById('status').textContent='';editor.showModal();};
+document.getElementById('cancel').onclick=()=>editor.close();
+document.getElementById('form').onsubmit=event=>{event.preventDefault();const next=timetable.map((day,d)=>day.map((_,p)=>document.getElementById(`subject-${d}-${p}`).value.trim()));timetable=next;firstStart=document.getElementById('first-start').value;render();try{localStorage.setItem(KEY,JSON.stringify(next));localStorage.setItem(START_KEY,firstStart);editor.close();}catch(e){document.getElementById('status').textContent='이 브라우저에서 저장이 제한되어 있습니다. 입력한 설정은 현재 창에 반영되지만, 창을 닫으면 사라질 수 있습니다.';}};
+const tasksEditor=document.getElementById('tasks-editor'),tasksText=document.getElementById('tasks-text');let tasksEditingDate='';
+document.getElementById('edit-tasks').onclick=()=>{renderMorning();tasksEditingDate=dateKey();tasksText.value=morningTasks.lines.join('\n');tasksText.setCustomValidity('');document.getElementById('tasks-status').textContent='';tasksEditor.showModal();tasksText.focus();};
+tasksText.oninput=()=>tasksText.setCustomValidity('');
+document.getElementById('tasks-cancel').onclick=()=>tasksEditor.close();
+document.getElementById('tasks-form').onsubmit=event=>{event.preventDefault();if(tasksEditingDate!==dateKey()){tasksEditor.close();renderMorning();return;}const lines=tasksText.value.replace(/\r/g,'').split('\n');if(lines.length>3){tasksText.setCustomValidity('오늘 할 일은 최대 3줄까지 입력해 주세요.');tasksText.reportValidity();return;}morningTasks={date:dateKey(),lines:lines.map(line=>line.trim()).filter(Boolean)};renderMorning();try{localStorage.setItem(TASKS_KEY,JSON.stringify(morningTasks));tasksEditor.close();}catch(e){document.getElementById('tasks-status').textContent='오늘 할 일은 반영되었습니다. 브라우저 저장이 제한되어 창을 닫으면 사라질 수 있습니다.';}};
+render();setInterval(()=>{if(new Date().toDateString()!==lastDate)render();else renderMorning();},1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)render();});
+})();
+</script>
+</body>
+</html>

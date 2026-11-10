@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>우리 반 1인 1역 희망 조사</title>
+<style>
+:root{font-family:system-ui,'Malgun Gothic',sans-serif;color:#203431;background:#f3f6f2;line-height:1.6}*{box-sizing:border-box}body{margin:0}main{max-width:820px;margin:48px auto;padding:0 22px}header{margin-bottom:24px}.eyebrow{color:#367260;font-weight:700;letter-spacing:.08em;font-size:13px}h1{font-size:clamp(26px,5vw,36px);margin:8px 0}h2{font-size:22px;margin-top:0}.sub,small{color:#597069}.card{background:white;border:1px solid #dce6df;border-radius:20px;padding:28px;margin:18px 0;box-shadow:0 8px 28px #20343106}label{display:block;font-weight:700;margin:18px 0 7px}input,select,textarea{width:100%;font:inherit;padding:12px;border:1px solid #a8bcb1;border-radius:9px;background:white;color:inherit}textarea{min-height:210px;resize:vertical}button{font:inherit;font-weight:700;cursor:pointer;padding:12px 20px;border-radius:10px;border:1px solid #bed0c4;background:#fff;color:#284e40}button.primary{background:#256750;color:white;border-color:#256750}button:disabled{opacity:.5;cursor:not-allowed}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #e4ad36;outline-offset:3px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.rank{color:#35745a;font-size:13px}#message{padding:14px 18px;border-radius:10px;background:#e2eee6;margin:18px 0;white-space:pre-line}#message.error{background:#ffebe5;color:#873b28}[hidden]{display:none!important}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:14px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid #e1e8e2}footer{font-size:13px;color:#5c7166;margin:24px 0 40px}.quiet{font-size:14px;background:transparent} .note{font-size:14px;background:#f3f6f2;padding:14px;border-radius:10px}@media(max-width:560px){main{margin-top:26px}.card{padding:22px}.choices{grid-template-columns:1fr}.choices label{margin-top:12px}}
+
+/* 화면 밖에서 실제 A4 폭으로 측정하여 한 장에 맞춥니다. */
+#printSheet{position:fixed;left:-10000px;top:0;width:186mm;visibility:hidden;color:#000;background:#fff;font-family:'Malgun Gothic',system-ui,sans-serif;line-height:1.35}
+#printContent{display:flow-root;font-size:22pt}
+#printSheet table{table-layout:fixed;width:100%;border-collapse:collapse;white-space:normal;font-size:inherit}
+#printSheet caption{font-size:1.35em;font-weight:800;padding:0 0 .5em;color:#000;caption-side:top}
+#printSheet th,#printSheet td{border:1.5px solid #000;padding:.3em .45em;overflow-wrap:anywhere;word-break:normal;color:#000;vertical-align:middle}
+#printSheet th{font-weight:800;text-align:center}
+#printSheet td{font-weight:600}
+#printSheet th:first-child{width:43%}
+#printSheet tr{break-inside:avoid}
+@page{size:A4 portrait;margin:12mm}
+@media print{
+ html,body{margin:0!important;padding:0!important;background:#fff!important;color:#000!important}
+ body>main,body>script{display:none!important}
+ input,select,textarea,button{display:none!important}
+ #printSheet{position:static;visibility:visible;width:186mm;margin:0;padding:0;break-inside:avoid}
+ #printSheet:not([data-ready="true"]){display:none!important}
+}
+</style>
+</head>
+<body><main>
+<header><div class="eyebrow">OUR CLASS · 함께 만드는 우리 반</div><h1>1인 1역 희망 조사</h1><p class="sub">내가 맡고 싶은 역할을 생각하고, 세 가지 희망을 골라 주세요.</p></header>
+<div id="message" role="status" aria-live="polite" hidden></div>
+<section id="setup" class="card" hidden><h2>선생님, 역할부터 준비해 주세요</h2><p>역할 이름을 한 줄에 하나씩 입력하세요. 서로 다른 역할이 3개 이상 필요합니다.</p><form id="setupForm"><label for="roles">우리 반 역할 목록</label><textarea id="roles" placeholder="칠판 지킴이&#10;도서 정리 도우미&#10;급식 도우미&#10;환경 지킴이" required></textarea><small>앞뒤 공백과 빈 줄은 제외하고, 같은 이름은 하나로 합칩니다.</small><div class="actions"><button class="primary" type="submit">이 목록으로 조사 시작</button></div></form></section>
+<section id="survey" class="card" hidden><div class="eyebrow">학생 입력</div><h2>어떤 역할을 맡고 싶나요?</h2><p class="sub">번호를 확인하고 서로 다른 역할을 골라 주세요. 제출 후에는 수정할 수 없습니다.</p><form id="surveyForm"><label for="number">학생 번호</label><input id="number" type="text" inputmode="numeric" pattern="[0-9]+" maxlength="6" placeholder="예: 7" autocomplete="off" required><div class="choices"><div><label for="first"><span class="rank">첫 번째 희망</span><br>1지망</label><select id="first" required></select></div><div><label for="second"><span class="rank">두 번째 희망</span><br>2지망</label><select id="second" required></select></div><div><label for="third"><span class="rank">세 번째 희망</span><br>3지망</label><select id="third" required></select></div></div><div class="actions"><button id="submit" class="primary" type="submit">희망 제출하기</button></div></form></section>
+<div class="actions"><button id="teacherToggle" class="quiet" type="button" hidden>교사용 관리 열기</button></div>
+<section id="teacher" class="card" hidden><h2>교사용 제출 현황</h2><p id="count"></p><div class="table-wrap"><table><thead><tr><th>번호</th><th>1지망</th><th>2지망</th><th>3지망</th></tr></thead><tbody id="rows"></tbody></table></div><div class="actions"><button id="download" type="button">CSV로 저장</button><button id="reset" type="button">전체 초기화</button></div><hr><h2>역할 배정</h2><p>역할별 필요 인원을 입력하세요. 0명인 역할에는 배정하지 않습니다.</p><div id="capacities"></div><p id="capacityTotal"></p><p class="note">1지망 배정 인원을 최대로 하고, 그 안에서 2지망, 다음으로 3지망 배정 인원을 최대화합니다. 지망을 받지 못한 학생은 빈자리에 배정합니다. 정원이 부족하면 미배정됩니다. 동률이면 번호순으로 계산합니다.</p><button id="assign" class="primary" type="button">배정</button><div id="assignmentResult" hidden><h2 style="margin-top:24px">배정 결과</h2><p id="assignmentStats" role="status" class="note"></p><div class="table-wrap"><table><thead><tr><th>번호</th><th>배정 역할</th><th>배정 구분</th></tr></thead><tbody id="assignmentRows"></tbody></table></div><button id="print" type="button">인쇄</button><button id="assignmentDownload" type="button">배정 결과 CSV로 저장</button></div><p class="note">교사용 화면에는 비밀번호가 없습니다. 학생은 선생님의 안내에 따라 입력하세요. 역할 목록을 바꾸려면 결과를 저장한 뒤 전체 초기화하세요.</p></section>
+<footer>인터넷 없이 사용 가능 · 이 파일을 같은 위치에서, 같은 컴퓨터의 같은 크롬 프로필로 열어 주세요.<br>제출 기록은 이 브라우저에만 저장되며 다른 기기와 공유되지 않습니다. 시크릿 모드나 브라우저 데이터 삭제 시 기록이 사라질 수 있으니 CSV로 보관하세요. 번호 중복 방지는 현재 저장된 기록을 기준으로 하며, 학생 본인 인증 기능은 없습니다.</footer>
+</main>
+<section id="printSheet" aria-hidden="true"><div id="printContent"><table><caption>우리 반 1인 1역 담당표</caption><thead><tr><th>역할</th><th>담당 학생 번호</th></tr></thead><tbody id="printRows"></tbody></table></div></section>
+<script>
+'use strict';
+const KEY='class-role-survey-v1';
+const $=id=>document.getElementById(id);
+let state,available=true;
+function tell(text,error=false){$('message').textContent=text;$('message').className=error?'error':'';$('message').hidden=false;}
+function read(){const raw=localStorage.getItem(KEY);if(raw===null)return {roles:[],entries:[]};const s=JSON.parse(raw);if(!s||!Array.isArray(s.roles)||!Array.isArray(s.entries)||!s.roles.every(x=>typeof x==='string')||!s.entries.every(e=>e&&typeof e.number==='string'&&Array.isArray(e.choices)&&e.choices.length===3&&e.choices.every(x=>typeof x==='string')))throw Error('invalid');return s;}
+function save(next){try{localStorage.setItem(KEY,JSON.stringify(next));state=next;return true;}catch(e){tell('저장하지 못했습니다. 브라우저 저장 공간과 설정을 확인하세요. 변경 내용은 저장되지 않았습니다.',true);return false;}}
+function render(){const ready=state.roles.length>=3;$('setup').hidden=ready;$('survey').hidden=!ready;$('teacherToggle').hidden=!ready;if(!ready)$('teacher').hidden=true;for(const id of ['first','second','third']){const select=$(id);select.replaceChildren(new Option('역할을 선택하세요',''));for(const role of state.roles)select.add(new Option(role,role));}renderRows();renderCapacities();}
+function renderRows(){$('count').textContent=`제출한 학생: ${state.entries.length}명`;$('rows').replaceChildren();for(const e of [...state.entries].sort((a,b)=>Number(a.number)-Number(b.number))){const tr=document.createElement('tr');for(const value of [e.number,...e.choices]){const td=document.createElement('td');td.textContent=value;tr.append(td);}$('rows').append(tr);}$('download').disabled=!state.entries.length;renderAssignment();}
+
+// 최소 비용 최대 유량. 역방향 간선으로 이전 배정을 재조정합니다.
+function allocate(entries,roles,capacities){
+ const students=[...entries].sort((a,b)=>Number(a.number)-Number(b.number));
+ const n=students.length,base=n+1,source=0,rs=n+1,sink=rs+roles.length;
+ const graph=Array.from({length:sink+1},()=>[]),links=[];
+ function edge(a,b,cap,cost){const f={to:b,rev:graph[b].length,cap,cost},r={to:a,rev:graph[a].length,cap:0,cost:-cost};graph[a].push(f);graph[b].push(r);return f;}
+ students.forEach((student,i)=>{edge(source,i+1,1,0);links[i]=roles.map((role,j)=>{const rank=student.choices.indexOf(role),score=rank===0?base*base:rank===1?base:rank===2?1:0;return edge(i+1,rs+j,1,-score);});});
+ roles.forEach((_,j)=>edge(rs+j,sink,Math.min(capacities[j],n),0));
+ for(;;){const dist=Array(graph.length).fill(Infinity),prev=Array(graph.length),queued=Array(graph.length).fill(false),queue=[source];dist[source]=0;queued[source]=true;
+  for(let k=0;k<queue.length;k++){const u=queue[k];queued[u]=false;graph[u].forEach((e,j)=>{if(e.cap>0&&dist[e.to]>dist[u]+e.cost){dist[e.to]=dist[u]+e.cost;prev[e.to]=[u,j];if(!queued[e.to]){queued[e.to]=true;queue.push(e.to);}}});}
+  if(!Number.isFinite(dist[sink]))break;
+  for(let v=sink;v!==source;){const [u,j]=prev[v],e=graph[u][j];e.cap--;graph[v][e.rev].cap++;v=u;}
+ }
+ return students.map((student,i)=>{const j=links[i].findIndex(e=>e.cap===0),role=j<0?null:roles[j];return {number:student.number,role,rank:role===null?null:student.choices.indexOf(role)+1};});
+}
+function enteredCapacities(){return state.roles.map((_,i)=>{const raw=$('capacity-'+i).value;return /^\d{1,3}$/.test(raw)?Number(raw):NaN;});}
+function updateCapacityTotal(){const caps=enteredCapacities();$('capacityTotal').textContent=caps.some(x=>!Number.isInteger(x))?'필요 인원을 0~999 사이의 정수로 입력하세요.': '전체 필요 인원: '+caps.reduce((a,b)=>a+b,0)+'명 / 제출 학생: '+state.entries.length+'명';}
+function renderCapacities(){
+ $('capacities').replaceChildren();state.roles.forEach((role,i)=>{const label=document.createElement('label');label.htmlFor='capacity-'+i;label.textContent=role;const input=document.createElement('input');input.id='capacity-'+i;input.type='number';input.min='0';input.max='999';input.step='1';input.value=state.capacities?.[i]??1;input.required=true;
+ input.addEventListener('input',()=>{state.assignment=null;renderAssignment();updateCapacityTotal();});
+ input.addEventListener('change',()=>{const caps=enteredCapacities();if(caps.every(x=>Number.isInteger(x)&&x>=0&&x<=999))save({...state,capacities:caps,assignment:null});});
+ $('capacities').append(label,input);});updateCapacityTotal();$('assign').disabled=!state.entries.length;
+}
+function renderAssignment(){$('printSheet').removeAttribute('data-ready');const result=state.assignment;$('assignmentResult').hidden=!Array.isArray(result);if(!Array.isArray(result))return;const counts=[0,0,0,0];let missing=0;$('assignmentRows').replaceChildren();for(const e of result){if(e.role===null)missing++;else counts[e.rank]++;const tr=document.createElement('tr');for(const value of [e.number,e.role??'미배정',e.role===null?'자리 부족':e.rank===0?'희망 외 배정':e.rank+'지망']){const td=document.createElement('td');td.textContent=value;tr.append(td);}$('assignmentRows').append(tr);}$('assignmentStats').textContent='1지망 '+counts[1]+'명 · 2지망 '+counts[2]+'명 · 3지망 '+counts[3]+'명 · 희망 외 '+counts[0]+'명 · 미배정 '+missing+'명';}
+
+function buildPrintRows(roles,assignment){
+ const rows=roles.map(role=>[role,assignment.filter(e=>e.role===role).map(e=>e.number).sort((a,b)=>Number(a)-Number(b)).map(n=>n+'번').join(', ')||'—']);
+ const missing=assignment.filter(e=>e.role===null).map(e=>e.number).sort((a,b)=>Number(a)-Number(b));
+ if(missing.length)rows.push(['미배정',missing.map(n=>n+'번').join(', ')]);
+ return rows;
+}
+function preparePrint(){
+ const sheet=$('printSheet'),content=$('printContent');sheet.removeAttribute('data-ready');
+ if(!Array.isArray(state?.assignment)||!state.assignment.length)return false;
+ $('printRows').replaceChildren();
+ for(const values of buildPrintRows(state.roles,state.assignment)){const tr=document.createElement('tr');for(const value of values){const td=document.createElement('td');td.textContent=value;tr.append(td);}$('printRows').append(tr);}
+ // A4: 297mm - 위아래 여백 24mm. 반올림 오차를 위해 2mm를 더 확보합니다.
+ const limit=271*96/25.4;
+ content.style.zoom='1';
+ // 가능한 한 큰 글씨를 사용하며, 내용이 많으면 글자 크기를 줄입니다.
+ let low=8,high=24;
+ for(let i=0;i<12;i++){const mid=(low+high)/2;content.style.fontSize=mid+'pt';if(content.getBoundingClientRect().height<=limit)low=mid;else high=mid;}
+ content.style.fontSize=low+'pt';
+ const height=content.getBoundingClientRect().height;
+ if(height>limit)content.style.zoom=String(limit/height);
+ sheet.setAttribute('data-ready','true');return true;
+}
+$('print').addEventListener('click',()=>{if(!preparePrint()){tell('배정을 완료한 뒤 인쇄해 주세요.',true);return;}window.print();});
+window.addEventListener('beforeprint',()=>{preparePrint();});
+
+$('assign').addEventListener('click',()=>{const caps=enteredCapacities();if(caps.some(x=>!Number.isInteger(x)||x<0||x>999)){tell('필요 인원을 0~999 사이의 정수로 입력해 주세요.',true);return;}try{const latest=read();if(JSON.stringify(latest.roles)!==JSON.stringify(state.roles)||JSON.stringify(latest.entries)!==JSON.stringify(state.entries)){state=latest;render();tell('제출 기록이 변경되었습니다. 필요 인원을 확인한 뒤 다시 배정해 주세요.',true);return;}}catch(e){tell('저장 기록을 읽지 못했습니다.',true);return;}if(!state.entries.length)return;const assignment=allocate(state.entries,state.roles,caps);if(save({...state,capacities:caps,assignment})){renderAssignment();tell('배정 결과를 저장했습니다. 필요 인원이나 제출 내용이 바뀌면 다시 배정해 주세요.');}});
+$('assignmentDownload').addEventListener('click',()=>{if(!Array.isArray(state.assignment))return;const rows=[['번호','배정 역할','배정 구분'],...state.assignment.map(e=>[e.number,e.role??'미배정',e.role===null?'자리 부족':e.rank===0?'희망 외 배정':e.rank+'지망'])];const cell=x=>'"'+String(x).replace(/^[=+@\-\t\r]/,match=>"'"+match).replace(/"/g,'""')+'"';const blob=new Blob(['\uFEFF'+rows.map(row=>row.map(cell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='1인1역_배정결과.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+
+try{const probe=KEY+'-check';localStorage.setItem(probe,'1');localStorage.removeItem(probe);state=read();render();}catch(e){available=false;tell('브라우저 저장소를 사용할 수 없거나 기존 기록을 읽을 수 없습니다. 기록 보호를 위해 조사를 시작하지 않았습니다. 원래 사용하던 크롬 프로필과 파일 위치를 확인하세요.',true);}
+$('setupForm').addEventListener('submit',e=>{e.preventDefault();if(!available)return;const roles=[...new Set($('roles').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean))];if(roles.length<3){tell('서로 다른 역할을 3개 이상 입력해 주세요.',true);return;}try{state=read();}catch(e){tell('기존 기록을 읽지 못했습니다. 새로고침 후 확인해 주세요.',true);return;}if(state.roles.length){render();tell('다른 창에서 이미 조사를 시작했습니다. 현재 목록을 사용해 주세요.',true);return;}if(save({roles,entries:[]})){render();tell('조사가 준비되었습니다. 학생들이 차례로 입력해 주세요.');$('number').focus();}});
+$('surveyForm').addEventListener('submit',e=>{e.preventDefault();if(!available)return;const raw=$('number').value.trim();if(!/^[0-9]{1,6}$/.test(raw)||Number(raw)<1){tell('학생 번호를 1 이상의 숫자로 입력해 주세요. (최대 6자리)',true);return;}const number=String(Number(raw));const choices=['first','second','third'].map(id=>$(id).value);try{state=read();}catch(e){tell('저장된 기록을 읽지 못했습니다. 새로고침 후 확인해 주세요.',true);return;}if(state.entries.some(x=>x.number===number)){tell(`${number}번은 이미 제출했습니다. 한 번호는 한 번만 제출할 수 있습니다.`,true);return;}if(choices.some(x=>!state.roles.includes(x))||new Set(choices).size!==3){tell('1·2·3지망에 서로 다른 역할을 선택해 주세요.',true);return;}if(!confirm(`${number}번으로 제출할까요?\n1지망: ${choices[0]}\n2지망: ${choices[1]}\n3지망: ${choices[2]}\n\n제출 후에는 수정할 수 없습니다.`))return;const next={...state,assignment:null,entries:[...state.entries,{number,choices,submittedAt:new Date().toISOString()}]};if(save(next)){$('surveyForm').reset();renderRows();renderCapacities();tell(`${number}번의 희망을 저장했습니다. 다음 학생이 입력해 주세요.`);$('number').focus();}});
+$('teacherToggle').addEventListener('click',()=>{$('teacher').hidden=!$('teacher').hidden;$('teacherToggle').textContent=$('teacher').hidden?'교사용 관리 열기':'교사용 관리 닫기';});
+$('download').addEventListener('click',()=>{const cell=x=>'"'+String(x).replace(/^[=+@\-\t\r]/,"'$&").replace(/"/g,'""')+'"';const data=[['번호','1지망','2지망','3지망'],...[...state.entries].sort((a,b)=>Number(a.number)-Number(b.number)).map(e=>[e.number,...e.choices])];const blob=new Blob(['\uFEFF'+data.map(row=>row.map(cell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='1인1역_희망조사_'+new Date().toLocaleDateString('sv-SE')+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+$('reset').addEventListener('click',()=>{if(prompt('역할 목록과 모든 제출 기록이 삭제됩니다. 결과를 CSV로 저장했는지 확인하세요.\n계속하려면 “전체 초기화”를 입력하세요.')!=='전체 초기화')return;if(save({roles:[],entries:[]})){$('roles').value='';$('surveyForm').reset();render();tell('초기화했습니다. 새 역할 목록을 입력해 주세요.');}});
+window.addEventListener('storage',e=>{if(e.key===KEY){try{state=read();render();tell('다른 창에서 기록이 변경되어 화면을 갱신했습니다.');}catch(e){location.reload();}}});
+</script></body></html>

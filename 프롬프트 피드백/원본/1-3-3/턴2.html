@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>시 설계도</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f3ed; color: #283d35; font-family: "맑은 고딕", "Malgun Gothic", sans-serif; line-height: 1.65; }
+    main { width: min(100% - 40px, 920px); margin: 54px auto 72px; }
+    header { margin-bottom: 30px; }
+    h1 { margin: 0 0 8px; font-size: clamp(30px, 5vw, 42px); letter-spacing: -.05em; }
+    header p { margin: 0; color: #65746b; }
+    .sheet { padding: 32px; border: 1px solid #dedfd5; border-radius: 20px; background: #fffefb; }
+    label { display: block; margin-bottom: 9px; font-weight: 700; font-size: 17px; }
+    input, textarea { display: block; width: 100%; border: 1px solid #d5dcd3; border-radius: 10px; background: #fff; color: #283d35; font: inherit; padding: 13px 15px; }
+    input::placeholder, textarea::placeholder { color: #899289; opacity: 1; }
+    input:focus, textarea:focus { outline: 3px solid #d6e6d8; border-color: #5c8067; }
+    textarea { min-height: 112px; resize: vertical; }
+    .topic { margin-bottom: 28px; }
+    .plan { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .plan > div:last-child { grid-column: 1 / -1; }
+    .poem { margin-top: 32px; padding-top: 28px; border-top: 1px solid #e2e5dc; }
+    .poem textarea { min-height: 310px; line-height: 1.9; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    button { padding: 11px 18px; border: 1px solid #52745e; border-radius: 9px; background: #fffefb; color: #355741; font: inherit; font-weight: 700; cursor: pointer; }
+    button:last-child { background: #355741; color: white; }
+    button:focus-visible { outline: 3px solid #a6c5ae; outline-offset: 3px; }
+    #print-page { position: absolute; top: 0; left: -10000px; width: 186mm; visibility: hidden; }
+    .print-content { width: 186mm; color: #222; font-size: 11pt; line-height: 1.5; transform-origin: top left; }
+    .print-content h1 { margin: 0 0 5mm; font-size: 23pt; }
+    .print-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3mm; }
+    .print-field { border: 1px solid #999; padding: 3mm; min-height: 32mm; break-inside: avoid; }
+    .print-field.wide { grid-column: 1 / -1; }
+    .print-field.topic { min-height: 22mm; margin: 0; }
+    .print-field.poem-field { min-height: 83mm; }
+    .print-label { font-weight: 700; font-size: 12pt; }
+    .print-help { color: #777; font-size: 9pt; margin: 1mm 0 2mm; }
+    .print-value { white-space: pre-wrap; overflow-wrap: anywhere; }
+    @page { size: A4 portrait; margin: 12mm; }
+    @media print {
+      body { margin: 0; background: white; }
+      main { display: none; }
+      #print-page { position: static; visibility: visible; width: 186mm; height: 270mm; overflow: hidden; }
+    }
+    @media (max-width: 600px) {
+      main { width: calc(100% - 28px); margin-top: 28px; }
+      .sheet { padding: 22px 18px; border-radius: 15px; }
+      .plan { grid-template-columns: 1fr; gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>시 설계도</h1>
+      <p>다섯 칸에 생각을 모으고, 나만의 시를 써 보세요.</p>
+    </header>
+    <div class="sheet">
+      <div class="topic">
+        <label for="topic">주제</label>
+        <input id="topic" type="text" placeholder="어떤 이야기를 시로 쓰고 싶나요?">
+      </div>
+      <div class="plan">
+        <div>
+          <label for="subject">대상</label>
+          <textarea id="subject" placeholder="누구 또는 무엇을 바라보나요?"></textarea>
+        </div>
+        <div>
+          <label for="scene">장면</label>
+          <textarea id="scene" placeholder="언제, 어디에서 어떤 일이 일어나나요?"></textarea>
+        </div>
+        <div>
+          <label for="senses">감각</label>
+          <textarea id="senses" placeholder="빛깔, 소리, 냄새, 맛, 촉감을 떠올려 보세요."></textarea>
+        </div>
+        <div>
+          <label for="metaphor">비유</label>
+          <textarea id="metaphor" placeholder="대상을 무엇에 빗대어 표현할까요?"></textarea>
+        </div>
+        <div>
+          <label for="rhythm">운율</label>
+          <textarea id="rhythm" placeholder="되풀이하고 싶은 말이나 소리를 적어 보세요."></textarea>
+        </div>
+      </div>
+      <div class="poem">
+        <label for="poem">나의 시</label>
+        <textarea id="poem" placeholder="위에서 모은 생각으로 시를 자유롭게 써 보세요."></textarea>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" id="print-blank">빈 설계도 인쇄</button>
+      <button type="button" id="print-mine">내 설계도 인쇄</button>
+    </div>
+  </main>
+  <div id="print-page" aria-hidden="true"></div>
+  <script>
+    const printPage = document.getElementById('print-page');
+    let printMode = 'mine';
+
+    function preparePrint() {
+      const content = document.createElement('div');
+      content.className = 'print-content';
+      const title = document.createElement('h1');
+      title.textContent = '시 설계도';
+      content.append(title);
+      const grid = document.createElement('div');
+      grid.className = 'print-grid';
+      document.querySelectorAll('input, textarea').forEach(field => {
+        const box = document.createElement('div');
+        box.className = 'print-field';
+        if (['topic', 'rhythm', 'poem'].includes(field.id)) box.classList.add('wide');
+        if (field.id === 'topic') box.classList.add('topic');
+        if (field.id === 'poem') box.classList.add('poem-field');
+        const label = document.createElement('div');
+        label.className = 'print-label';
+        label.textContent = document.querySelector('label[for="' + field.id + '"]').textContent;
+        const help = document.createElement('div');
+        help.className = 'print-help';
+        help.textContent = field.placeholder;
+        box.append(label, help);
+        if (printMode === 'mine') {
+          const value = document.createElement('div');
+          value.className = 'print-value';
+          value.textContent = field.value;
+          box.append(value);
+        }
+        grid.append(box);
+      });
+      content.append(grid);
+      printPage.replaceChildren(content);
+      // 긴 글도 잘리지 않도록 인쇄용 전체 내용을 한 장 높이에 맞춥니다.
+      const availableHeight = printPage.getBoundingClientRect().width * 270 / 186;
+      const scale = Math.min(1, availableHeight / content.getBoundingClientRect().height);
+      content.style.transform = 'scale(' + scale + ')';
+    }
+
+    function printDesign(mode) {
+      printMode = mode;
+      preparePrint();
+      window.print();
+    }
+    document.getElementById('print-blank').addEventListener('click', () => printDesign('blank'));
+    document.getElementById('print-mine').addEventListener('click', () => printDesign('mine'));
+    window.addEventListener('beforeprint', preparePrint);
+    window.addEventListener('afterprint', () => { printMode = 'mine'; });
+  </script>
+</body>
+</html>

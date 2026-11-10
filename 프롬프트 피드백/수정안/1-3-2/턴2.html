@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>문단 번호 읽기판</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#18283c;font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif}header{padding:30px 24px 20px;max-width:1200px;margin:auto}h1{font-size:30px;margin:0 0 10px}header p{margin:0;color:#526276;line-height:1.7}main{max-width:1200px;margin:auto;padding:0 24px 40px}.controls,.board{background:white;border:1px solid #dce3ec;border-radius:18px;padding:24px;margin-bottom:20px}label{display:block;font-weight:700;margin-bottom:12px}textarea{width:100%;min-height:235px;resize:vertical;border:1px solid #aab9ca;border-radius:10px;padding:16px;font:18px/1.8 inherit;font-family:inherit;font-size:18px;line-height:1.8;color:inherit}textarea:focus{outline:3px solid #bad8ff;border-color:#2563eb}.hint{font-size:14px;line-height:1.7;color:#526276;margin:10px 0 18px}.toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:12px}button{border:1px solid #b9c7d8;background:white;border-radius:9px;padding:11px 17px;font:inherit;font-weight:700;color:#243b58;cursor:pointer}button.primary{background:#245bd7;border-color:#245bd7;color:white}button:hover{filter:brightness(.95)}.size{display:flex;align-items:center;gap:10px;margin-left:auto}.size label{margin:0;font-size:15px}input[type=range]{width:130px;accent-color:#245bd7}output{min-width:42px;font-size:14px}.board-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #e4eaf1;padding-bottom:16px;margin-bottom:20px}h2{font-size:20px;margin:0}.count{font-size:14px;color:#617185}.reading{font-size:var(--reading-size,36px);line-height:1.8;word-break:keep-all;overflow-wrap:anywhere}.paragraph{display:flex;gap:20px;padding:22px 0;border-bottom:1px solid #e4eaf1}.paragraph:last-child{border-bottom:0}.paragraph-number{color:#245bd7;font-weight:800;flex:0 0 1.8em}.sentences{flex:1;min-width:0}.sentence{display:flex;align-items:baseline;gap:16px;margin-bottom:12px}.sentence:last-child{margin-bottom:0}.sentence-number{font-size:.6em;font-weight:700;color:#667a94;min-width:1.6em;text-align:right;font-variant-numeric:tabular-nums}.sentence-text{white-space:pre-wrap}.empty{font-size:20px;color:#758499;text-align:center;padding:40px 0}.example{margin-top:18px;border-top:1px solid #e4eaf1;padding-top:15px}summary{cursor:pointer;color:#405775;font-weight:600}pre{font:15px/1.8 inherit;font-family:inherit;white-space:pre-wrap;background:#f5f7fb;padding:16px;border-radius:8px;margin-bottom:0}@media(max-width:600px){header{padding:24px 16px 16px}main{padding:0 12px 24px}.controls,.board{padding:18px}.size{margin-left:0;width:100%}.paragraph{gap:8px}.sentence{gap:8px}.reading{word-break:normal}}@media print{body{background:white}header,.controls,.board-head{display:none}main{max-width:none;padding:0}.board{border:0;padding:0}.paragraph{break-inside:avoid}}
+.sentence{width:100%;border:0;border-radius:10px;background:transparent;padding:8px 12px;text-align:left;font:inherit;color:inherit;font-weight:400;cursor:pointer}.sentence:hover{background:#f0f5ff;filter:none}.sentence[aria-pressed="true"]{background:#ffeb80}.sentence:focus-visible{outline:3px solid #245bd7;outline-offset:2px}.selection-hint{font-size:16px;color:#526276;line-height:1.7;margin:0 0 8px}@media print{.sentence[aria-pressed="true"]{print-color-adjust:exact;-webkit-print-color-adjust:exact}}</style>
+</head>
+<body>
+<header><h1>문단 번호 읽기판</h1><p>글을 붙여 넣으면 문단과 문장에 번호를 붙여 크게 보여 줍니다.</p></header>
+<main>
+<section class="controls" aria-label="글 입력">
+<label for="source">읽을 글</label>
+<textarea id="source" placeholder="한 줄에 한 문장씩 입력하세요.&#10;문단 사이에는 빈 줄을 넣으세요."></textarea>
+<p class="hint">문단은 <strong>빈 줄</strong>로 나누고, 문장은 <strong>한 줄에 하나씩</strong> 써 주세요.<br>문장 번호는 각 문단에서 1부터 다시 시작합니다.</p>
+<div class="toolbar"><button class="primary" id="render">읽기판 만들기</button><button id="example">예시 넣기</button><button id="clear">지우기</button><div class="size"><label for="fontSize">글씨 크기</label><input id="fontSize" type="range" min="24" max="64" value="36"><output id="fontValue" for="fontSize">36px</output></div></div>
+<details class="example"><summary>입력 예시 보기</summary><pre>아침 햇살이 교실 창문으로 들어왔습니다.
+아이들은 책을 펴고 자리에 앉았습니다.
+
+선생님이 천천히 글을 읽었습니다.
+우리는 문단의 중심 생각을 찾아보았습니다.</pre></details>
+</section>
+<section class="board" aria-labelledby="boardTitle"><div class="board-head"><h2 id="boardTitle">함께 읽어요</h2><span class="count" id="count" role="status"></span></div><p class="selection-hint">각 문단에서 중심 문장을 하나씩 눌러 보세요. 고른 문장은 노란색으로 표시되며, 다른 문장을 누르면 선택이 바뀝니다.</p><div class="reading" id="reading"><p class="empty">글을 입력하고 ‘읽기판 만들기’를 눌러 주세요.</p></div></section>
+</main>
+<script>
+const source=document.getElementById('source');
+const reading=document.getElementById('reading');
+const count=document.getElementById('count');
+const sample='아침 햇살이 교실 창문으로 들어왔습니다.\n아이들은 책을 펴고 자리에 앉았습니다.\n\n선생님이 천천히 글을 읽었습니다.\n우리는 문단의 중심 생각을 찾아보았습니다.';
+function paragraphMark(n){if(n<=20)return String.fromCodePoint(0x2460+n-1);if(n<=35)return String.fromCodePoint(0x3251+n-21);if(n<=50)return String.fromCodePoint(0x32b1+n-36);return '('+n+')';}
+function render(){
+ reading.replaceChildren();
+ const text=source.value.replace(/\r\n?/g,'\n').trim();
+ if(!text){const p=document.createElement('p');p.className='empty';p.textContent='글을 입력하고 ‘읽기판 만들기’를 눌러 주세요.';reading.append(p);count.textContent='';return;}
+ const paragraphs=text.split(/\n[\t ]*\n(?:[\t ]*\n)*/).map(p=>p.split('\n').map(s=>s.trim()).filter(Boolean)).filter(p=>p.length);
+ let total=0;
+ paragraphs.forEach((lines,i)=>{const block=document.createElement('div');block.className='paragraph';const mark=document.createElement('div');mark.className='paragraph-number';mark.textContent=paragraphMark(i+1);mark.setAttribute('aria-label',(i+1)+'문단');const sentences=document.createElement('div');sentences.className='sentences';lines.forEach((line,j)=>{const row=document.createElement('button');row.type='button';row.className='sentence';row.setAttribute('aria-pressed','false');row.addEventListener('click',()=>{sentences.querySelectorAll('.sentence').forEach(sentence=>sentence.setAttribute('aria-pressed',String(sentence===row)));});const num=document.createElement('span');num.className='sentence-number';num.textContent=j+1;const content=document.createElement('span');content.className='sentence-text';content.textContent=line;row.append(num,content);sentences.append(row);total++;});block.append(mark,sentences);reading.append(block);});
+ count.textContent=paragraphs.length+'개 문단 · '+total+'개 문장';
+}
+document.getElementById('render').addEventListener('click',render);
+document.getElementById('example').addEventListener('click',()=>{source.value=sample;render();});
+document.getElementById('clear').addEventListener('click',()=>{source.value='';render();source.focus();});
+document.getElementById('fontSize').addEventListener('input',event=>{const value=event.target.value;reading.style.setProperty('--reading-size',value+'px');document.getElementById('fontValue').value=value+'px';});
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>한 권 읽기 독서일지</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f3ed; color: #283c35; font-family: '맑은 고딕', sans-serif; line-height: 1.6; }
+    main { max-width: 850px; margin: 48px auto; padding: 0 22px 50px; }
+    .eyebrow { color: #718474; font-size: 13px; letter-spacing: 2px; font-weight: bold; }
+    h1 { margin: 6px 0; font-size: clamp(27px, 5vw, 38px); }
+    .intro { color: #748078; margin: 0 0 28px; }
+    .panel { background: #fffefb; border: 1px solid #e2e6dc; border-radius: 20px; padding: 28px; box-shadow: 0 8px 28px #233e3010; }
+    label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 7px; }
+    input, textarea { width: 100%; border: 1px solid #d5ddd3; border-radius: 10px; padding: 12px 14px; background: white; color: #283c35; font: inherit; }
+    input:focus, textarea:focus { outline: 2px solid #94b79c; outline-offset: 2px; }
+    textarea { resize: vertical; min-height: 100px; }
+    .field { margin-bottom: 20px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    button { width: 100%; border: 0; border-radius: 10px; padding: 14px; background: #42694f; color: white; font: inherit; font-weight: bold; cursor: pointer; }
+    button:hover { background: #33563e; }
+    .list-heading { display: flex; align-items: center; justify-content: space-between; margin-top: 32px; }
+    h2 { font-size: 21px; }
+    #count { color: #718474; font-size: 14px; }
+    #empty { text-align: center; padding: 36px 20px; border: 1px dashed #cbd5c7; border-radius: 16px; color: #7a877c; }
+    article { background: #fffefb; border: 1px solid #e0e6dc; border-radius: 16px; padding: 24px; margin-bottom: 16px; overflow-wrap: anywhere; }
+    article h3 { margin: 0 0 5px; font-size: 20px; }
+    .meta { color: #718474; font-size: 13px; margin-bottom: 18px; }
+    blockquote { margin: 0 0 20px; border-left: 3px solid #a7bfa3; padding: 10px 16px; background: #f3f6ef; white-space: pre-wrap; }
+    .thought { white-space: pre-wrap; margin: 6px 0 0; }
+    .caption { color: #718474; font-size: 12px; margin: 10px 0 0; text-align: center; }
+    @media (max-width: 520px) { main { margin-top: 28px; } .panel { padding: 20px; } .row { grid-template-columns: 1fr; gap: 0; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">MY READING JOURNAL</div>
+      <h1>한 권 읽기 독서일지</h1>
+      <p class="intro">한 문장, 하나의 생각. 읽은 만큼 나만의 이야기를 쌓아 보세요.</p>
+    </header>
+    <form id="journalForm" class="panel">
+      <div class="field"><label for="bookTitle">책 제목</label><input id="bookTitle" placeholder="함께 읽고 있는 책 제목을 적어 주세요" required></div>
+      <div class="row">
+        <div class="field"><label for="date">날짜</label><input id="date" type="date" required></div>
+        <div class="field"><label for="pages">읽은 쪽</label><input id="pages" placeholder="예: 15~32쪽" required></div>
+      </div>
+      <div class="field"><label for="sentence">기억에 남는 문장</label><textarea id="sentence" placeholder="오래 간직하고 싶은 문장을 옮겨 적어 보세요" required></textarea></div>
+      <div class="field"><label for="thought">내 생각</label><textarea id="thought" placeholder="문장을 읽으며 느낀 점이나 떠오른 생각을 적어 보세요" required></textarea></div>
+      <button type="submit">＋ 기록 추가</button>
+      <p class="caption" id="saveStatus">책 제목과 기록은 창을 닫았다 다시 열어도 유지됩니다.</p>
+    </form>
+    <section aria-labelledby="recordsHeading">
+      <div class="list-heading"><h2 id="recordsHeading">차곡차곡 읽기 기록</h2><span id="count">0개의 기록</span></div>
+      <div id="records" aria-live="polite"></div>
+      <p id="empty">아직 기록이 없어요.<br>첫 번째 독서의 흔적을 남겨 보세요.</p>
+    </section>
+    <footer class="caption">이 컴퓨터의 이 브라우저에만 저장됩니다</footer>
+  </main>
+  <script>
+    const key = 'one-book-reading-journal-v1';
+    const form = document.getElementById('journalForm');
+    const fields = Object.fromEntries(['bookTitle', 'date', 'pages', 'sentence', 'thought'].map(id => [id, document.getElementById(id)]));
+    let entries = [];
+    try {
+      const saved = JSON.parse(localStorage.getItem(key) || 'null');
+      if (saved && Array.isArray(saved.entries)) entries = saved.entries.filter(item => item && ['bookTitle', 'date', 'pages', 'sentence', 'thought'].every(k => typeof item[k] === 'string'));
+      if (saved && typeof saved.bookTitle === 'string') fields.bookTitle.value = saved.bookTitle;
+    } catch (_) { }
+    const today = new Date();
+    fields.date.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    function save() {
+      try { localStorage.setItem(key, JSON.stringify({ bookTitle: fields.bookTitle.value, entries })); }
+      catch (_) { document.getElementById('saveStatus').textContent = '브라우저 저장을 사용할 수 없어 현재 화면에만 기록됩니다.'; }
+    }
+    function render() {
+      const list = document.getElementById('records');
+      list.replaceChildren();
+      entries.forEach((entry, index) => {
+        const article = document.createElement('article');
+        const heading = document.createElement('h3');
+        heading.textContent = entry.bookTitle;
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = `기록 ${index + 1} · ${entry.date} · ${entry.pages}`;
+        const quote = document.createElement('blockquote');
+        quote.textContent = entry.sentence;
+        const label = document.createElement('strong');
+        label.textContent = '내 생각';
+        const thought = document.createElement('p');
+        thought.className = 'thought';
+        thought.textContent = entry.thought;
+        article.append(heading, meta, quote, label, thought);
+        list.append(article);
+      });
+      document.getElementById('count').textContent = `${entries.length}개의 기록`;
+      document.getElementById('empty').hidden = entries.length > 0;
+    }
+    fields.bookTitle.addEventListener('input', save);
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const entry = Object.fromEntries(Object.entries(fields).map(([k, input]) => [k, input.value.trim()]));
+      for (const [k, value] of Object.entries(entry)) {
+        if (!value) { fields[k].setCustomValidity('내용을 입력해 주세요.'); fields[k].reportValidity(); fields[k].setCustomValidity(''); return; }
+      }
+      entries.push(entry);
+      save();
+      render();
+      fields.pages.value = '';
+      fields.sentence.value = '';
+      fields.thought.value = '';
+      fields.pages.focus();
+    });
+    render();
+  </script>
+</body>
+</html>

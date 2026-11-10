@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>낚시 제목 감별 카드</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:#eff3fa;color:#18243d;font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;display:grid;place-items:center;padding:24px}main{width:min(780px,100%)}header{margin-bottom:24px}.eyebrow{font-size:14px;font-weight:800;color:#5264ce;letter-spacing:.08em}h1{font-size:clamp(26px,5vw,38px);margin:8px 0}header p{color:#57647b;line-height:1.7;margin:0}.card{background:white;border:1px solid #dce3f0;border-radius:26px;padding:clamp(24px,5vw,48px);box-shadow:0 18px 50px #26345b0c}.meta{display:flex;justify-content:space-between;gap:12px;font-size:14px;color:#64718a;font-weight:700}.track{height:6px;border-radius:10px;background:#edf0f7;margin-top:14px;overflow:hidden}.bar{height:100%;background:#6474e5;transition:width .3s}h2{font-size:clamp(27px,4.6vw,39px);line-height:1.5;word-break:keep-all;letter-spacing:-.035em;margin:38px 0;min-height:118px;display:flex;align-items:center}.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}button{font:inherit;font-weight:750;border-radius:13px;padding:17px 14px;border:1px solid #d3dced;background:#f7f9fe;color:#283b65;cursor:pointer;transition:background .15s}button:hover:not(:disabled){background:#e9edff}button:focus-visible{outline:3px solid #7b8af0;outline-offset:4px}button:disabled{cursor:default;color:#8290a7}button.selected{border:2px solid #6375df;background:#eef0ff;color:#3449af}button.correct{border:2px solid #258465;background:#ecf8f1;color:#1b7355}.feedback{margin-top:22px;border-radius:13px;padding:17px;background:#eff7f2;line-height:1.7;color:#225f48;font-size:16px}.feedback.wrong{background:#fff5e7;color:#85531d}.next{display:block;width:100%;margin-top:18px;background:#4257ca;color:white;border:0}.next:hover:not(:disabled){background:#3043b1}footer{text-align:center;color:#69758a;font-size:13px;margin-top:22px;line-height:1.8}.result{text-align:center}.result h2{display:block;min-height:0;margin:24px 0 8px}.score{font-size:64px;font-weight:850;color:#4257ca;margin:22px 0}.result p{line-height:1.8;color:#57647b}[hidden]{display:none!important}@media(max-width:500px){body{padding:18px}.choices{grid-template-columns:1fr}h2{margin:28px 0;min-height:140px}.card{border-radius:20px}}
+  </style>
+</head>
+<body>
+<main>
+  <header><span class="eyebrow">미디어 리터러시 · 제목 읽기</span><h1>낚시 제목 감별 카드</h1><p>제목이 정보를 전하나요, 궁금증만 자극하나요?<br>제목을 읽고 두 가지 중 하나를 골라 보세요.</p></header>
+  <section class="card" id="quiz" aria-label="제목 감별 퀴즈">
+    <div class="meta"><span id="counter"></span><span>총 10문제</span></div>
+    <div class="track" role="progressbar" aria-label="답변한 문제 수" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" id="progress"><div class="bar" id="bar"></div></div>
+    <h2 id="headline" tabindex="-1"></h2>
+    <div class="choices"><button type="button" data-answer="info">정보를 주는 제목</button><button type="button" data-answer="bait">낚시 제목</button></div>
+    <div id="feedback" class="feedback" role="status" hidden></div>
+    <button type="button" id="next" class="next" hidden>다음 카드 →</button>
+  </section>
+  <section id="result" class="card result" aria-label="퀴즈 결과" hidden><span class="eyebrow">10장 모두 완료!</span><h2 id="resultTitle" tabindex="-1">나의 감별 결과</h2><div class="score" id="score"></div><p id="message"></p><p>누가, 언제, 무엇을 했는지 구체적으로 알려 주는지 살펴보세요.<br>제목만으로 판단하기 어려울 때는 본문과 출처도 확인해요.</p><button type="button" id="restart" class="next">다시 도전하기 ↻</button></section>
+  <footer>이 카드의 기사 제목 10개는 모두 수업용으로 만든 가짜 제목입니다.<br>실제 사건이나 기사에 관한 정보가 아닙니다.</footer>
+</main>
+<script>
+const cards = [
+  {title:'한빛중 도서관, 5월부터 매주 수요일 오후 6시까지 개방',answer:'info',reason:'장소와 시작 시기, 이용 시간을 구체적으로 알려 줍니다.'},
+  {title:'매일 쓰는 필통에 이런 비밀이? 알면 모두 깜짝!',answer:'bait',reason:'비밀이 무엇인지 숨기고 과장된 표현으로 클릭을 유도합니다.'},
+  {title:'새봄시, 청소년 버스 요금 7월부터 100원 인하',answer:'info',reason:'대상과 시행 시기, 요금 변화가 명확합니다.'},
+  {title:'전교 1등이 절대 말하지 않는 공부법, 이것 하나면 끝!',answer:'bait',reason:'핵심 내용을 숨기고 한 가지 방법으로 모든 것이 해결된다고 과장합니다.'},
+  {title:'은하중 학생회, 6월 12일 운동장에서 중고 물품 나눔 장터 개최',answer:'info',reason:'행사 주최와 날짜, 장소, 내용을 구체적으로 전합니다.'},
+  {title:'급식실에서 벌어진 일… 학생들이 모두 말을 잃었다',answer:'bait',reason:'무슨 일이 일어났는지 밝히지 않고 강한 반응만 강조합니다.'},
+  {title:'푸른마을 도서관, 중학생 대상 토요일 글쓰기 모임 20명 모집',answer:'info',reason:'모집 기관과 대상, 활동, 인원을 알려 줍니다.'},
+  {title:'이 앱 아직도 안 쓴다고? 너만 모르는 충격적인 기능',answer:'bait',reason:'앱과 기능을 밝히지 않은 채 소외감과 호기심을 자극합니다.'},
+  {title:'별빛중 환경 동아리, 한 달간 교내에서 폐건전지 320개 수거',answer:'info',reason:'활동 주체와 기간, 장소, 수거 결과를 구체적으로 제시합니다.'},
+  {title:'친구의 한마디에 교실이 발칵! 대체 무슨 말을 했길래?',answer:'bait',reason:'실제 발언은 숨기고 자극적인 상황과 질문으로 관심을 끕니다.'}
+];
+const $ = id => document.getElementById(id);
+const buttons = [...document.querySelectorAll('[data-answer]')];
+let current = 0, score = 0, answered = false;
+const label = answer => answer === 'info' ? '정보를 주는 제목' : '낚시 제목';
+function showCard(focus = false){
+  answered = false;
+  $('counter').textContent = `카드 ${current + 1} / 10`;
+  $('headline').textContent = cards[current].title;
+  $('bar').style.width = `${current * 10}%`;
+  $('progress').setAttribute('aria-valuenow',current);
+  $('feedback').hidden = true;
+  $('next').hidden = true;
+  buttons.forEach(button => {button.disabled = false;button.className = '';});
+  if(focus) $('headline').focus();
+}
+buttons.forEach(button => button.addEventListener('click', () => {
+  if(answered) return;
+  answered = true;
+  const card = cards[current], correct = button.dataset.answer === card.answer;
+  if(correct) score++;
+  buttons.forEach(item => {item.disabled = true;if(item === button) item.classList.add('selected');if(item.dataset.answer === card.answer) item.classList.add('correct');});
+  $('feedback').className = `feedback${correct ? '' : ' wrong'}`;
+  $('feedback').textContent = `${correct ? '정답!' : '아쉬워요!'} 정답: ${label(card.answer)} — ${card.reason}`;
+  $('feedback').hidden = false;
+  $('bar').style.width = `${(current + 1) * 10}%`;
+  $('progress').setAttribute('aria-valuenow',current + 1);
+  $('next').textContent = current === 9 ? '결과 보기 →' : '다음 카드 →';
+  $('next').hidden = false;
+}));
+$('next').addEventListener('click', () => {
+  if(!answered) return;
+  current++;
+  if(current < cards.length) return showCard(true);
+  $('quiz').hidden = true;
+  $('result').hidden = false;
+  $('score').textContent = `${score} / 10`;
+  $('message').textContent = `10문제 중 ${score}문제를 맞혔어요. ${score === 10 ? '제목 속 단서를 잘 찾아냈네요!' : '구체적인 정보와 호기심을 자극하는 표현을 비교해 보세요.'}`;
+  $('resultTitle').focus();
+});
+$('restart').addEventListener('click', () => {current = 0;score = 0;$('result').hidden = true;$('quiz').hidden = false;showCard(true);});
+showCard();
+</script>
+</body>
+</html>

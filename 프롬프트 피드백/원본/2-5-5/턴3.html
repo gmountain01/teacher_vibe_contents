@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>배움 기록 · 단원 자기평가</title>
+<style>
+:root{--ink:#203c35;--green:#246b53;--muted:#687872;--line:#dce5df}*{box-sizing:border-box}body{margin:0;background:#f5f7f2;color:var(--ink);font-family:"Malgun Gothic",system-ui,sans-serif;line-height:1.6}header{border-bottom:1px solid var(--line);background:#fff}nav{max-width:1080px;margin:auto;padding:20px 28px;display:flex;justify-content:space-between;align-items:center}.brand{font-size:19px;font-weight:800}.tag{font-size:12px;background:#edf3ed;padding:5px 12px;border-radius:20px}main{max-width:1080px;margin:44px auto;padding:0 28px}.intro{margin-bottom:28px}.eyebrow{font-size:12px;letter-spacing:2px;color:var(--green);font-weight:800}h1{font-size:32px;letter-spacing:-1.3px;margin:8px 0}p{margin:6px 0;color:var(--muted)}.layout{display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:0 8px 30px #213e3510}.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}h2{font-size:19px;margin:0}.small{font-size:12px;color:var(--muted)}.row{display:grid;grid-template-columns:1fr 1fr;gap:18px}.field{margin-bottom:22px}label,legend{display:block;font-size:14px;font-weight:700;margin-bottom:8px}input,textarea{width:100%;font:inherit;font-size:14px;color:var(--ink);background:#fcfdfb;border:1px solid #cbd8cf;border-radius:10px;padding:12px 14px}input:focus,textarea:focus{outline:3px solid #dcece2;border-color:var(--green)}textarea{resize:vertical;min-height:100px}fieldset{border:0;padding:0;margin:0 0 24px}.ratings{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.rating input{position:absolute;opacity:0;width:1px}.rating{margin:0;cursor:pointer}.rating span{display:block;text-align:center;border:1px solid var(--line);border-radius:12px;padding:12px 2px;font-size:20px;background:#fff}.rating small{display:block;font-weight:400;font-size:11px;margin-top:3px}.rating input:checked+span{border-color:var(--green);background:#e8f2eb;color:var(--green);box-shadow:inset 0 0 0 1px var(--green)}.rating input:focus-visible+span{outline:3px solid #a9cbb8}.actions{display:flex;gap:10px;border-top:1px solid var(--line);padding-top:22px;align-items:center}button{font:inherit;font-size:14px;font-weight:700;border-radius:10px;padding:12px 18px;cursor:pointer;border:1px solid var(--line);background:white;color:var(--ink)}button:hover{filter:brightness(.96)}.primary{background:var(--green);color:#fff;border-color:var(--green);margin-left:auto}.guide{background:#eaf0e6;border-color:#dce5d6}.guide h2{margin:12px 0;font-size:18px}.guide p{font-size:13px}.guide ol{padding-left:20px;font-size:13px;color:#4c6258}.guide li{margin:12px 0}.note{margin-top:24px;border-top:1px solid #d3decd;padding-top:18px;font-size:12px;color:#596c60}.counter{text-align:right;font-size:11px;color:var(--muted)}[hidden]{display:none!important}.success{text-align:center;padding-bottom:24px;border-bottom:1px solid var(--line);margin-bottom:24px}.check{width:54px;height:54px;display:grid;place-items:center;border-radius:50%;background:#e8f2eb;font-size:28px;margin:0 auto 14px}.success h2{font-size:24px}.result-item{margin:20px 0}.result-item dt{font-size:12px;color:var(--muted);margin-bottom:5px}.result-item dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}.notice{font-size:12px;margin-top:16px}footer{text-align:center;font-size:12px;color:#809087;margin:34px 0}@media(max-width:760px){main{margin:26px auto;padding:0 18px}nav{padding:16px 18px}.layout{grid-template-columns:1fr}.card{padding:22px}.row{grid-template-columns:1fr;gap:0}h1{font-size:26px}.actions{flex-wrap:wrap}.primary{flex:1}.rating small{font-size:10px}.guide{order:2}}
+</style>
+</head>
+<body>
+<header><nav><div class="brand">🌿 배움 기록</div><span class="tag">학생 자기평가 · 시트 연동</span><button type="button" id="teacherOpen">교사 관리</button></nav></header>
+<main><div class="intro"><div class="eyebrow">MY LEARNING JOURNAL</div><h1>한 단원을 마친 나에게</h1><p>배운 내용을 돌아보고, 다음 배움을 위한 작은 목표를 세워 보세요.</p></div>
+<div class="layout" id="studentView"><section class="card">
+<form id="evaluation"><div class="section-title"><h2>단원 자기평가 카드</h2><span class="small">모든 항목 필수</span></div>
+<div class="row"><div class="field"><label for="student">학번</label><input id="student" name="student" placeholder="예: 20315" maxlength="30" required></div><div class="field"><label for="subject">과목명</label><input id="subject" name="subject" placeholder="예: 과학" maxlength="60" required></div></div>
+<div class="field"><label for="unit">단원명</label><input id="unit" name="unit" placeholder="예: 식물의 구조와 기능" maxlength="100" required></div>
+<fieldset><legend>이번 단원, 얼마나 이해했나요?</legend><div class="ratings">
+<label class="rating"><input type="radio" name="understanding" value="1" required><span>1<small>많이 어려워요</small></span></label>
+<label class="rating"><input type="radio" name="understanding" value="2"><span>2<small>조금 어려워요</small></span></label>
+<label class="rating"><input type="radio" name="understanding" value="3"><span>3<small>보통이에요</small></span></label>
+<label class="rating"><input type="radio" name="understanding" value="4"><span>4<small>잘 이해했어요</small></span></label>
+<label class="rating"><input type="radio" name="understanding" value="5"><span>5<small>설명할 수 있어요</small></span></label>
+</div></fieldset>
+<div class="field"><label for="strength">✨ 가장 잘한 점</label><textarea id="strength" name="strength" placeholder="스스로 칭찬하고 싶은 활동이나 노력을 적어 보세요." maxlength="1000" required></textarea><div class="counter" data-for="strength">0 / 1,000</div></div>
+<div class="field"><label for="difficulty">🧩 어려웠던 점</label><textarea id="difficulty" name="difficulty" placeholder="이해하기 어려웠던 내용이나 도움이 필요한 부분은 무엇인가요?" maxlength="1000" required></textarea><div class="counter" data-for="difficulty">0 / 1,000</div></div>
+<div class="field"><label for="goal">🌱 다음 학습 목표</label><textarea id="goal" name="goal" placeholder="다음 학습에서 실천할 수 있는 구체적인 목표를 적어 보세요." maxlength="1000" required></textarea><div class="counter" data-for="goal">0 / 1,000</div></div>
+<div class="actions"><button type="button" id="example">예시 채우기</button><button type="reset">비우기</button><button class="primary" type="submit">자기평가 제출 →</button></div>
+<p class="notice">제출하면 선생님의 구글 시트에 저장됩니다. 예시 데이터도 제출 시 시트에 기록됩니다.</p><p id="status" role="status" class="small"></p><button type="button" id="retrySubmit" hidden>같은 요청 다시 제출</button><p class="small">같은 학번·과목·단원은 한 번만 제출할 수 있습니다. 수정은 선생님께 요청하세요.</p>
+</form>
+<div id="complete" hidden tabindex="-1"><div class="success"><div class="check">✓</div><h2>자기평가를 제출했어요!</h2><p>오늘의 돌아봄이 다음 배움의 시작이 됩니다.</p><p id="savedAt" class="small"></p></div><dl id="result"></dl><div class="actions"><button id="edit" type="button">내용 불러와 새로 제출</button><button id="again" type="button" class="primary">새 자기평가 작성</button></div><p id="saveMessage" role="status" class="notice"></p></div>
+</section><aside class="card guide"><span class="eyebrow">REFLECTION GUIDE</span><h2>점수보다 중요한 건<br>나의 솔직한 생각</h2><p>정답이 있는 평가가 아니에요.<br>나의 배움을 천천히 돌아보세요.</p><ol><li><b>떠올리기</b><br>기억에 남는 수업 장면을 생각해요.</li><li><b>구체적으로 쓰기</b><br>어떤 활동에서 무엇을 했는지 적어요.</li><li><b>작게 약속하기</b><br>실천할 수 있는 목표 하나를 정해요.</li></ol><div class="note">💡 예시가 필요하다면<br>‘예시 채우기’를 눌러 시작하세요.</div></aside></div>
+<section id="teacherView" class="card" hidden>
+<div class="section-title"><h2>교사 관리 · 응답 현황</h2><button id="studentBack" type="button">학생 화면으로</button></div>
+<form id="teacherLogin"><label for="teacherPassword">교사 비밀번호</label><input id="teacherPassword" type="password" autocomplete="current-password" required placeholder="교사에게만 제공된 비밀번호"><button type="submit">로그인</button><p class="small">조회 권한은 서버에서 확인합니다. 학생에게 비밀번호를 공유하지 마세요.</p></form>
+<p id="adminStatus" role="status"></p>
+<div id="adminContent" hidden><div class="actions"><button id="refreshAdmin" type="button">새로고침 / 재시도</button><button id="logoutAdmin" type="button">로그아웃</button></div><label for="adminFilter">학번·과목·단원 검색</label><input id="adminFilter" placeholder="검색어를 입력하세요"><p id="adminSummary"></p><div id="distribution" aria-label="이해도 분포"></div><div id="responses"></div></div>
+</section><footer>배움을 돌아보는 시간, 성장하는 나의 기록</footer></main>
+<script>
+// 배포된 Apps Script 웹앱의 /exec 주소를 입력하세요.
+const APPS_SCRIPT_URL = '';
+let submitting=false, pendingSubmission=null;
+const form=document.querySelector('#evaluation'),complete=document.querySelector('#complete'),status=document.querySelector('#status'),key='learning-reflection-v1';let latest=null;
+const labels={student:'학번',subject:'과목명',unit:'단원명',understanding:'이해도',strength:'가장 잘한 점',difficulty:'어려웠던 점',goal:'다음 학습 목표'};
+function counts(){document.querySelectorAll('[data-for]').forEach(el=>el.textContent=document.getElementById(el.dataset.for).value.length+' / 1,000')}
+function fill(data){for(const name of Object.keys(labels))form.elements[name].value=data[name]||'';counts()}
+function show(data,message){document.querySelector('#result').replaceChildren();for(const [name,label] of Object.entries(labels)){const item=document.createElement('div');item.className='result-item';const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=data[name]+(name==='understanding'?' / 5점':'');item.append(dt,dd);document.querySelector('#result').append(item)}document.querySelector('#savedAt').textContent='제출 일시 · '+new Date(data.createdAt).toLocaleString('ko-KR');document.querySelector('#saveMessage').textContent=message;form.hidden=true;complete.hidden=false;complete.focus();}
+form.addEventListener('input',()=>{counts();status.textContent=''});
+document.querySelector('#example').onclick=()=>{fill({student:'20315',subject:'과학',unit:'식물의 구조와 기능',understanding:'4',strength:'모둠 관찰 활동에서 잎의 생김새를 자세히 기록하고 친구들에게 관찰 결과를 설명했다.',difficulty:'뿌리에서 흡수한 물이 잎까지 이동하는 과정을 설명하는 것이 어려웠다.',goal:'다음 수업 전까지 물의 이동 경로를 그림으로 정리하고 내 말로 설명해 보겠다.'});status.textContent='예시를 채웠어요. 나의 경험에 맞게 바꾼 뒤 제출해 보세요.'};
+form.addEventListener('reset',()=>{form.querySelectorAll('input,textarea').forEach(el=>el.setCustomValidity(''));setTimeout(counts,0);status.textContent=''});
+form.addEventListener('submit',async event=>{
+ event.preventDefault();if(submitting)return;
+ for(const el of form.querySelectorAll('input:not([type=radio]),textarea')){
+  el.value=el.value.trim();if(!el.value){el.setCustomValidity('내용을 입력해 주세요.');el.reportValidity();el.addEventListener('input',()=>el.setCustomValidity(''),{once:true});return}
+ }
+ if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(APPS_SCRIPT_URL)){
+  status.textContent='연동 설정이 필요합니다. HTML의 APPS_SCRIPT_URL에 배포된 웹앱 /exec 주소를 입력해 주세요.';return;
+ }
+ const values=Object.fromEntries(new FormData(form)),fingerprint=JSON.stringify(values);
+ if(!pendingSubmission||pendingSubmission.fingerprint!==fingerprint){
+  const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);
+  pendingSubmission={fingerprint,data:{...values,requestId:Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join(''),createdAt:new Date().toISOString()}};
+ }
+ const data=pendingSubmission.data;
+ submitting=true;const controls=[...form.querySelectorAll('input,textarea,button')];controls.forEach(el=>el.disabled=true);
+ const submitButton=form.querySelector('[type=submit]');submitButton.textContent='저장 중…';status.textContent='구글 시트에 저장하고 있습니다…';form.setAttribute('aria-busy','true');
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
+ try{
+  const response=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data),redirect:'follow',credentials:'omit',signal:controller.signal});
+  if(!response.ok)throw new Error('서버 응답 오류 ('+response.status+'). 배포 권한을 확인해 주세요.');
+  let result;try{result=await response.json()}catch{throw new Error('저장 확인 응답을 읽지 못했습니다. 웹앱 주소와 접근 권한을 확인해 주세요.')}
+  if(result.requestId!==data.requestId)throw new Error('제출 확인 정보가 일치하지 않습니다.');
+  if(result.ok!==true){const error=new Error(result.message||'시트 저장에 실패했습니다.');error.confirmed=true;throw error;}
+  latest={...data,createdAt:result.savedAt,remoteSaved:true};pendingSubmission=null;
+
+  document.querySelector('#retrySubmit').hidden=true;status.textContent='';show(latest,result.duplicate?'이 요청은 이미 저장되었습니다. 중복 행을 추가하지 않았습니다.':'구글 시트에 저장되었습니다.');
+ }catch(error){
+  status.textContent=(error.name==='AbortError'?'응답 대기 시간이 초과되었습니다.':error.message||'연결에 실패했습니다.')+(error.confirmed?'':' 연결과 웹앱 주소를 확인한 뒤 아래 재시도 버튼을 누르세요. 실제로 저장되었을 수도 있으므로 내용을 바꾸지 마세요. 입력 내용은 유지됩니다.');document.querySelector('#retrySubmit').hidden=!!error.confirmed;
+ }finally{clearTimeout(timer);submitting=false;controls.forEach(el=>el.disabled=false);submitButton.textContent='자기평가 제출 →';form.removeAttribute('aria-busy')}
+});
+document.querySelector('#edit').onclick=()=>{fill(latest);complete.hidden=true;form.hidden=false;document.querySelector('#student').focus()};
+document.querySelector('#again').onclick=()=>{latest=null;pendingSubmission=null;document.querySelector('#result').replaceChildren();document.querySelector('#retrySubmit').hidden=true;form.reset();complete.hidden=true;form.hidden=false;document.querySelector('#student').focus()};
+try{localStorage.removeItem(key)}catch{}
+</script>
+<script>
+document.querySelector('#retrySubmit').onclick=()=>form.requestSubmit();
+const teacherView=document.querySelector('#teacherView'),studentView=document.querySelector('#studentView'),adminStatus=document.querySelector('#adminStatus'),adminContent=document.querySelector('#adminContent'),teacherLogin=document.querySelector('#teacherLogin');
+let adminToken='',adminRows=[],adminExpiry=null,adminEpoch=0;
+function clearAdmin(){adminEpoch++;adminToken='';adminRows=[];clearTimeout(adminExpiry);document.querySelector('#responses').replaceChildren();document.querySelector('#distribution').replaceChildren();document.querySelector('#adminSummary').textContent='';document.querySelector('#adminFilter').value='';adminContent.hidden=true;teacherLogin.hidden=false;document.querySelector('#teacherPassword').value=''}
+async function adminRequest(data){
+ if(!APPS_SCRIPT_URL)throw new Error('먼저 HTML에 웹앱 주소를 설정해 주세요.');
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
+ try{const response=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data),credentials:'omit',signal:controller.signal});if(!response.ok)throw new Error('서버 연결 실패');const result=await response.json();if(!result.ok){if(result.code==='UNAUTHORIZED')clearAdmin();throw new Error(result.message||'요청 실패')}return result}finally{clearTimeout(timer)}
+}
+function renderAdmin(){
+ const query=document.querySelector('#adminFilter').value.trim().toLowerCase(),rows=adminRows.filter(r=>[r.student,r.subject,r.unit].some(v=>v.toLowerCase().includes(query)));
+ const distribution=document.querySelector('#distribution'),list=document.querySelector('#responses');distribution.replaceChildren();list.replaceChildren();
+ const counts=[0,0,0,0,0];rows.forEach(r=>{if(r.understanding>=1&&r.understanding<=5)counts[r.understanding-1]++});
+ const average=rows.length?(rows.reduce((n,r)=>n+r.understanding,0)/rows.length).toFixed(1):'—';
+ document.querySelector('#adminSummary').textContent=`전체 ${adminRows.length}건 · 현재 검색 ${rows.length}건 · 평균 이해도 ${average}점`;
+ counts.forEach((count,i)=>{const line=document.createElement('div'),label=document.createElement('span'),bar=document.createElement('progress');label.textContent=`${i+1}점: ${count}명 (${rows.length?Math.round(count/rows.length*100):0}%) `;bar.max=rows.length||1;bar.value=count;bar.setAttribute('aria-label',`${i+1}점 ${count}명`);line.append(label,bar);distribution.append(line)});
+ if(!rows.length){const empty=document.createElement('p');empty.textContent='표시할 응답이 없습니다.';list.append(empty)}
+ rows.slice().reverse().forEach(r=>{const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent=`${r.student} · ${r.subject} / ${r.unit} · ${r.understanding}점`;details.style.cssText='border-top:1px solid #dce5df;padding:16px 0;overflow-wrap:anywhere';details.append(summary);const time=document.createElement('p');time.textContent=new Date(r.savedAt).toLocaleString('ko-KR');details.append(time);for(const key of ['strength','difficulty','goal']){const title=document.createElement('strong'),value=document.createElement('p');title.textContent=labels[key];value.textContent=r[key];value.style.whiteSpace='pre-wrap';details.append(title,value)}list.append(details)});
+}
+async function loadAdmin(){const epoch=adminEpoch;adminStatus.textContent='응답을 불러오는 중…';document.querySelector('#refreshAdmin').disabled=true;try{const result=await adminRequest({action:'list',token:adminToken});if(epoch!==adminEpoch)return;adminRows=result.responses;renderAdmin();adminStatus.textContent='응답을 불러왔습니다.'}catch(error){if(epoch===adminEpoch){adminRows=[];document.querySelector('#responses').replaceChildren();document.querySelector('#distribution').replaceChildren();document.querySelector('#adminSummary').textContent='';adminStatus.textContent='조회 실패: '+error.message+' 연결 확인 후 새로고침 / 재시도를 누르세요.'}}finally{document.querySelector('#refreshAdmin').disabled=false}}
+document.querySelector('#teacherOpen').onclick=()=>{if(submitting)return;studentView.hidden=true;teacherView.hidden=false;document.querySelector('#teacherPassword').focus()};
+async function logout(){const token=adminToken;clearAdmin();adminStatus.textContent='로그아웃했습니다.';if(token)try{await adminRequest({action:'logout',token})}catch{adminStatus.textContent='이 기기의 로그인 정보는 지웠습니다. 서버 세션은 최대 30분 뒤 만료됩니다.'}}
+document.querySelector('#studentBack').onclick=()=>{logout();teacherView.hidden=true;studentView.hidden=false;form.reset();latest=null;pendingSubmission=null;complete.hidden=true;form.hidden=false;document.querySelector('#result').replaceChildren();document.querySelector('#retrySubmit').hidden=true};
+document.querySelector('#logoutAdmin').onclick=logout;
+teacherLogin.onsubmit=async event=>{event.preventDefault();const button=teacherLogin.querySelector('button'),epoch=adminEpoch;button.disabled=true;adminStatus.textContent='로그인 중…';try{const result=await adminRequest({action:'login',password:document.querySelector('#teacherPassword').value});if(epoch!==adminEpoch)return;adminToken=result.token;document.querySelector('#teacherPassword').value='';teacherLogin.hidden=true;adminContent.hidden=false;adminExpiry=setTimeout(()=>{clearAdmin();adminStatus.textContent='세션이 만료되었습니다. 다시 로그인해 주세요.'},result.expiresIn*1000);await loadAdmin()}catch(error){if(epoch===adminEpoch)adminStatus.textContent='로그인 실패: '+error.message+' 연결 또는 비밀번호를 확인하고 다시 로그인해 주세요.'}finally{button.disabled=false}};
+document.querySelector('#refreshAdmin').onclick=loadAdmin;document.querySelector('#adminFilter').oninput=renderAdmin;
+window.addEventListener('pagehide',()=>{clearAdmin();latest=null;form.reset();document.querySelector('#result').replaceChildren();complete.hidden=true;form.hidden=false;teacherView.hidden=true;studentView.hidden=false});
+</script></body></html>

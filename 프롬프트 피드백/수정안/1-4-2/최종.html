@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>문장 구조 학습판</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f2f5fb;color:#24324a;font-family:"맑은 고딕",sans-serif;line-height:1.7}main{max-width:900px;margin:auto;padding:54px 22px}header{text-align:center;margin-bottom:32px}h1{font-size:clamp(27px,5vw,38px);margin:8px 0}header p{color:#627086;margin:8px 0}.badge{color:#5265b8;font-weight:700;font-size:14px;letter-spacing:2px}.legend{display:flex;justify-content:center;gap:24px;margin:24px 0}.subject-key{color:#175bc6;border-bottom:3px solid #2671e8}.predicate-key{color:#c42e3e;border-bottom:3px solid #e34657}.examples{display:grid;gap:16px}.card{background:white;border:1px solid #dfe5ef;border-radius:16px;overflow:hidden;box-shadow:0 4px 15px #23395d06}.sentence{display:block;width:100%;border:0;background:transparent;text-align:left;padding:23px 25px;font:inherit;font-size:21px;color:inherit;cursor:pointer;line-height:2}.sentence:hover{background:#f8faff}.sentence:focus-visible{outline:3px solid #728de1;outline-offset:-4px}.number{font-size:13px;color:#8794a8;display:inline-block;width:34px;vertical-align:middle}.card.active .subject{text-decoration:underline;text-decoration-color:#2671e8;text-decoration-thickness:3px;text-underline-offset:7px}.card.active .predicate{text-decoration:underline;text-decoration-color:#e34657;text-decoration-thickness:3px;text-underline-offset:7px}.answer{margin:0;padding:0 25px 22px 59px;color:#5d6b81;font-size:15px}.answer strong{display:inline-block;background:#edf1ff;color:#4358a1;border-radius:7px;padding:2px 10px;margin-right:9px}.answer[hidden]{display:none}footer{text-align:center;color:#7b879a;font-size:13px;margin-top:26px}@media(max-width:540px){main{padding:30px 15px}.sentence{font-size:18px;padding:18px 16px}.answer{padding:0 16px 18px}.answer strong{display:table;margin-bottom:8px}.number{width:26px}}
+.embedded{border:2px solid transparent;border-radius:8px;padding:3px 7px;box-decoration-break:clone;-webkit-box-decoration-break:clone}.card.active .embedded{background:#f0e8ff;border-color:#a77cdb}.connector{font-weight:inherit}.card.active .connector{font-weight:900;color:#7041a5}
+.practice-start,.practice-action,.choice{font:inherit;border:0;border-radius:10px;padding:11px 20px;cursor:pointer}.practice-start,.practice-action{background:#4358a1;color:white}.practice-toolbar{text-align:center;margin-bottom:24px}.practice-panel{background:white;border:1px solid #dfe5ef;border-radius:16px;padding:24px;margin-bottom:24px}.practice-panel[hidden],.examples[hidden]{display:none}.practice-panel .card{margin:16px 0;box-shadow:none}.practice-panel .sentence{cursor:default}.choices{display:flex;gap:10px;flex-wrap:wrap}.choice{background:#edf1ff;color:#354985;border:2px solid transparent}.choice:disabled{cursor:default;opacity:.7}.choice.selected{border-color:#4358a1;opacity:1}.feedback{font-weight:bold;min-height:28px}.practice-progress{color:#627086}.practice-actions{display:flex;gap:12px;flex-wrap:wrap}.practice-action.secondary{background:#e9edf5;color:#43516a}button:focus-visible{outline:3px solid #728de1;outline-offset:3px}
+</style>
+</head>
+<body>
+<main>
+<header><div class="badge">국어 · 문장 탐구</div><h1>문장 구조 학습판</h1><p>예문을 눌러 주어와 서술어, 문장의 종류를 확인해 보세요.</p><div class="legend"><span class="subject-key">주어 · 파란 밑줄</span><span class="predicate-key">서술어 · 빨간 밑줄</span></div></header>
+<div class="practice-toolbar"><button class="practice-start" id="startPractice" type="button">연습하기</button></div>
+<section class="practice-panel" id="practicePanel" aria-label="문장 종류 맞히기" hidden>
+<div class="practice-progress" id="practiceProgress"></div>
+<h2 id="practiceTitle" tabindex="-1">어떤 종류의 문장일까요?</h2>
+<div id="practiceSentence"></div>
+<div class="choices" id="choices" aria-label="문장 종류 선택">
+<button class="choice" type="button">홑문장</button><button class="choice" type="button">안은문장</button><button class="choice" type="button">이어진문장</button>
+</div>
+<p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+<div class="practice-actions"><button class="practice-action" id="nextPractice" type="button" hidden>다음 문장</button><button class="practice-action secondary" id="endPractice" type="button">학습판으로 돌아가기</button></div>
+</section>
+<section class="examples" aria-label="문장 예문 6개">
+<article class="card"><button class="sentence" aria-expanded="false" aria-controls="answer1"><span class="number">01</span><span class="subject">새가</span> <span class="predicate">노래한다</span>.</button><p class="answer" id="answer1" hidden><strong>홑문장</strong>주어와 서술어의 관계가 한 번 나타나는 문장입니다.</p></article>
+<article class="card"><button class="sentence" aria-expanded="false" aria-controls="answer2"><span class="number">02</span><span class="subject">민수가</span> 책을 <span class="predicate">읽는다</span>.</button><p class="answer" id="answer2" hidden><strong>홑문장</strong>주어와 서술어의 관계가 한 번 나타나는 문장입니다.</p></article>
+<article class="card"><button class="sentence" aria-expanded="false" aria-controls="answer3"><span class="number">03</span><span class="subject">나는</span> <span class="embedded"><span class="subject">비가</span> <span class="predicate">오기</span></span>를 <span class="predicate">기다린다</span>.</button><p class="answer" id="answer3" hidden><strong>안은문장</strong>보라색 상자는 안에 들어 있는 ‘비가 오기’라는 명사절입니다. 바깥 문장의 주어는 ‘나는’, 서술어는 ‘기다린다’입니다.</p></article>
+<article class="card"><button class="sentence" aria-expanded="false" aria-controls="answer4"><span class="number">04</span><span class="subject">나는</span> <span class="embedded"><span class="subject">마음이</span> <span class="predicate">착한</span></span> 친구를 <span class="predicate">좋아한다</span>.</button><p class="answer" id="answer4" hidden><strong>안은문장</strong>보라색 상자의 ‘마음이 착한’이라는 관형절이 ‘친구’를 꾸밉니다. 바깥 문장의 주어는 ‘나는’, 서술어는 ‘좋아한다’입니다.</p></article>
+<article class="card"><button class="sentence" aria-expanded="false" aria-controls="answer5"><span class="number">05</span><span class="subject">해가</span> <span class="predicate">뜨<strong class="connector">고</strong></span> <span class="subject">새가</span> <span class="predicate">운다</span>.</button><p class="answer" id="answer5" hidden><strong>이어진문장</strong>‘해가 뜨다’와 ‘새가 울다’가 연결 어미 ‘-고’로 대등하게 이어져 있습니다.</p></article>
+<article class="card"><button class="sentence" aria-expanded="false" aria-controls="answer6"><span class="number">06</span><span class="subject">비가</span> <span class="predicate"><strong class="connector">와서</strong></span> <span class="subject">우리는</span> 집에 <span class="predicate">머문다</span>.</button><p class="answer" id="answer6" hidden><strong>이어진문장</strong>‘비가 오다’와 ‘우리는 집에 머물다’가 이유를 나타내는 연결 어미 ‘-아서’로 종속적으로 이어져 있습니다. ‘오-’와 ‘-아서’가 결합하면 ‘와서’가 되므로 줄어든 부분을 함께 굵게 표시했습니다.</p></article>
+</section>
+<footer>예문을 다시 누르면 밑줄과 설명이 숨겨집니다. · 안은문장은 안긴절의 주어와 서술어도 표시합니다.</footer>
+</main>
+<script>
+document.querySelectorAll('.sentence').forEach(button=>{
+ button.addEventListener('click',()=>{
+  const expanded=button.getAttribute('aria-expanded')!=='true';
+  button.setAttribute('aria-expanded',String(expanded));
+  button.closest('.card').classList.toggle('active',expanded);
+  document.getElementById(button.getAttribute('aria-controls')).hidden=!expanded;
+ });
+});
+</script>
+<script>
+const examples=document.querySelector('.examples');
+const sourceCards=Array.from(examples.querySelectorAll('.card'));
+const practicePanel=document.getElementById('practicePanel');
+const practiceSentence=document.getElementById('practiceSentence');
+const startPractice=document.getElementById('startPractice');
+const nextPractice=document.getElementById('nextPractice');
+const feedback=document.getElementById('feedback');
+const choiceButtons=Array.from(document.querySelectorAll('.choice'));
+let practiceIndex=0;
+let answered=false;
+function showPracticeSentence(){
+ answered=false;
+ const source=sourceCards[practiceIndex];
+ const card=document.createElement('article');
+ card.className='card';
+ const sentence=document.createElement('div');
+ sentence.className='sentence';
+ sentence.innerHTML=source.querySelector('.sentence').innerHTML;
+ const answer=source.querySelector('.answer').cloneNode(true);
+ answer.removeAttribute('id');
+ answer.hidden=true;
+ card.append(sentence,answer);
+ practiceSentence.replaceChildren(card);
+ document.getElementById('practiceProgress').textContent=`${practiceIndex+1} / ${sourceCards.length} 문장`;
+ feedback.textContent='';
+ nextPractice.hidden=true;
+ choiceButtons.forEach(button=>{button.disabled=false;button.classList.remove('selected');});
+ document.getElementById('practiceTitle').focus();
+}
+startPractice.addEventListener('click',()=>{
+ practiceIndex=0;
+ examples.hidden=true;
+ startPractice.hidden=true;
+ practicePanel.hidden=false;
+ showPracticeSentence();
+});
+choiceButtons.forEach(button=>button.addEventListener('click',()=>{
+ if(answered)return;
+ answered=true;
+ const correct=sourceCards[practiceIndex].querySelector('.answer strong').textContent;
+ feedback.textContent=(button.textContent===correct?'정답입니다!':'다시 확인해 보세요.')+` 정답: ${correct}`;
+ button.classList.add('selected');
+ choiceButtons.forEach(choice=>{choice.disabled=true;});
+ const card=practiceSentence.querySelector('.card');
+ card.classList.add('active');
+ card.querySelector('.answer').hidden=false;
+ nextPractice.textContent=practiceIndex===sourceCards.length-1?'처음부터 다시 연습':'다음 문장';
+ nextPractice.hidden=false;
+}));
+nextPractice.addEventListener('click',()=>{
+ practiceIndex=(practiceIndex+1)%sourceCards.length;
+ showPracticeSentence();
+});
+document.getElementById('endPractice').addEventListener('click',()=>{
+ practicePanel.hidden=true;
+ examples.hidden=false;
+ startPractice.hidden=false;
+ startPractice.focus();
+});
+</script>
+</body>
+</html>

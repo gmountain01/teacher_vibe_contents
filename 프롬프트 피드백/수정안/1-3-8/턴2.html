@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>함수 그래프 그리기</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fb;color:#17243a;font-family:system-ui,'Malgun Gothic',sans-serif}main{max-width:1050px;margin:36px auto;padding:24px}h1{margin:0 0 8px;font-size:28px}header p{color:#64748b;margin:0 0 24px}.panel{padding:24px;background:white;border:1px solid #dce3ee;border-radius:16px;box-shadow:0 6px 24px #17243a08}.inputs{display:grid;grid-template-columns:2fr 1fr 1fr;gap:18px}label,legend{font-weight:650;font-size:14px}label{display:block}input{width:100%;padding:11px;margin-top:8px;border:1px solid #bdc9da;border-radius:7px;font:inherit}fieldset{border:0;padding:0;margin:0;min-width:0}.range{display:flex;align-items:center;gap:8px}.range label{flex:1;font-size:12px;color:#64748b}button{border:0;border-radius:8px;padding:12px 20px;background:#2859d6;color:white;font:inherit;font-weight:650;cursor:pointer}button.secondary{background:#eaf0fc;color:#24499d}.actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}.help{font-size:13px;color:#586780;line-height:1.7}#error{color:#a52222;background:#fff0f0;border-radius:8px;padding:12px;white-space:pre-line}#error:empty{display:none}.graph{margin-top:22px;background:white;border:1px solid #dce3ee;border-radius:12px;overflow:hidden}canvas{display:block;width:100%;height:auto}input:focus,button:focus-visible{outline:3px solid #9bbaff;outline-offset:2px}@media(max-width:700px){main{margin:10px auto;padding:12px}.inputs{grid-template-columns:1fr}.panel{padding:18px}h1{font-size:24px}}
+</style>
+</head>
+<body><main>
+<header><h1>함수 그래프 그리기</h1><p>수식과 표시 범위를 정하고, 완성된 그래프를 PNG로 저장하세요.</p></header>
+<section class="panel">
+<form id="form">
+<div class="inputs">
+<label>함수 수식<input id="formula" value="y=x^2" placeholder="예: y=x^2" autocomplete="off" spellcheck="false"></label>
+<fieldset><legend>x축 범위</legend><div class="range"><label>최솟값<input id="xmin" type="number" step="any" value="-5" required></label><span>~</span><label>최댓값<input id="xmax" type="number" step="any" value="5" required></label></div></fieldset>
+<fieldset><legend>y축 범위</legend><div class="range"><label>최솟값<input id="ymin" type="number" step="any" value="-2" required></label><span>~</span><label>최댓값<input id="ymax" type="number" step="any" value="10" required></label></div></fieldset>
+</div>
+<div class="actions"><button type="submit">그래프 그리기</button><button type="button" class="secondary" id="save">PNG로 저장</button></div>
+<p class="help">사용 표기: x, +, -, *, /, ^, 괄호 · 예: 2*x+1, x^2, sin(x), sqrt(x), abs(x), log(x)<br>함수: sin, cos, tan, sqrt, abs, exp, log(자연로그), log10 · 상수: pi, e · 곱셈은 2*x처럼 *를 넣으세요.</p>
+<p id="error" role="alert"></p>
+</form>
+</section>
+<div class="graph"><canvas id="canvas" width="1400" height="1000" aria-label="입력한 함수 그래프" role="img"></canvas></div>
+<p class="help">수식은 외부 도구 없이 기기의 수학 글꼴과 위첨자로 표시합니다. 인터넷 연결은 필요하지 않습니다. (전체 LaTeX 문법 입력은 지원하지 않습니다.)<br>축과 원점은 지정한 범위 안에 있을 때 표시됩니다. 범위를 벗어나는 곡선은 표시하지 않습니다.</p>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id), canvas=$('canvas'),ctx=canvas.getContext('2d');
+const funcs={sin:Math.sin,cos:Math.cos,tan:Math.tan,sqrt:Math.sqrt,abs:Math.abs,exp:Math.exp,log:Math.log,log10:Math.log10};
+// 허용된 토큰만 해석하는 재귀 하강 파서입니다. 입력 코드를 실행하지 않습니다.
+function compile(source){
+ const s=source.trim().replace(/^y\s*=/i,'').toLowerCase();let pos=0,count=0;
+ if(!s||s.length>500)throw Error('수식을 1~500자로 입력해 주세요.');
+ const tokens=[];const re=/\s*(?:(\d+(?:\.\d*)?(?:e[+-]?\d+)?|\.\d+(?:e[+-]?\d+)?)|([a-z][a-z0-9]*)|([+\-*/^()]))/gy;
+ while(pos<s.length){if(!s.slice(pos).trim())break;re.lastIndex=pos;const m=re.exec(s);if(!m)throw Error('해석할 수 없는 문자가 있습니다.');tokens.push(m[1]?{n:Number(m[1])}:m[2]||m[3]);pos=re.lastIndex;}tokens.push('END');
+ let i=0;const peek=()=>tokens[i],take=()=>tokens[i++];
+ function expr(){let a=term();while(peek()==='+'||peek()==='-'){const op=take(),l=a,r=term();a=x=>op==='+'?l(x)+r(x):l(x)-r(x);}return a;}
+ function term(){let a=unary();while(peek()==='*'||peek()==='/'){const op=take(),l=a,r=unary();a=x=>op==='*'?l(x)*r(x):l(x)/r(x);}return a;}
+ function unary(){if(peek()==='+'){take();return unary();}if(peek()==='-'){take();const a=unary();return x=>-a(x);}return power();}
+ function power(){let a=atom();if(peek()==='^'){take();const l=a,r=unary();a=x=>Math.pow(l(x),r(x));}return a;}
+ function atom(){if(++count>500)throw Error('수식이 너무 복잡합니다.');const t=take();if(typeof t==='object')return ()=>t.n;if(t==='x')return x=>x;if(t==='pi')return ()=>Math.PI;if(t==='e')return ()=>Math.E;if(t==='('){const a=expr();if(take()!==')')throw Error('닫는 괄호 )가 필요합니다.');return a;}if(Object.hasOwn(funcs,t)){if(take()!=='(')throw Error('함수는 sin(x)처럼 괄호로 입력해 주세요.');const a=expr();if(take()!==')')throw Error('닫는 괄호 )가 필요합니다.');return x=>funcs[t](a(x));}throw Error('수식 또는 함수 이름을 확인해 주세요.');}
+ const f=expr();if(peek()!=='END')throw Error('곱셈은 2*x처럼 *를 넣고 괄호를 확인해 주세요.');return f;
+}
+// 외부 라이브러리 없이 수학 글꼴과 위첨자를 Canvas에 직접 조판합니다.
+function mathTitle(source){
+ const tokens=source.trim().replace(/^y\s*=/i,'').toLowerCase().match(/(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?|[a-z][a-z0-9]*|[+*/^()\-]/g)||[];
+ let i=0;
+ const runs=[{t:'y',size:34,shift:0,italic:true},{t:' = ',size:34,shift:0}];
+ function read(size,shift,group=false){
+  while(i<tokens.length){let t=tokens[i++];if(t===')'&&group)return;
+   if(t==='^'){const z=size*.7,s=shift-size*.55;if(tokens[i]==='('){i++;read(z,s,true);}else{if(tokens[i]==='-'||tokens[i]==='+')runs.push({t:tokens[i++],size:z,shift:s});const v=tokens[i++];runs.push({t:v==='pi'?'π':v,size:z,shift:s,italic:v==='x'||v==='e'});}continue;}
+   if(t==='('){runs.push({t:'(',size,shift});read(size,shift,true);runs.push({t:')',size,shift});continue;}
+   const names={pi:'π',sqrt:'√',log:'ln',log10:'log₁₀','*':' · ','/':' / ','-':' − ','+':' + '};
+   runs.push({t:names[t]||t,size,shift,italic:t==='x'||t==='e'});
+  }
+ }
+ read(34,0);
+ function font(r){return `${r.italic?'italic ':''}${r.size}px "Cambria Math", "STIX Two Math", "Times New Roman", serif`;}
+ for(const r of runs){ctx.font=font(r);r.w=ctx.measureText(r.t).width;}
+ const width=runs.reduce((n,r)=>n+r.w,0),height=Math.max(...runs.map(r=>r.size-r.shift));
+ const scale=Math.min(1,1200/width,105/height);ctx.save();ctx.translate((canvas.width-width*scale)/2,115);ctx.scale(scale,scale);ctx.textAlign='left';ctx.fillStyle='#000';let x=0;
+ for(const r of runs){ctx.font=font(r);ctx.fillText(r.t,x,r.shift);x+=r.w;}ctx.restore();
+}
+function draw(){try{
+ const f=compile($('formula').value),v=['xmin','xmax','ymin','ymax'].map(id=>$(id).value.trim()===''?NaN:Number($(id).value));const [xmin,xmax,ymin,ymax]=v,dx=xmax-xmin,dy=ymax-ymin;
+ if(!v.every(Number.isFinite)||!Number.isFinite(dx)||!Number.isFinite(dy)||dx<=0||dy<=0)throw Error('축 범위는 유한한 숫자로 입력하고 최솟값을 최댓값보다 작게 설정해 주세요.');
+ const W=canvas.width,H=canvas.height,L=170,R=W-90,T=160,B=H-100,pw=R-L,ph=B-T;
+ const px=x=>L+(x-xmin)/dx*pw,py=y=>B-(y-ymin)/dy*ph;
+ ctx.fillStyle='white';ctx.fillRect(0,0,W,H);mathTitle($('formula').value);
+ function ticks(min,max){const span=max-min,raw=span/8,base=10**Math.floor(Math.log10(raw)),q=raw/base,step=(q<=1?1:q<=2?2:q<=5?5:10)*base;if(!Number.isFinite(step)||step===0)return [min,max];const out=[];for(let n=Math.ceil(min/step),k=0;k<40;k++,n++){const val=n*step;if(val>max)break;if(val>=min)out.push(val);}return out;}
+ const fmt=n=>n===0?'0':Number(n.toPrecision(5)).toString();ctx.font='24px "Times New Roman", serif';ctx.lineWidth=1;ctx.strokeStyle='#000';ctx.fillStyle='#000';
+ let lastRight=-Infinity,lastY=-Infinity;
+ for(const x of ticks(xmin,xmax)){const p=px(x),label=fmt(x),w=ctx.measureText(label).width;if(p-w/2<lastRight+24)continue;lastRight=p+w/2;ctx.beginPath();ctx.moveTo(p,B);ctx.lineTo(p,B+8);ctx.stroke();ctx.textAlign='center';ctx.fillText(label,p,B+36);}
+ for(const y of ticks(ymin,ymax).reverse()){const p=py(y);if(p<lastY+38)continue;lastY=p;ctx.beginPath();ctx.moveTo(L-8,p);ctx.lineTo(L,p);ctx.stroke();ctx.textAlign='right';ctx.fillText(fmt(y),L-16,p+8,140);}
+ ctx.strokeRect(L,T,pw,ph);
+ ctx.save();ctx.beginPath();ctx.rect(L,T,pw,ph);ctx.clip();ctx.strokeStyle='#000';ctx.lineWidth=2.5;
+ if(ymin<=0&&ymax>=0){ctx.beginPath();ctx.moveTo(L,py(0));ctx.lineTo(R,py(0));ctx.stroke();}if(xmin<=0&&xmax>=0){ctx.beginPath();ctx.moveTo(px(0),T);ctx.lineTo(px(0),B);ctx.stroke();}
+ ctx.strokeStyle='#000';ctx.lineWidth=3.5;ctx.lineJoin='round';ctx.beginPath();let prev=null,valid=0;
+ const N=6000;for(let i=0;i<=N;i++){const x=xmin+dx*(i/N),y=f(x),p=px(x),q=py(y);if(!Number.isFinite(y)||!Number.isFinite(q)){prev=null;continue;}if(y>=ymin&&y<=ymax)valid++;if(prev){const mid=f((prev.x+x)/2),mq=py(mid);if(Number.isFinite(mq)&&Math.abs(mq-(prev.q+q)/2)<ph*.15){ctx.moveTo(prev.p,prev.q);ctx.lineTo(p,q);}}prev={x,p,q};}ctx.stroke();
+ if(xmin<=0&&xmax>=0&&ymin<=0&&ymax>=0){ctx.fillStyle='#000';ctx.beginPath();ctx.arc(px(0),py(0),4,0,Math.PI*2);ctx.fill();ctx.font='22px sans-serif';ctx.textAlign='left';ctx.fillText('O',px(0)+10,py(0)+25);}ctx.restore();
+ ctx.fillStyle='#000';ctx.font='italic 26px serif';ctx.textAlign='right';ctx.fillText('x',R,B+66);ctx.textAlign='left';ctx.fillText('y',L-44,T-20);
+ $('error').textContent=valid?'':'이 범위에서 표시할 수 있는 함수값이 없습니다. 수식이나 축 범위를 바꿔 주세요.';
+ }catch(e){$('error').textContent=e.message+'\n사용 가능한 표기: x, +, -, *, /, ^, ( ), sin(x), cos(x), tan(x), sqrt(x), abs(x), exp(x), log(x), log10(x), pi, e. 예: y=x^2 또는 y=2*x+1';return false;}return true;}
+ $('form').addEventListener('submit',e=>{e.preventDefault();draw();});
+ $('save').addEventListener('click',()=>{if(!draw())return;canvas.toBlob(blob=>{if(!blob){$('error').textContent='PNG 저장에 실패했습니다.';return;}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='함수_그래프.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);},'image/png');});draw();
+</script>
+</body></html>

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1인 1역 희망 조사기</title>
+<style>
+:root{font-family:'Malgun Gothic',system-ui,sans-serif;color:#20352e;background:#f1f6f2}*{box-sizing:border-box}body{margin:0;padding:40px 20px}main{max-width:780px;margin:auto}header{margin-bottom:28px}header p{color:#617269;line-height:1.7}.tag{font-size:13px;font-weight:700;color:#267356;letter-spacing:2px}h1{font-size:34px;margin:12px 0}section,details{background:white;border:1px solid #dce6df;border-radius:20px;padding:28px;margin:18px 0;box-shadow:0 6px 22px #243d2910}h2{font-size:21px;margin:0 0 12px}label{display:block;font-weight:700;margin:20px 0 8px}input,select,textarea{width:100%;padding:14px;border:1px solid #bdcec3;border-radius:10px;font:inherit;background:white;color:inherit}textarea{min-height:190px;resize:vertical}button{border:0;border-radius:10px;padding:14px 22px;background:#267356;color:white;font:inherit;font-weight:700;cursor:pointer;margin-top:18px}button:hover{background:#1d5d44}button:disabled{opacity:.45;cursor:not-allowed}summary{font-weight:700;cursor:pointer}.muted{font-size:14px;color:#617269;line-height:1.7}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.submit{width:100%;font-size:18px}.message{padding:14px;border-radius:10px;line-height:1.6;margin-top:16px}.message:empty{display:none}.error{background:#fff0ed;color:#a13625}.success{background:#e4f5eb;color:#195b3c}#count{display:inline-block;border-radius:30px;padding:7px 13px;background:#e4eee7;font-size:14px}footer{text-align:center;color:#617269;font-size:13px;line-height:1.8;margin:24px}button:focus-visible,summary:focus-visible{outline:3px solid #e8ab40;outline-offset:3px}@media(max-width:560px){body{padding:24px 14px}section,details{padding:22px}.grid{grid-template-columns:1fr;gap:0}h1{font-size:28px}}
+</style>
+</head>
+<body>
+<main>
+<header><span class="tag">우리 반 함께 가꾸기</span><h1>1인 1역 희망 조사</h1><p>내가 맡고 싶은 역할을 생각하고,<br>1지망부터 3지망까지 차례대로 골라 주세요.</p><span id="count">제출 0명</span></header>
+<details id="settings"><summary>선생님 · 역할 목록 설정</summary><p class="muted">역할을 한 줄에 하나씩 입력해 주세요. 최소 3개의 역할이 필요합니다.<br>제출이 시작되면 목록은 고정됩니다.</p><label for="roles">역할 목록</label><textarea id="roles" placeholder="칠판 관리&#10;급식 도우미&#10;도서 정리&#10;분리수거"></textarea><button id="saveRoles" type="button">역할 목록 저장</button><div id="setupMessage" class="message" role="status"></div></details>
+<section><h2>나의 희망 역할</h2><p class="muted" id="guide">번호를 입력하고 서로 다른 역할 3개를 선택해 주세요.</p><form id="survey"><label for="number">학생 번호</label><input id="number" type="text" inputmode="numeric" pattern="[0-9]+" maxlength="6" autocomplete="off" placeholder="예: 7" required><div class="grid"><div><label for="first">1지망</label><select id="first" required></select></div><div><label for="second">2지망</label><select id="second" required></select></div><div><label for="third">3지망</label><select id="third" required></select></div></div><button class="submit" id="submit" type="submit">희망 제출하기</button></form><div id="message" class="message" role="status" aria-live="polite"></div></section>
+<footer>입력한 내용은 이 기기의 현재 브라우저에 저장됩니다.<br>같은 HTML 파일을 같은 브라우저로 열어 이어서 사용하세요.<br>브라우저 데이터 삭제 또는 시크릿 모드 종료 시 기록이 사라질 수 있습니다.</footer>
+</main>
+<script>
+'use strict';
+const KEY='class-one-role-survey-v1';
+const $=id=>document.getElementById(id);
+let state={roles:[],responses:[]},available=true;
+function message(id,text,error=false){$(id).textContent=text;$(id).className='message '+(error?'error':'success');}
+function load(){const raw=localStorage.getItem(KEY);if(!raw)return {roles:[],responses:[]};const data=JSON.parse(raw);if(!Array.isArray(data.roles)||!data.roles.every(x=>typeof x==='string')||!Array.isArray(data.responses)||!data.responses.every(x=>x&&typeof x.number==='string'&&Array.isArray(x.choices)))throw Error('invalid');return data;}
+try{state=load();localStorage.setItem(KEY,JSON.stringify(state));}catch(e){available=false;message('message','브라우저 저장소를 사용할 수 없거나 저장된 자료를 읽을 수 없습니다. 브라우저의 저장 설정을 확인해 주세요. 제출은 중단되었습니다.',true);}
+function persist(next){try{localStorage.setItem(KEY,JSON.stringify(next));state=next;return true;}catch(e){message('message','저장하지 못했습니다. 브라우저 저장 공간과 설정을 확인한 뒤 다시 제출해 주세요.',true);return false;}}
+const selects=[$('first'),$('second'),$('third')];
+function updateOptions(){selects.forEach(select=>{[...select.options].forEach(option=>{option.disabled=!!option.value&&selects.some(other=>other!==select&&other.value===option.value);});});}
+function render(){ $('roles').value=state.roles.join('\n');$('count').textContent='제출 '+state.responses.length+'명';const locked=state.responses.length>0;$('roles').disabled=locked||!available;$('saveRoles').disabled=locked||!available;selects.forEach(select=>{select.replaceChildren();const placeholder=new Option('역할을 선택하세요','');select.add(placeholder);state.roles.forEach(role=>select.add(new Option(role,role)));select.disabled=state.roles.length<3||!available;});$('submit').disabled=state.roles.length<3||!available;$('number').disabled=!available||state.roles.length<3;$('guide').textContent=state.roles.length<3?'선생님이 역할 목록을 저장하면 조사를 시작할 수 있어요.':'번호를 입력하고 서로 다른 역할 3개를 선택해 주세요.';if(!state.roles.length)$('settings').open=true;}
+$('saveRoles').addEventListener('click',()=>{if(state.responses.length)return;const roles=[...new Set($('roles').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean))];if(roles.length<3){message('setupMessage','서로 다른 역할을 최소 3개 입력해 주세요.',true);return;}if(persist({roles,responses:[]})){render();message('setupMessage',roles.length+'개의 역할을 저장했습니다. 학생 입력을 시작할 수 있습니다.');$('settings').open=false;$('number').focus();}});
+selects.forEach(select=>select.addEventListener('change',updateOptions));
+$('survey').addEventListener('submit',event=>{event.preventDefault();if(!available)return;const raw=$('number').value.trim();if(!/^\d{1,6}$/.test(raw)||Number(raw)<1){message('message','학생 번호는 1 이상의 숫자로 입력해 주세요.',true);return;}const number=String(Number(raw));const choices=selects.map(select=>select.value);try{state=load();}catch(e){message('message','저장된 자료를 읽을 수 없습니다. 제출하지 못했습니다.',true);return;}if(state.responses.some(item=>item.number===number)){message('message',number+'번은 이미 제출했습니다. 한 번호는 한 번만 제출할 수 있어요.',true);return;}if(choices.some(role=>!state.roles.includes(role))||new Set(choices).size!==3){message('message','서로 다른 역할을 1·2·3지망에 모두 선택해 주세요.',true);return;}const next={roles:state.roles,responses:[...state.responses,{number,choices,submittedAt:new Date().toISOString()}]};if(persist(next)){$('survey').reset();render();message('message',number+'번의 희망을 저장했습니다. 다음 학생이 입력해 주세요.');$('number').focus();}});
+render();
+</script>
+</body>
+</html>

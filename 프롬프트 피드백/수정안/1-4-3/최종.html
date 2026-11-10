@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>화학 결합 실험실 · 이온·공유·금속 결합</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f2f5fa;color:#172b45;font-family:system-ui,'Malgun Gothic',sans-serif}main{max-width:1100px;margin:auto;padding:38px 24px}.eyebrow{color:#526d90;font-size:13px;font-weight:800;letter-spacing:2px}header{display:flex;justify-content:space-between;align-items:center;gap:20px}h1{font-size:34px;margin:10px 0}header p{color:#53677e;line-height:1.7;margin:0}.badge{white-space:nowrap;background:#fff3d8;color:#875a10;border:1px solid #ecd49c;border-radius:24px;padding:10px 16px;font-weight:700}.panel{background:white;border:1px solid #dce4ef;border-radius:24px;margin-top:26px;overflow:hidden;box-shadow:0 12px 35px #1c3a6010}.steps{display:flex;padding:20px 26px;gap:10px;border-bottom:1px solid #e8edf5}.step{flex:1;font-size:14px;color:#7a899c;padding:10px;border-radius:10px;text-align:center}.step.active{background:#e9f0ff;color:#275cc7;font-weight:800}svg{display:block;width:100%;height:auto;background:radial-gradient(ellipse at center,#f9fbff,white)}.shell{fill:none;stroke:#cbd8e8;stroke-width:1.5}.electron{fill:#356beb;stroke:white;stroke-width:2}.nucleusNa{fill:#e78336}.nucleusCl{fill:#199786}.symbol{fill:white;font-size:26px;font-weight:800;text-anchor:middle;dominant-baseline:middle}.atomLabel{font-size:20px;font-weight:800;text-anchor:middle;fill:#263c57}.configuration{font-size:15px;text-anchor:middle;fill:#63768e}.caption{padding:0 24px 22px;text-align:center;min-height:80px}.caption h2{font-size:21px;margin:0 0 8px}.caption p{margin:0;color:#53677e;line-height:1.6}.controls{display:flex;align-items:center;justify-content:center;gap:12px;padding:22px;background:#f8faff;border-top:1px solid #e6edf6}button{font:inherit;font-weight:750;border:1px solid #cdd8e8;background:white;color:#263d5c;padding:12px 24px;border-radius:12px;cursor:pointer}button.primary{background:#285fd2;border-color:#285fd2;color:white}button:disabled{opacity:.4;cursor:default}button:focus-visible{outline:3px solid #e69d35;outline-offset:3px}.notes{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}.note{padding:20px 23px;background:#e7edf6;border-radius:16px;line-height:1.7;font-size:14px}.note strong{display:block;font-size:16px;margin-bottom:5px}.legend{font-size:13px;color:#657890;text-align:right;padding:15px 24px 0}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#356beb;margin-right:6px}.progress{height:4px;background:#e8eef8}.progress div{height:100%;background:#346de1;width:0} @media(max-width:650px){main{padding:24px 12px}header{display:block}h1{font-size:28px}.badge{display:inline-block;margin-top:14px}.steps{padding:12px 8px;gap:2px}.step{padding:8px 2px;font-size:12px}.notes{grid-template-columns:1fr}.controls{gap:8px;padding:16px}button{padding:11px 18px}}
+</style>
+</head>
+<body><main>
+<header><div><div class="eyebrow">CHEMISTRY LAB</div><h1>화학 결합 실험실</h1><p>전자의 <b>이동 · 공유 · 자유로운 움직임</b>으로 알아보는 세 가지 결합</p></div><span class="badge">학습용 모형</span></header>
+<section class="panel" aria-label="이온 결합 애니메이션">
+<div class="steps"><div class="step active">01 · 두 원자</div><div class="step">02 · 전자 이동</div><div class="step">03 · 이온 생성</div><div class="step">04 · 정전기적 인력</div></div>
+<div class="legend"><span class="dot"></span>전자 · 원은 전자 껍질을 나타냅니다</div>
+<svg viewBox="0 0 1000 410" role="img" aria-labelledby="svgTitle svgDesc"><title id="svgTitle">나트륨과 염소의 이온 결합 모형</title><desc id="svgDesc">나트륨의 최외각 전자 하나가 염소로 이동해 나트륨 양이온과 염화 음이온이 되고, 두 이온이 서로 끌어당깁니다.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10" fill="none" stroke="#8663bb" stroke-width="2"/></marker></defs>
+<g id="na"></g><g id="cl"></g><g id="attraction" opacity="0"><path d="M425 195H475 M575 195H525" stroke="#8663bb" stroke-width="3" marker-end="url(#arrow)"/><text x="500" y="150" text-anchor="middle" fill="#7654a5" font-size="16">서로 끌어당김</text></g>
+<path id="transferPath" d="M350 195 Q500 50 650 195" fill="none" stroke="#91ade5" stroke-width="2" stroke-dasharray="6 7" opacity="0"/>
+<circle id="movingElectron" class="electron" r="7" cx="350" cy="195"/>
+</svg>
+<div class="caption" aria-live="polite"><h2 id="heading"></h2><p id="description"></p></div>
+<div class="progress"><div id="bar"></div></div>
+<div class="controls"><button id="start" class="primary">▶ 시작</button><button id="pause" disabled>Ⅱ 멈춤</button><button id="reset">↺ 처음으로</button></div>
+</section>
+<div class="notes"><div class="note"><strong>전자 이동과 전하</strong>Na → Na⁺ + e⁻<br>Cl + e⁻ → Cl⁻<br>전자를 잃은 나트륨은 양이온, 전자를 얻은 염소는 음이온이 됩니다.</div><div class="note"><strong>이온 결합이란?</strong>양이온과 음이온 사이의 정전기적 인력으로 형성되는 결합입니다. 실제 염화 나트륨 결정에서는 많은 이온이 규칙적으로 배열됩니다. 전자 위치·크기·이동 경로와 시간은 이해를 돕기 위한 모형입니다.</div></div>
+<section class="panel" aria-labelledby="covalentTitle">
+<div style="padding:24px 26px 8px"><h2 id="covalentTitle" style="margin:0 0 10px">02 · 공유 결합</h2><p>두 원자가 전자쌍을 함께 사용합니다. 결합 종류를 골라 공유 전자쌍 수를 비교하세요.</p><div id="bondChoices" style="display:flex;flex-wrap:wrap;gap:10px"><button data-order="1" class="primary" aria-pressed="true">단일 결합 · H₂</button><button data-order="2" aria-pressed="false">이중 결합 · O₂</button><button data-order="3" aria-pressed="false">삼중 결합 · N₂</button></div></div>
+<svg id="covalentSvg" viewBox="0 0 1000 370" role="img" aria-label="공유 결합의 전자쌍 모형"></svg>
+<div class="caption" aria-live="polite"><h2 id="covalentHeading"></h2><p id="covalentDescription"></p></div>
+<div class="controls"><button id="covStart" class="primary">▶ 시작</button><button id="covPause" disabled>Ⅱ 멈춤</button><button id="covReset">↺ 처음으로</button></div>
+</section>
+<section class="panel" aria-labelledby="metalTitle">
+<div style="padding:24px 26px 0"><h2 id="metalTitle" style="margin:0 0 10px">03 · 금속 결합</h2><p>규칙적으로 배열된 금속 양이온 사이를 자유 전자가 움직입니다.</p></div>
+<svg id="metalSvg" viewBox="0 0 1000 370" role="img" aria-label="금속 양이온 사이를 자유롭게 움직이는 전자 모형"></svg>
+<div class="caption"><h2>금속 전체에 퍼져 있는 자유 전자</h2><p>자유 전자는 특정 원자에 속박되지 않고 금속 전체에서 움직입니다.<br>금속 양이온과 자유 전자 사이의 정전기적 인력이 금속 결합을 이룹니다.</p></div>
+<div class="controls"><button id="metalStart" class="primary">▶ 시작</button><button id="metalPause" disabled>Ⅱ 멈춤</button><button id="metalReset">↺ 처음으로</button></div>
+</section>
+<section class="note" style="margin-top:24px;background:white;border:1px solid #dce4ef" aria-labelledby="compareTitle"><h2 id="compareTitle" style="font-size:21px;margin:0 0 12px">세 결합에서 전자의 역할 비교</h2><p><b>이온 결합</b> — 전자가 이동해 양이온과 음이온이 생기고, 두 이온이 정전기적 인력으로 결합합니다.</p><p><b>공유 결합</b> — 두 원자가 전자쌍을 함께 사용하여 결합합니다.</p><p><b>금속 결합</b> — 금속 전체를 움직이는 자유 전자가 금속 양이온과 정전기적 인력으로 결합을 이룹니다.</p><p style="color:#63768e;margin-bottom:0">모든 그림은 학습용 모형입니다. 전자 점의 경로는 실제 궤적이 아니며, 크기·거리·속도는 실제 비율과 다릅니다. 공유 결합 그림은 원자가 전자만 표시합니다.</p></section>
+<section class="panel" aria-labelledby="crystalTitle">
+<div style="padding:24px 26px"><h2 id="crystalTitle" style="margin:0 0 12px">04 · 3차원 결정 격자</h2><p>드래그: 회전 · 마우스 휠: 확대/축소 · 터치: 한 손가락 회전, 두 손가락 확대/축소</p><p style="color:#875a10">Three.js를 인터넷에서 불러옵니다. 이 3차원 기능을 사용하려면 인터넷 연결이 필요합니다.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><button id="ionicCrystal" class="primary" aria-pressed="true">이온 결정 · NaCl</button><button id="metalCrystal" aria-pressed="false">금속 결정 · 면심 입방 격자</button><button id="crystalReset">↺ 시점 초기화</button></div></div>
+<p id="crystalStatus" role="status" aria-live="polite" style="padding:0 26px">Three.js를 불러오는 중입니다…</p>
+<div id="crystalView" style="height:460px;position:relative;background:#101d33;touch-action:none" aria-label="마우스로 회전하고 확대 또는 축소할 수 있는 결정 모형"></div>
+<div class="note" style="margin:18px"><strong id="crystalLabel">이온 결정 · NaCl</strong><span id="crystalInfo">주황색: Na⁺ · 초록색: Cl⁻. 반대 전하의 이온이 번갈아 배열되며, 내부의 각 이온은 가장 가까운 반대 전하 이온 6개에 둘러싸입니다.</span><p style="margin-bottom:0;color:#63768e">학습용 모형: 결정의 일부만 표시하며 구의 크기는 실제 이온 반지름 비율과 다릅니다. 격자 안내선은 배열을 돕는 표시이며 개별 공유 결합을 뜻하지 않습니다.</p></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){let e=document.createElementNS(NS,tag);for(const [k,v]of Object.entries(attrs))e.setAttribute(k,v);parent.appendChild(e);return e}
+function atom(id,symbol,counts,color){let g=$(id);[40,73,110].forEach(r=>el('circle',{r,cx:0,cy:0,class:'shell'},g));el('circle',{r:29,class:color},g);el('text',{x:0,y:1,class:'symbol'},g).textContent=symbol;let dots=[];counts.forEach((n,i)=>{for(let j=0;j<n;j++){let a=(j/n)*Math.PI*2;dots.push(el('circle',{cx:Math.cos(a)*[40,73,110][i],cy:Math.sin(a)*[40,73,110][i],r:6,class:'electron'},g))}});let charge=el('text',{x:125,y:-90,fill:color==='nucleusNa'?'#c66b26':'#168774','font-size':34,'font-weight':800},g);let label=el('text',{x:0,y:157,class:'atomLabel'},g);let config=el('text',{x:0,y:184,class:'configuration'},g);return {g,dots,charge,label,config}}
+const na=atom('na','Na',[2,8,0],'nucleusNa'),cl=atom('cl','Cl',[2,8,7],'nucleusCl');
+// 염소의 최외각 전자 7개를 8개 자리 중 하나를 비워 배치합니다.
+cl.dots.slice(10).forEach((e,j)=>{let a=(j+1)*Math.PI/4;e.setAttribute('cx',110*Math.cos(a));e.setAttribute('cy',110*Math.sin(a))});
+const copy=[['두 원자가 만났어요','나트륨의 전자 배치는 2, 8, 1이고 염소는 2, 8, 7입니다.'],['나트륨의 전자 하나가 염소로 이동해요','나트륨의 가장 바깥 전자 껍질에 있는 전자 하나를 따라가 보세요.'],['양이온과 음이온이 생겼어요','Na⁺의 전자 배치는 2, 8이고 Cl⁻는 2, 8, 8입니다. 두 이온의 전하 부호는 반대입니다.'],['반대 전하를 띤 이온이 서로 끌어당겨요','Na⁺와 Cl⁻ 사이에 작용하는 정전기적 인력이 이온 결합을 형성합니다.']];
+let elapsed=0,running=false,last=0,stage=-1;const duration=14000;
+const ease=x=>x*x*(3-2*x),clamp=x=>Math.max(0,Math.min(1,x));
+function draw(){let t=elapsed/1000,s=t<2?0:t<6?1:t<8?2:3;let move=ease(clamp((t-8)/4)),nx=240+135*move,cx=760-135*move;na.g.setAttribute('transform',`translate(${nx},195)`);cl.g.setAttribute('transform',`translate(${cx},195)`);let ion=t>=6;na.charge.textContent=ion?'+':'';cl.charge.textContent=ion?'−':'';na.label.textContent=ion?'나트륨 이온 Na⁺':'나트륨 원자 Na';cl.label.textContent=ion?'염화 이온 Cl⁻':'염소 원자 Cl';na.config.textContent=ion?'전자 10개 · 2, 8':'전자 11개 · 2, 8, 1';cl.config.textContent=ion?'전자 18개 · 2, 8, 8':'전자 17개 · 2, 8, 7';na.g.firstChild.nextSibling.nextSibling.setAttribute('opacity',ion?'.15':'1');let u=ease(clamp((t-2)/4));let x=t<6?350+(870-350)*u:cx+110;let y=t<6?195-115*Math.sin(Math.PI*u):195;$('movingElectron').setAttribute('cx',x);$('movingElectron').setAttribute('cy',y);$('transferPath').setAttribute('d','M350 195 Q610 -35 870 195');$('transferPath').setAttribute('opacity',s===1?'.7':'0');$('attraction').setAttribute('opacity',s===3?'1':'0');$('bar').style.width=(elapsed/duration*100)+'%';if(s!==stage){stage=s;$('heading').textContent=copy[s][0];$('description').textContent=copy[s][1];document.querySelectorAll('.step').forEach((e,i)=>e.classList.toggle('active',i===s))}}
+function buttons(){$('start').disabled=running;$('pause').disabled=!running;$('start').textContent=elapsed>=duration?'↻ 다시 시작':elapsed>0?'▶ 이어서':'▶ 시작'}
+function tick(now){if(!running)return;if(last)elapsed=Math.min(duration,elapsed+now-last);last=now;draw();if(elapsed>=duration){running=false;last=0;buttons()}else requestAnimationFrame(tick)}
+$('start').onclick=()=>{if(running)return;if(elapsed>=duration)elapsed=0;running=true;last=0;buttons();requestAnimationFrame(tick)};
+$('pause').onclick=()=>{running=false;last=0;buttons()};
+$('reset').onclick=()=>{running=false;last=0;elapsed=0;draw();buttons()};draw();buttons();
+
+// 각 모형의 시간을 독립적으로 제어합니다.
+function motion(prefix,render){let time=0,frame=0,previous=null,active=false;function state(){ $(prefix+'Start').disabled=active;$(prefix+'Pause').disabled=!active;$(prefix+'Start').textContent=time?'▶ 이어서':'▶ 시작'}function loop(now){if(!active)return;if(previous!==null)time+=(now-previous)/1000;previous=now;render(time);frame=requestAnimationFrame(loop)}function stop(){active=false;cancelAnimationFrame(frame);previous=null;state()}$(prefix+'Start').onclick=()=>{if(active)return;active=true;previous=null;state();frame=requestAnimationFrame(loop)};$(prefix+'Pause').onclick=stop;function reset(){stop();time=0;render(0);state()}$(prefix+'Reset').onclick=reset;reset();return {reset}}
+let order=1,sharedDots=[];const cov=$('covalentSvg');
+function svgText(parent,x,y,text,size=18,color='#53677e'){let e=el('text',{x,y,'text-anchor':'middle','font-size':size,fill:color},parent);e.textContent=text;return e}
+function buildCovalent(){cov.replaceChildren();sharedDots=[];let symbol=order===1?'H':order===2?'O':'N';
+el('ellipse',{cx:410,cy:166,rx:155,ry:112,fill:'#e7833610',stroke:'#e7b58c','stroke-width':2},cov);el('ellipse',{cx:590,cy:166,rx:155,ry:112,fill:'#19978610',stroke:'#86c9be','stroke-width':2},cov);
+el('ellipse',{cx:500,cy:166,rx:58,ry:92,fill:'#356beb12',stroke:'#9ab9ed','stroke-dasharray':'5 5'},cov);
+[350,650].forEach((x,i)=>{el('circle',{cx:x,cy:166,r:30,fill:i?'#199786':'#e78336'},cov);svgText(cov,x,175,symbol,26,'white')});
+for(let k=0;k<order;k++){let row=166+(k-(order-1)/2)*48;for(let j=0;j<2;j++)sharedDots.push({e:el('circle',{r:7,class:'electron',fill:'#356beb'},cov),row,phase:j*Math.PI})}
+// O₂: 각 원자에 비공유 전자쌍 2개, N₂: 각 원자에 1개.
+let lone=order===2?2:order===3?1:0;[350,650].forEach((x,side)=>{for(let p=0;p<lone;p++){let y=lone===2?(p===0?100:232):166;let px=x+(side?72:-72);[-9,9].forEach(d=>el('circle',{cx:px,cy:y+d,r:6,class:'electron'},cov))}});
+svgText(cov,500,310,`${symbol}${'─'.repeat(order)}${symbol}  ·  공유 전자쌍 ${order}개 (전자 ${order*2}개)`,23,'#263c57');svgText(cov,500,342,'가운데 점: 공유 전자쌍 / 바깥쪽 점: 비공유 전자쌍',15);
+// 결합선은 전자쌍 개수에 대응하는 표준 기호로 별도 표시합니다.
+let notation=order===1?'H–H':order===2?'O=O':'N≡N';cov.querySelector('text[y="310"]').textContent=`${notation}  ·  공유 전자쌍 ${order}개 (전자 ${order*2}개)`;
+$('covalentHeading').textContent=['','단일 결합 · 공유 전자쌍 1개','이중 결합 · 공유 전자쌍 2개','삼중 결합 · 공유 전자쌍 3개'][order];$('covalentDescription').textContent=order===1?'수소 원자는 전자 1개씩을 내어 전자쌍 1개를 공유하며, 각 원자는 전자 2개를 함께 셉니다.':`${symbol} 원자는 전자 ${order}개씩을 내어 ${order}쌍을 공유합니다. 공유 전자를 두 원자 모두에 포함해 세면 각각 옥텟을 만족합니다.`;
+document.querySelectorAll('[data-order]').forEach(b=>{let selected=Number(b.dataset.order)===order;b.classList.toggle('primary',selected);b.setAttribute('aria-pressed',selected)});
+}
+buildCovalent();const covMotion=motion('cov',t=>{sharedDots.forEach(({e,row,phase})=>{e.setAttribute('cx',500+23*Math.cos(t*1.8+phase));e.setAttribute('cy',row+12*Math.sin(t*1.8+phase))})});
+document.querySelectorAll('[data-order]').forEach(b=>b.onclick=()=>{order=Number(b.dataset.order);buildCovalent();covMotion.reset()});
+const metal=$('metalSvg');el('rect',{x:95,y:35,width:810,height:290,rx:24,fill:'#edf3ff',stroke:'#ccd9ec'},metal);let ionPositions=[];
+for(let row=0;row<3;row++)for(let col=0;col<5;col++){let x=180+col*160,y=90+row*90;ionPositions.push({x,y});el('circle',{cx:x,cy:y,r:27,fill:'#e78336'},metal);svgText(metal,x,y+8,'+',27,'white')}
+let free=[];for(let i=0;i<15;i++)free.push({e:el('circle',{r:6,class:'electron'},metal),x:120+(i*137)%760,y:50+(i*73)%260,vx:48+(i*17)%49,vy:(i%2?1:-1)*(27+i*3)});
+svgText(metal,500,355,'주황색 + : 금속 양이온  /  파란 점 : 자유 전자',17);
+function bounce(v,length){let p=((v%(length*2))+length*2)%(length*2);return p>length?2*length-p:p}
+motion('metal',t=>{free.forEach(p=>{let x=110+bounce(p.x-110+p.vx*t,780),y=48+bounce(p.y-48+p.vy*t,264);for(const ion of ionPositions){let dx=x-ion.x,dy=y-ion.y,d=Math.hypot(dx,dy);if(d<36){let a=d===0?0:Math.atan2(dy,dx);x=ion.x+36*Math.cos(a);y=ion.y+36*Math.sin(a)}}p.e.setAttribute('cx',x);p.e.setAttribute('cy',y)})});
+</script>
+<script type="module">
+// 외부 의존성은 3차원 모형에만 사용합니다. 기존 학습판은 그대로 동작합니다.
+const status=document.getElementById('crystalStatus'),host=document.getElementById('crystalView');
+let renderer;
+async function loadThree(){const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('network timeout')),18000));return Promise.race([import('https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js'),timeout])}
+try{
+const THREE=await loadThree();
+renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));host.appendChild(renderer.domElement);renderer.domElement.style.cssText='display:block;width:100%;height:100%;cursor:grab';renderer.domElement.setAttribute('aria-label','결정 격자: 드래그로 회전, 휠로 확대 및 축소');
+const scene=new THREE.Scene();scene.background=new THREE.Color('#101d33');const camera=new THREE.PerspectiveCamera(42,1,.1,100);let distance=15;camera.position.set(0,0,distance);
+scene.add(new THREE.AmbientLight(0xffffff,1.8));const light=new THREE.DirectionalLight(0xffffff,3);light.position.set(4,7,8);scene.add(light);const group=new THREE.Group();scene.add(group);
+const sphere=new THREE.SphereGeometry(1,24,16),materials=[new THREE.MeshStandardMaterial({color:0xe78336,roughness:.38}),new THREE.MeshStandardMaterial({color:0x26b5a2,roughness:.38}),new THREE.MeshStandardMaterial({color:0x94b6e6,metalness:.55,roughness:.3})];let kind='ionic',dirty=true;
+function ball(x,y,z,r,material){const mesh=new THREE.Mesh(sphere,material);mesh.position.set(x,y,z);mesh.scale.setScalar(r);group.add(mesh)}
+function lineBox(size){const geometry=new THREE.EdgesGeometry(new THREE.BoxGeometry(size,size,size)),mat=new THREE.LineBasicMaterial({color:0x607caa,transparent:true,opacity:.5});group.add(new THREE.LineSegments(geometry,mat))}
+function clear(){for(const child of [...group.children]){group.remove(child);if(child.isLineSegments){child.geometry.dispose();child.material.dispose()}}}
+function reset(){distance=15;camera.position.z=distance;group.rotation.set(.35,-.55,0);dirty=true}
+function build(next){kind=next;clear();if(kind==='ionic'){
+// 암염 구조: 같은 간격의 격자점에 Na⁺와 Cl⁻를 번갈아 배치합니다.
+for(let x=0;x<5;x++)for(let y=0;y<5;y++)for(let z=0;z<5;z++)ball((x-2)*1.25,(y-2)*1.25,(z-2)*1.25,.32,materials[(x+y+z)%2]);lineBox(5);
+document.getElementById('crystalLabel').textContent='이온 결정 · NaCl';document.getElementById('crystalInfo').textContent='주황색: Na⁺ · 초록색: Cl⁻. 반대 전하의 이온이 번갈아 배열되며, 내부의 각 이온은 가장 가까운 반대 전하 이온 6개에 둘러싸입니다.';
+}else{
+// FCC conventional cells; doubled coordinates avoid duplicate lattice points.
+const occupied=new Set();for(let x=0;x<2;x++)for(let y=0;y<2;y++)for(let z=0;z<2;z++){const basis=[[0,0,0],[2,0,0],[0,2,0],[0,0,2],[2,2,0],[2,0,2],[0,2,2],[2,2,2],[1,1,0],[1,1,2],[1,0,1],[1,2,1],[0,1,1],[2,1,1]];for(const [a,b,c] of basis){const v=[2*x+a,2*y+b,2*z+c],key=v.join(',');if(!occupied.has(key)){occupied.add(key);ball((v[0]-2)*1.25,(v[1]-2)*1.25,(v[2]-2)*1.25,.43,materials[2])}}}lineBox(5);
+document.getElementById('crystalLabel').textContent='금속 결정 · 면심 입방 격자 (예: 구리)';document.getElementById('crystalInfo').textContent='연한 파란색 구: 금속 양이온의 위치를 나타낸 모형. 단위 격자의 꼭짓점과 각 면의 중심에 배열됩니다. 금속은 종류에 따라 결정 구조가 다르며, 자유 전자는 위의 금속 결합 모형에서 확인할 수 있습니다.';
+}document.getElementById('ionicCrystal').classList.toggle('primary',kind==='ionic');document.getElementById('metalCrystal').classList.toggle('primary',kind==='metal');document.getElementById('ionicCrystal').setAttribute('aria-pressed',kind==='ionic');document.getElementById('metalCrystal').setAttribute('aria-pressed',kind==='metal');reset()}
+document.getElementById('ionicCrystal').onclick=()=>build('ionic');document.getElementById('metalCrystal').onclick=()=>build('metal');document.getElementById('crystalReset').onclick=reset;
+const pointers=new Map();let pinch=0;function separation(){const a=[...pointers.values()];return a.length===2?Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y):0}function zoom(factor){distance=THREE.MathUtils.clamp(distance*factor,7,30);camera.position.z=distance;dirty=true}
+host.addEventListener('pointerdown',e=>{host.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});pinch=separation();renderer.domElement.style.cursor='grabbing'});
+host.addEventListener('pointermove',e=>{const old=pointers.get(e.pointerId);if(!old)return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1){group.rotation.y+=(e.clientX-old.x)*.009;group.rotation.x+=(e.clientY-old.y)*.009;dirty=true}else{const next=separation();if(pinch&&next)zoom(pinch/next);pinch=next}});
+function end(e){pointers.delete(e.pointerId);pinch=separation();renderer.domElement.style.cursor='grab'}host.addEventListener('pointerup',end);host.addEventListener('pointercancel',end);host.addEventListener('lostpointercapture',end);host.addEventListener('wheel',e=>{e.preventDefault();zoom(Math.exp(Math.max(-200,Math.min(200,e.deltaY))*.0015))},{passive:false});
+function resize(){const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();dirty=true}new ResizeObserver(resize).observe(host);
+renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();status.textContent='3차원 그래픽 연결이 중단되었습니다. 페이지를 새로고침해 주세요.'});
+build('ionic');resize();status.textContent='3차원 모형 준비 완료 · 드래그로 회전하고 휠로 확대·축소하세요.';renderer.setAnimationLoop(()=>{if(dirty){renderer.render(scene,camera);dirty=false}});
+}catch(error){if(renderer)renderer.dispose();host.replaceChildren();host.style.cssText+=';display:flex;align-items:center;justify-content:center;color:#f5d7a0;padding:24px;text-align:center';host.textContent='3차원 모형을 표시할 수 없습니다.';status.textContent='Three.js를 불러오지 못했거나 3차원 그래픽(WebGL)을 시작할 수 없습니다. 인터넷 연결 및 CDN 접속, 브라우저의 WebGL 지원을 확인한 뒤 새로고침해 주세요. 위의 2차원 학습 모형은 계속 사용할 수 있습니다.';for(const id of ['ionicCrystal','metalCrystal','crystalReset'])document.getElementById(id).disabled=true;}
+</script></body></html>

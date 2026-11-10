@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>체육 시간 점수판</title>
+<style>
+:root{color-scheme:dark;font-family:Arial,'Malgun Gothic',sans-serif;background:#0c1220;color:#fff}*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:24px}button,input{font:inherit}button{cursor:pointer;border:1px solid #ffffff30;border-radius:12px;background:#263248;color:white;padding:13px 20px;font-weight:700}button:hover{filter:brightness(1.2)}button:focus-visible,input:focus-visible{outline:3px solid #facc15;outline-offset:4px}header{display:flex;align-items:center;justify-content:space-between;gap:15px;max-width:1400px;margin:auto}h1{font-size:24px;margin:0}header span{font-size:13px;color:#aebbd0}.clock-panel{text-align:center;margin:24px auto}.clock{font-size:clamp(64px,10vw,128px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.03em;line-height:1.1}.clock.finished{color:#fbbf24}.controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}.primary{background:#e8efff;color:#15223b}.time-settings{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;color:#b9c6db}.time-settings input{width:72px;padding:8px;border:1px solid #46526a;border-radius:8px;background:#151e30;color:white;text-align:center}.teams{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1400px;margin:auto}.team{background:linear-gradient(160deg,color-mix(in srgb,var(--team) 22%,#141d2f),#141d2f);border:2px solid var(--team);border-radius:24px;padding:24px;text-align:center;min-width:0}.team-name{font-size:clamp(24px,3vw,42px);font-weight:bold;overflow-wrap:anywhere}.score{display:block;width:100%;border:0;background:transparent;color:white;font-size:clamp(100px,20vw,280px);line-height:1.15;padding:0;font-variant-numeric:tabular-nums;letter-spacing:-.04em}.score:hover{background:#ffffff08}.score-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.score-buttons button{font-size:24px;padding:16px 4px;background:color-mix(in srgb,var(--team) 40%,#172034)}.hint{color:#aebbd0;font-size:13px;margin:10px 0 20px}.settings{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:22px}.settings input[type=text]{width: min(220px,75%);padding:10px;border:1px solid #58647b;border-radius:8px;background:#0c1424;color:white}.settings input[type=color]{width:42px;height:40px;padding:3px;border:1px solid #58647b;border-radius:8px;background:transparent}footer{text-align:center;margin:24px auto;color:#aebbd0}footer button{margin:5px}button:disabled{opacity:.4;cursor:default}#status{min-height:24px;margin-top:12px;font-size:14px}@media(max-width:650px){body{padding:12px}header{align-items:start}header span{max-width:110px;text-align:right}.teams{gap:10px}.team{padding:14px 8px;border-radius:16px}.score-buttons{grid-template-columns:repeat(2,1fr);gap:6px}.score-buttons button{font-size:22px;padding:12px 2px}.settings{gap:6px}.clock-panel{margin:20px auto}.hint{font-size:11px}.settings input[type=text]{width:100%}}
+</style>
+</head>
+<body>
+<header><h1>체육 시간 점수판</h1><span id="saveState">자동 저장</span></header>
+<section class="clock-panel" aria-label="경기 시계">
+<div class="clock" id="clock" role="timer" aria-label="남은 시간">10:00</div>
+<div class="controls"><button class="primary" id="start">▶ 시작</button><button id="pause">Ⅱ 멈춤</button><button id="resetTime">↺ 시계 초기화</button></div>
+<div class="time-settings"><label for="minutes">경기 시간</label><input id="minutes" type="number" min="0" max="999" value="10" aria-label="분">분 <input id="seconds" type="number" min="0" max="59" value="0" aria-label="초">초 <button id="applyTime">시간 적용</button></div>
+</section>
+<main class="teams" id="teams"></main>
+<footer><button id="undo">↶ 되돌리기</button><button id="resetScores">점수 초기화</button><div id="status" role="status" aria-live="polite"></div></footer>
+<script>
+'use strict';
+const KEY='pe-scoreboard-v1';
+const initial=()=>({teams:[{name:'우리 팀',color:'#3b82f6',score:0},{name:'상대 팀',color:'#f43f5e',score:0}],duration:600000,remaining:600000,running:false,endAt:null});
+let state=initial(),history=[],audioContext;
+try{const saved=JSON.parse(localStorage.getItem(KEY));if(saved&&Array.isArray(saved.teams)&&saved.teams.length===2&&saved.teams.every(t=>typeof t.name==='string'&&/^#[0-9a-f]{6}$/i.test(t.color)&&Number.isSafeInteger(t.score)&&t.score>=0)&&Number.isFinite(saved.duration)&&saved.duration>0&&Number.isFinite(saved.remaining)&&saved.remaining>=0&&(!saved.running||Number.isFinite(saved.endAt)))state=saved;}catch(e){}
+const $=id=>document.getElementById(id);
+function remaining(){return state.running?Math.max(0,state.endAt-Date.now()):state.remaining;}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));$('saveState').textContent='자동 저장됨 · 새로고침해도 유지';}catch(e){$('saveState').textContent='저장 불가 · 현재 화면에서만 유지';}}
+function remember(){history.push({teams:structuredClone(state.teams),duration:state.duration,remaining:remaining()});if(history.length>100)history.shift();$('undo').disabled=false;}
+function announce(message){$('status').textContent=message;}
+function renderTeams(){
+ $('teams').replaceChildren();
+ state.teams.forEach((team,i)=>{
+ const card=document.createElement('section');card.className='team';card.style.setProperty('--team',team.color);
+ card.innerHTML='<div class="team-name"></div><button class="score"></button><p class="hint">큰 점수를 누르면 +1</p><div class="score-buttons"></div><div class="settings"><input type="text" maxlength="30"><input type="color"></div>';
+ card.querySelector('.team-name').textContent=team.name||'팀 '+(i+1);
+ const score=card.querySelector('.score');score.textContent=team.score;score.setAttribute('aria-label',(team.name||'팀 '+(i+1))+' '+team.score+'점, 누르면 1점 추가');score.onclick=()=>changeScore(i,1);
+ [1,2,3,-1].forEach(n=>{const b=document.createElement('button');b.textContent=n>0?'+'+n:'−1';b.setAttribute('aria-label',(team.name||'팀 '+(i+1))+' '+(n>0?n+'점 추가':'1점 차감'));b.onclick=()=>changeScore(i,n);card.querySelector('.score-buttons').append(b);});
+ const name=card.querySelector('input[type=text]');name.value=team.name;name.setAttribute('aria-label','팀 '+(i+1)+' 이름');name.onchange=()=>{remember();team.name=name.value.trim().slice(0,30)||'팀 '+(i+1);save();renderTeams();};
+ const color=card.querySelector('input[type=color]');color.value=team.color;color.setAttribute('aria-label','팀 '+(i+1)+' 색');color.onchange=()=>{remember();team.color=color.value;save();renderTeams();};
+ $('teams').append(card);
+ });
+}
+function changeScore(i,delta){const next=Math.max(0,state.teams[i].score+delta);if(next===state.teams[i].score||!Number.isSafeInteger(next))return;remember();state.teams[i].score=next;save();renderTeams();announce(state.teams[i].name+' '+next+'점');}
+function renderClock(){const ms=remaining(),total=Math.ceil(ms/1000);$('clock').textContent=String(Math.floor(total/60)).padStart(2,'0')+':'+String(total%60).padStart(2,'0');$('clock').classList.toggle('finished',ms===0);$('start').disabled=state.running||ms===0;$('pause').disabled=!state.running;}
+function unlockAudio(){try{audioContext=audioContext||new(window.AudioContext||window.webkitAudioContext)();audioContext.resume().catch(()=>{});}catch(e){}}
+function buzzer(){unlockAudio();if(!audioContext)return;for(let i=0;i<3;i++){const osc=audioContext.createOscillator(),gain=audioContext.createGain(),t=audioContext.currentTime+i*.6;osc.type='sawtooth';osc.frequency.value=220;gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(.22,t+.02);gain.gain.setValueAtTime(.22,t+.4);gain.gain.linearRampToValueAtTime(0,t+.48);osc.connect(gain);gain.connect(audioContext.destination);osc.start(t);osc.stop(t+.5);}}
+$('start').onclick=()=>{unlockAudio();if(state.running||remaining()<=0)return;state.endAt=Date.now()+state.remaining;state.running=true;save();renderClock();announce('경기 시계 시작');};
+$('pause').onclick=()=>{state.remaining=remaining();state.running=false;state.endAt=null;save();renderClock();announce('경기 시계 멈춤');};
+$('resetTime').onclick=()=>{remember();state.running=false;state.endAt=null;state.remaining=state.duration;save();renderClock();announce('경기 시계 초기화');};
+$('applyTime').onclick=()=>{const m=Number($('minutes').value),s=Number($('seconds').value);if(!Number.isInteger(m)||!Number.isInteger(s)||m<0||m>999||s<0||s>59||m*60+s===0){announce('분은 0~999, 초는 0~59로 입력하고 1초 이상 설정해 주세요.');return;}remember();state.duration=(m*60+s)*1000;state.remaining=state.duration;state.running=false;state.endAt=null;save();renderClock();announce('경기 시간을 적용했습니다.');};
+$('resetScores').onclick=()=>{remember();state.teams.forEach(t=>t.score=0);save();renderTeams();announce('두 팀 점수를 초기화했습니다.');};
+$('undo').onclick=()=>{const prev=history.pop();if(!prev)return;state.teams=prev.teams;state.duration=prev.duration;state.remaining=prev.remaining;state.running=false;state.endAt=null;save();renderTeams();renderClock();syncInputs();$('undo').disabled=!history.length;announce('이전 상태로 되돌렸습니다. 시계는 멈춤 상태입니다.');};
+function syncInputs(){const total=Math.ceil(state.duration/1000);$('minutes').value=Math.floor(total/60);$('seconds').value=total%60;}
+document.addEventListener('pointerdown',unlockAudio,{once:true});
+setInterval(()=>{if(state.running&&remaining()===0){state.remaining=0;state.running=false;state.endAt=null;save();buzzer();announce('경기 종료!');}renderClock();},100);
+syncInputs();renderTeams();renderClock();$('undo').disabled=true;save();
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><base target="_top"><meta charset="UTF-8"><?!= include_('Styles'); ?></head>
+<body>
+  <header><div class="header-inner"><div><small>PARENT PROGRAM</small><h1>학부모 프로그램 <span id="role"></span></h1></div><nav><button id="home">프로그램 목록</button><button id="create" class="primary" hidden>＋ 프로그램 등록</button></nav></div></header>
+  <main><div id="message" role="status" aria-live="polite"></div><div id="content"></div></main>
+  <footer>배움으로 연결되는 우리 학교 · 모든 일시는 한국 표준시 기준입니다.</footer>
+  <div id="loading" hidden role="status">처리하고 있습니다. 잠시만 기다려주세요.</div>
+  <script>const IS_ADMIN = <?!= admin ? 'true' : 'false' ?>;</script>
+  <?!= include_('Scripts'); ?>
+</body>
+</html>

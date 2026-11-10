@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>우리 반 모둠 편성기</title>
+<style>
+:root{font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:#17352d;background:#f4f7f2;font-synthesis:none}*{box-sizing:border-box}body{margin:0}main{max-width:1600px;margin:auto;padding:40px}header{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:30px}.eyebrow{font-size:17px;font-weight:700;color:#527365;letter-spacing:2px}h1{font-size:clamp(32px,4vw,54px);margin:8px 0}header p{font-size:20px;margin:0;color:#52685f}.offline{padding:12px 18px;border:1px solid #ccdacb;border-radius:30px;white-space:nowrap;font-weight:700;background:#fff}.layout{display:grid;grid-template-columns:320px 1fr;gap:28px;align-items:start}.panel{background:white;border:1px solid #dce5d9;border-radius:24px;padding:26px}label{display:block;font-size:23px;font-weight:700;margin-bottom:12px}.hint{font-size:16px;line-height:1.6;color:#63736a;margin:0 0 16px}textarea,input,button{font:inherit}textarea{resize:vertical;width:100%;min-height:300px;padding:16px;font-size:21px;line-height:1.6;border:2px solid #ccd9ce;border-radius:12px}textarea:focus,input:focus{outline:3px solid #adcbb9;outline-offset:2px}input{width:100%;padding:12px 16px;border:2px solid #ccd9ce;border-radius:12px;font-size:26px;margin-bottom:18px}.count-label{margin-top:24px}button{cursor:pointer;min-height:56px;border-radius:12px;border:0;padding:14px 22px;font-weight:700;font-size:21px}.primary{background:#21644e;color:white;width:100%}.primary:hover,.shuffle:hover{background:#174c3a}.secondary{background:white;border:2px solid #cddbd0;color:#234e3d}.shuffle{background:#21644e;color:white;font-size:25px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:20px;flex-wrap:wrap}.toolbar h2{font-size:30px;margin:0 0 6px}.status{font-size:18px;color:#5b7064;margin:0}.actions{display:flex;gap:12px;flex-wrap:wrap}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}.card{background:white;border:1px solid #d9e2d8;border-top:7px solid var(--accent);border-radius:18px;padding:24px;min-width:0}.card h3{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:27px;margin:0 0 20px;color:#244438}.badge{font-size:17px;background:#eef3ed;padding:6px 10px;border-radius:20px;white-space:nowrap}.names{list-style:none;margin:0;padding:0;display:grid;gap:12px}.names li{font-size:clamp(27px,2.5vw,38px);font-weight:700;line-height:1.4;overflow-wrap:anywhere}.empty{padding:80px 30px;text-align:center;border:2px dashed #cedace;border-radius:24px;background:#edf3eb}.empty .symbol{font-size:58px}.empty h2{font-size:30px;margin:18px 0 12px}.empty p{font-size:20px;line-height:1.7;color:#647568;margin:0}.error{color:#a12828;font-size:17px;line-height:1.6;margin:14px 0 0}.error:empty{display:none}footer{color:#718073;font-size:15px;margin-top:28px;text-align:center}button:focus-visible{outline:4px solid #d49426;outline-offset:3px}[hidden]{display:none!important}body.board .layout{grid-template-columns:1fr}body.board .panel{display:none}body.board main{max-width:none}body.board .names li{font-size:clamp(34px,3.3vw,56px)}@media(max-width:800px){main{padding:22px}header{align-items:start}.offline{display:none}.layout{grid-template-columns:1fr}textarea{min-height:180px}.panel{padding:22px}.cards{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}}@media print{.panel,.actions,footer,.offline{display:none}.layout{display:block}main{padding:0}.card{break-inside:avoid}.cards{grid-template-columns:repeat(3,1fr)}.names li{font-size:24px}}
+.student-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:8px 0}.student-row label{font-size:20px;margin:0;overflow-wrap:anywhere}.student-row select{font:inherit;font-size:21px;padding:8px;border:2px solid #ccd9ce;border-radius:10px;background:white}.level-title{font-size:21px;margin:20px 0 8px}</style>
+</head>
+<body>
+<main>
+<header><div><div class="eyebrow">함께 배우는 우리 반</div><h1>우리 반 모둠 편성기</h1><p>명단을 넣고, 새로운 모둠을 만나 보세요.</p></div><div class="offline">● 인터넷 없이 사용 가능</div></header>
+<div class="layout">
+<form class="panel" id="form" novalidate>
+<label for="roster">학생 명단</label><p class="hint">한 줄에 한 명씩 입력하세요.<br>이름이 같은 학생은 번호를 붙여 주세요.</p>
+<textarea id="roster" placeholder="김민준&#10;이서연&#10;박지호&#10;최하은" spellcheck="false" aria-describedby="rosterCount"></textarea>
+<p class="hint" id="rosterCount">입력한 학생 0명</p>
+<h2 class="level-title">학생별 수준</h2><p class="hint">이름 옆에서 상·중·하를 선택하세요. 기본값은 중입니다. 수준은 결과 카드에 표시되지 않습니다.</p><div id="studentLevels"></div>
+<label class="count-label" for="groupCount">모둠 수</label><input id="groupCount" type="number" min="1" step="1" value="4" inputmode="numeric">
+<button class="primary" type="submit">모둠 만들기</button><p class="error" id="error" role="alert"></p>
+</form>
+<section aria-label="모둠 편성 결과">
+<div id="toolbar" class="toolbar" hidden><div><h2>우리 반 모둠</h2><p class="status" id="status" role="status" aria-live="polite"></p></div><div class="actions"><button class="secondary" type="button" id="board" aria-pressed="false">크게 보기</button><button class="shuffle" type="button" id="shuffle">↻ 다시 섞기</button></div></div>
+<div id="empty" class="empty"><div class="symbol" aria-hidden="true">✳</div><h2>오늘은 누구와 함께할까요?</h2><p>학생 명단과 모둠 수를 입력하고<br>‘모둠 만들기’를 눌러 주세요.<br>모둠별 인원 차이는 1명 이하로 맞춰집니다.</p></div>
+<div class="cards" id="cards"></div>
+</section>
+</div><footer>학생 명단은 외부로 전송되거나 저장되지 않습니다. 페이지를 닫으면 사라집니다.</footer>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const readNames=()=>$('roster').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+let round=0,students=[];
+function syncStudents(){
+ const previous=new Map(students.map(student=>[student.key,student.level])),seen=new Map();
+ students=readNames().map(name=>{const n=seen.get(name)||0;seen.set(name,n+1);const key=JSON.stringify([name,n]);return {name,key,level:previous.get(key)||'중'};});
+ $('rosterCount').textContent='입력한 학생 '+students.length+'명';
+ const fragment=document.createDocumentFragment();
+ students.forEach((student,i)=>{const row=document.createElement('div');row.className='student-row';const label=document.createElement('label');label.htmlFor='level-'+i;label.textContent=student.name;const select=document.createElement('select');select.id='level-'+i;select.setAttribute('aria-label',(i+1)+'번 '+student.name+' 수준');['상','중','하'].forEach(level=>{const option=document.createElement('option');option.value=level;option.textContent=level;select.append(option);});select.value=student.level;select.addEventListener('change',()=>{student.level=select.value;});row.append(label,select);fragment.append(row);});
+ $('studentLevels').replaceChildren(fragment);
+}
+$('roster').addEventListener('input',syncStudents);
+// Rejection sampling avoids modulo bias when choosing a random integer.
+function randomBelow(n){const buffer=new Uint32Array(1),limit=4294967296-(4294967296%n);do{crypto.getRandomValues(buffer);}while(buffer[0]>=limit);return buffer[0]%n;}
+function shuffle(items){const result=items.slice();for(let i=result.length-1;i>0;i--){const j=randomBelow(i+1);[result[i],result[j]]=[result[j],result[i]];}return result;}
+function balancedCandidate(students,count){
+ const groups=Array.from({length:count},()=>[]);
+ // Each level visits all groups; remainder students go to smaller groups.
+ for(const level of shuffle(['상','중','하'])){
+  const members=shuffle(students.filter(student=>student.level===level));
+  const order=shuffle(groups.map((_,i)=>i)).sort((a,b)=>groups[a].length-groups[b].length);
+  members.forEach((student,i)=>groups[order[i%count]].push(student));
+ }
+ return shuffle(groups).map(group=>shuffle(group));
+}
+function meetsBalance(groups){const spread=values=>Math.max(...values)-Math.min(...values);return spread(groups.map(group=>group.length))<=1&&['상','하'].every(level=>spread(groups.map(group=>group.filter(student=>student.level===level).length))<=1);}
+function makeGroups(students,count){let selected=null,valid=0;for(let attempt=0;attempt<300;attempt++){const candidate=balancedCandidate(students,count);if(meetsBalance(candidate)){valid++;if(randomBelow(valid)===0)selected=candidate;}}return selected;}
+function generate(event){if(event)event.preventDefault();const names=students,count=Number($('groupCount').value);$('error').textContent='';if(!names.length){$('error').textContent='학생 이름을 한 명 이상 입력해 주세요.';$('roster').focus();return;}if(!Number.isInteger(count)||count<1||count>names.length){$('error').textContent=`모둠 수는 1부터 학생 수(${names.length})까지의 정수로 입력해 주세요.`;$('groupCount').focus();return;}const groups=makeGroups(names,count);if(!groups){$('error').textContent='조건을 만족하는 조합을 찾지 못했습니다. 다시 시도해 주세요.';return;}const fragment=document.createDocumentFragment(),colors=['#38866a','#daaa47','#638bb2','#b68091','#7d9b59','#9182b1'];groups.forEach((members,i)=>{const card=document.createElement('article');card.className='card';card.style.setProperty('--accent',colors[i%colors.length]);const title=document.createElement('h3');title.append(document.createTextNode(`${i+1}모둠`));const badge=document.createElement('span');badge.className='badge';badge.textContent=`${members.length}명`;title.append(badge);const list=document.createElement('ul');list.className='names';members.forEach(name=>{const item=document.createElement('li');item.textContent=name.name;list.append(item);});card.append(title,list);fragment.append(card);});$('cards').replaceChildren(fragment);$('empty').hidden=true;$('toolbar').hidden=false;round++;const sizes=groups.map(g=>g.length),min=Math.min(...sizes),max=Math.max(...sizes);$('status').textContent=`총 ${names.length}명 · ${count}개 모둠 · 모둠당 ${min===max?min:min+'~'+max}명 · 300개 조합 검토 · ${round}회 편성`;}
+$('form').addEventListener('submit',generate);$('shuffle').addEventListener('click',generate);$('board').addEventListener('click',()=>{const active=document.body.classList.toggle('board');$('board').textContent=active?'명단 수정':'크게 보기';$('board').setAttribute('aria-pressed',String(active));});
+</script>
+</body>
+</html>

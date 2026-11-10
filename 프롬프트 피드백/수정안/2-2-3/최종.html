@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>우리 반 모둠 편성기</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f3f6fc;color:#18243b;font-family:system-ui,-apple-system,'맑은 고딕',sans-serif}main{max-width:1250px;margin:auto;padding:48px 24px}header{margin-bottom:30px}.eyebrow{color:#5264d9;font-weight:800;letter-spacing:.1em;font-size:13px}h1{font-size:clamp(30px,4vw,44px);margin:10px 0}header p{color:#647089;line-height:1.7}.panel{background:white;border:1px solid #e0e6f0;border-radius:22px;padding:26px;box-shadow:0 8px 28px #23355c06}.settings{display:grid;grid-template-columns:1fr 280px;gap:28px}label{display:block;font-weight:750;margin-bottom:10px}textarea,input{font:inherit;width:100%;border:1px solid #cbd3e3;border-radius:12px;padding:14px;color:#18243b;background:#fcfdff}textarea{min-height:200px;resize:vertical;line-height:1.7}input{font-size:22px}textarea:focus,input:focus{outline:3px solid #dce2ff;border-color:#6375e7}.hint{font-size:13px;color:#718099;margin:9px 0 0;line-height:1.6}.actions{display:flex;flex-direction:column;gap:12px;margin-top:22px}button{font:inherit;font-weight:750;border:0;border-radius:12px;padding:15px 20px;cursor:pointer;background:#5264d9;color:white;transition:background .15s}button:hover{background:#4052c6}button.secondary{background:#edf0ff;color:#4052bc}button.secondary:hover{background:#e0e5ff}button:disabled{opacity:.45;cursor:default}button:focus-visible{outline:3px solid #a6b4ff;outline-offset:3px}.results-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:32px 0 18px}h2{font-size:23px;margin:0}.summary{color:#67758c;font-size:15px}.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.group{background:white;border:1px solid #e0e6f0;border-top:6px solid var(--accent);border-radius:18px;overflow:hidden;box-shadow:0 6px 22px #23355c06}.group-head{display:flex;justify-content:space-between;align-items:center;padding:22px 24px 16px}.group h3{font-size:25px;margin:0}.badge{background:#f0f3fa;color:#5b6982;border-radius:30px;padding:6px 12px;font-size:14px}.members{list-style:none;margin:0;padding:0 24px 24px;display:flex;flex-wrap:wrap;gap:10px}.members li{font-size:23px;font-weight:650;padding:12px 15px;background:#f5f7fc;border-radius:10px;overflow-wrap:anywhere;max-width:100%}.empty{padding:55px 20px;text-align:center;color:#7b879c;border:2px dashed #d9dfec;border-radius:20px;line-height:1.8}.error{color:#c33943;min-height:22px;font-size:14px;margin:12px 0 0}@media(max-width:650px){main{padding:28px 16px}.settings{grid-template-columns:1fr;gap:22px}.panel{padding:20px}.actions{flex-direction:row}.actions button{flex:1}.results-heading{align-items:flex-start;flex-direction:column}.groups{grid-template-columns:1fr}}
+    .roster-inputs{display:grid;grid-template-columns:1fr 1fr;gap:16px}.level-list{max-height:300px;overflow:auto;border:1px solid #dce2ee;border-radius:12px;padding:10px;background:#fcfdff}.level-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 4px;border-bottom:1px solid #edf0f6}.level-row:last-child{border:0}.level-row label{margin:0;font-size:15px;overflow-wrap:anywhere}.level-row select{font:inherit;padding:7px;border:1px solid #cbd3e3;border-radius:8px;background:white}.level-row select:focus-visible{outline:3px solid #dce2ff}@media(max-width:650px){.roster-inputs{grid-template-columns:1fr}}
+    .print-button{padding:10px 20px;white-space:nowrap}
+    @page{size:A4 portrait;margin:10mm}
+    @media print{
+      html,body{margin:0!important;padding:0!important;background:white!important;color:black!important}
+      main{max-width:none;margin:0;padding:0}
+      header,form,.results-heading,button,.hint,.error,.empty{display:none!important}
+      section{margin:0;padding:0}
+      .groups{display:grid!important;grid-template-columns:repeat(var(--print-columns,2),minmax(0,1fr));grid-template-rows:repeat(var(--print-rows,1),minmax(0,1fr));gap:3mm;width:190mm;height:276mm}
+      .group{min-width:0;min-height:0;border:1px solid #777;border-top:2px solid #444;border-radius:3mm;box-shadow:none;break-inside:avoid;overflow:visible;display:flex;flex-direction:column}
+      .group-head{padding:var(--print-padding,3mm);gap:2mm;flex-shrink:0}
+      .group h3{font-size:var(--print-title,16pt);line-height:1.15}
+      .badge{padding:1mm 2mm;background:white;color:black;font-size:var(--print-badge,10pt);white-space:nowrap}
+      .members{padding:0 var(--print-padding,3mm) var(--print-padding,3mm);gap:1.5mm;align-content:flex-start}
+      .members li{padding:1mm 2mm;border-radius:1mm;background:white;font-size:var(--print-name,14pt);line-height:1.2;color:black}
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header><span class="eyebrow">CLASSROOM TOOLS</span><h1>우리 반 모둠 편성기</h1><p>학생 명단만 넣으면 모둠 편성 끝! 골고루 나누고, 함께 시작해 보세요.</p></header>
+  <form id="groupForm" class="panel" novalidate>
+    <div class="settings">
+      <div><div class="roster-inputs"><div><label for="students">학생 명단</label><textarea id="students" placeholder="김민준&#10;이서연&#10;박지우&#10;최도윤"></textarea></div><div><label id="levelsLabel">학생별 수준</label><div id="levels" class="level-list" role="group" aria-labelledby="levelsLabel"><p class="hint">명단을 입력하면 수준 선택 칸이 나타납니다.</p></div></div></div><p class="hint">한 줄에 한 명씩 입력하세요. 쉼표로 구분해도 됩니다. <span id="count">현재 0명</span><br>수준 기본값은 ‘중’이며 모둠 카드에는 표시되지 않습니다.</p></div>
+      <div><label for="groupCount">모둠 수</label><input id="groupCount" type="number" min="1" step="1" value="4"><p class="hint">모둠별 인원 차이가 최대 1명이 되도록 나눕니다.</p><div class="actions"><button type="submit">모둠 만들기</button><button type="button" id="reshuffle" class="secondary" disabled>다시 섞기</button></div></div>
+    </div>
+    <div class="roster-inputs" style="margin-top:24px">
+      <fieldset style="border:1px solid #dce2ee;border-radius:12px;padding:16px;min-width:0"><legend>같은 모둠 금지</legend><div class="roster-inputs"><input id="apartFirst" type="text" placeholder="첫 번째 학생 이름" aria-label="같은 모둠 금지 첫 번째 학생"><input id="apartSecond" type="text" placeholder="두 번째 학생 이름" aria-label="같은 모둠 금지 두 번째 학생"></div></fieldset>
+      <fieldset style="border:1px solid #dce2ee;border-radius:12px;padding:16px;min-width:0"><legend>같은 모둠으로</legend><div class="roster-inputs"><input id="togetherFirst" type="text" placeholder="첫 번째 학생 이름" aria-label="같은 모둠으로 첫 번째 학생"><input id="togetherSecond" type="text" placeholder="두 번째 학생 이름" aria-label="같은 모둠으로 두 번째 학생"></div></fieldset>
+    </div>
+    <p class="hint">필요한 조건만 입력하세요. 각 조건은 두 이름을 모두 적어 주세요. 동명이인은 명단과 조건에 ‘김민준1’, ‘김민준2’처럼 구분해서 입력하세요.</p>
+    <p id="error" class="error" role="alert"></p>
+  </form>
+  <section aria-labelledby="resultTitle"><div class="results-heading"><h2 id="resultTitle">모둠 편성 결과</h2><span id="summary" class="summary" aria-live="polite"></span><button type="button" id="print" class="secondary print-button" disabled>인쇄</button></div><div id="results"><div class="empty">함께할 학생들의 이름을 입력해 주세요.<br>모둠 카드가 여기에 표시됩니다.</div></div></section>
+</main>
+<script>
+  const studentsInput=document.getElementById('students');
+  const groupInput=document.getElementById('groupCount');
+  const results=document.getElementById('results');
+  const error=document.getElementById('error');
+  const reshuffle=document.getElementById('reshuffle');
+  const colors=['#6375e7','#31a58b','#e5a345','#c477b1','#529dce','#dc7d70'];
+  function names(){return studentsInput.value.split(/[\n,，]+/).map(name=>name.trim()).filter(Boolean)}
+  let roster=[];
+  function syncRoster(){
+    const previous=new Map();
+    roster.forEach(student=>{if(!previous.has(student.name))previous.set(student.name,[]);previous.get(student.name).push(student.level)});
+    roster=names().map(name=>({name,level:previous.get(name)?.shift()||'중'}));
+    document.getElementById('count').textContent=`현재 ${roster.length}명`;
+    const levels=document.getElementById('levels');levels.replaceChildren();
+    if(!roster.length){const hint=document.createElement('p');hint.className='hint';hint.textContent='명단을 입력하면 수준 선택 칸이 나타납니다.';levels.append(hint)}
+    roster.forEach((student,index)=>{
+      const row=document.createElement('div');row.className='level-row';
+      const label=document.createElement('label');label.htmlFor=`level-${index}`;label.textContent=`${index+1}. ${student.name}`;
+      const select=document.createElement('select');select.id=`level-${index}`;
+      ['상','중','하'].forEach(level=>{const option=document.createElement('option');option.value=level;option.textContent=level;select.append(option)});
+      select.value=student.level;select.addEventListener('change',()=>{student.level=select.value});row.append(label,select);levels.append(row);
+    });
+  }
+  studentsInput.addEventListener('input',syncRoster);
+  function randomBelow(max){const values=new Uint32Array(1);const limit=4294967296-4294967296%max;do{crypto.getRandomValues(values)}while(values[0]>=limit);return values[0]%max}
+  function arrange(){
+    syncRoster();
+    const students=roster;const total=Number(groupInput.value);error.textContent='';
+    if(!students.length){error.textContent='학생 이름을 한 명 이상 입력해 주세요.';studentsInput.focus();return}
+    if(!Number.isInteger(total)||total<1){error.textContent='모둠 수는 1 이상의 정수로 입력해 주세요.';groupInput.focus();return}
+    if(total>students.length){error.textContent='모둠 수는 학생 수 이하로 입력해 주세요.';groupInput.focus();return}
+    const pairs=[];
+    for(const [kind,firstId,secondId] of [['apart','apartFirst','apartSecond'],['together','togetherFirst','togetherSecond']]){
+      const first=document.getElementById(firstId).value.trim();
+      const second=document.getElementById(secondId).value.trim();
+      if(!first&&!second)continue;
+      if(!first||!second){error.textContent='각 조건에 학생 두 명의 이름을 모두 입력해 주세요.';return}
+      const firstMatches=students.filter(student=>student.name===first);
+      const secondMatches=students.filter(student=>student.name===second);
+      if(firstMatches.length!==1||secondMatches.length!==1){error.textContent='조건의 이름은 명단에 정확히 한 명씩 있어야 합니다. 동명이인은 이름을 구분해 주세요.';return}
+      if(first===second){error.textContent='조건에는 서로 다른 두 학생을 입력해 주세요.';return}
+      pairs.push({kind,first:firstMatches[0],second:secondMatches[0]});
+    }
+    let groups=null;
+    for(let attempt=0;attempt<300;attempt++){
+      const shuffled=students.slice();
+      for(let i=shuffled.length-1;i>0;i--){const j=randomBelow(i+1);[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]}
+      const candidate=Array.from({length:total},()=>[]);shuffled.forEach((student,index)=>candidate[index%total].push(student));
+      const balanced=['상','하'].every(level=>{const counts=candidate.map(members=>members.filter(student=>student.level===level).length);return Math.max(...counts)-Math.min(...counts)<=1});
+      const pairsSatisfied=pairs.every(pair=>{
+        const sameGroup=candidate.findIndex(members=>members.includes(pair.first))===candidate.findIndex(members=>members.includes(pair.second));
+        return pair.kind==='together'?sameGroup:!sameGroup;
+      });
+      if(balanced&&pairsSatisfied&&(!groups||randomBelow(attempt+1)===0))groups=candidate;
+    }
+    reshuffle.disabled=false;
+    if(!groups){
+      document.getElementById('print').disabled=true;
+      results.className='';results.replaceChildren();
+      const message=document.createElement('div');message.className='empty';message.textContent='조건이 너무 많아요';results.append(message);
+      document.getElementById('summary').textContent='편성 결과 없음';
+      error.textContent='조건이 너무 많아요';
+      const hint=document.createElement('p');hint.className='hint';hint.textContent='300번 안에 모든 조건을 만족하는 조합을 찾지 못했습니다. 다시 섞거나 조건·모둠 수를 조정해 주세요.';message.append(hint);return;
+    }
+    results.replaceChildren();results.className='groups';
+    groups.forEach((members,index)=>{
+      const card=document.createElement('article');card.className='group';card.style.setProperty('--accent',colors[index%colors.length]);
+      const heading=document.createElement('div');heading.className='group-head';
+      const title=document.createElement('h3');title.textContent=`${index+1}모둠`;
+      const badge=document.createElement('span');badge.className='badge';badge.textContent=`${members.length}명`;
+      heading.append(title,badge);const list=document.createElement('ul');list.className='members';
+      members.forEach(student=>{const item=document.createElement('li');item.textContent=student.name;list.append(item)});
+      card.append(heading,list);results.append(card);
+    });
+    const min=Math.floor(students.length/total),max=Math.ceil(students.length/total);
+    document.getElementById('summary').textContent=`총 ${students.length}명 · ${total}개 모둠 · 모둠당 ${min===max?min:min+'~'+max}명`;
+    reshuffle.disabled=false;
+    document.getElementById('print').disabled=false;
+  }
+  function fitPrint(){
+    const cards=Array.from(results.querySelectorAll('.group'));
+    if(!cards.length)return;
+    const columns=cards.length===1?1:cards.length<=8?2:3;
+    const rows=Math.ceil(cards.length/columns);
+    results.style.setProperty('--print-columns',columns);
+    results.style.setProperty('--print-rows',rows);
+    results.style.setProperty('--print-padding',rows>6?'1mm':'3mm');
+    results.style.setProperty('--print-title',Math.min(18,Math.max(5,100/rows))+'pt');
+    results.style.setProperty('--print-badge',Math.min(11,Math.max(4,75/rows))+'pt');
+    results.style.setProperty('--print-name','14pt');
+    // Measure in the print layout, then reduce type and spacing until every card fits.
+    for(let size=14;size>=1;size-=0.5){
+      results.style.setProperty('--print-name',size+'pt');
+      if(cards.every(card=>card.scrollHeight<=card.clientHeight+1&&card.scrollWidth<=card.clientWidth+1))break;
+    }
+  }
+  window.addEventListener('beforeprint',fitPrint);
+  document.getElementById('print').addEventListener('click',()=>window.print());
+  document.getElementById('groupForm').addEventListener('submit',event=>{event.preventDefault();arrange()});
+  reshuffle.addEventListener('click',arrange);
+</script>
+</body>
+</html>

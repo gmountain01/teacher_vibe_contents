@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>끌어다 놓는 품사 분류 바구니</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f8fc;color:#24324a;font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif}main{max-width:1100px;margin:auto;padding:32px 20px 48px}header{text-align:center}h1{font-size:clamp(25px,4vw,38px);margin:0 0 12px}header p{line-height:1.8;margin:0;color:#526079}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:26px 0 14px}.toolbar strong{font-size:18px}button{font:inherit;cursor:pointer}#reset{border:1px solid #c7d3e5;border-radius:12px;background:white;padding:10px 16px;color:#344563}.tray{background:white;border:2px dashed #c8d3e4;border-radius:20px;padding:20px;min-height:170px}.cards{display:flex;flex-wrap:wrap;gap:12px;align-content:flex-start}.card{border:2px solid #dce3ee;background:#fff;box-shadow:0 3px 0 #e6ebf3;border-radius:13px;padding:13px 20px;min-width:96px;font-size:21px;font-weight:700;color:#263650;touch-action:none;user-select:none;-webkit-user-select:none}.card:hover{border-color:#8da5cd}.card.selected{border-color:#386be5;background:#edf3ff;box-shadow:0 0 0 3px #386be52b}.card.dragging{opacity:.35}.baskets{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}.basket{border:3px solid var(--line);background:var(--bg);border-radius:22px;min-height:260px;padding:17px;outline:none}.basket:focus-visible,.tray:focus-visible{outline:3px solid #386be5;outline-offset:4px}.basket.over,.tray.over{outline:4px solid #386be5;outline-offset:3px}.basket h2{margin:0 0 6px;font-size:25px}.basket p{margin:0 0 18px;font-size:14px;color:#526079;line-height:1.5}.basket .cards{min-height:140px}.basket .card{font-size:18px;min-width:0;padding:10px 13px}.noun{--line:#edbd59;--bg:#fff8e5}.verb{--line:#80bd9d;--bg:#edfaf2}.adjective{--line:#b29ad8;--bg:#f6f0ff}.adverb{--line:#80b5df;--bg:#edf7ff}#message{min-height:30px;margin:18px 0 0;text-align:center;font-weight:700;color:#37578b;line-height:1.6}.ghost{position:fixed;z-index:10;pointer-events:none;opacity:.9;margin:0;box-shadow:0 8px 24px #24324a33}footer{text-align:center;font-size:14px;color:#64718a;margin-top:14px}@media(max-width:800px){.baskets{grid-template-columns:repeat(2,1fr)}.basket{min-height:220px}}@media(max-width:430px){main{padding:24px 12px}.card{font-size:19px;padding:12px 16px;min-width:85px}.baskets{gap:10px}.basket{padding:12px}.basket h2{font-size:23px}.tray{padding:14px}.cards{gap:10px}}
+</style>
+</head>
+<body>
+<main>
+<header><h1>🧺 품사 분류 바구니</h1><p>낱말 카드를 알맞은 품사 바구니에 넣어 보세요.<br>손가락이나 마우스로 끌거나, <b>카드를 누른 뒤 바구니를 눌러</b> 옮길 수 있어요.</p></header>
+<div class="toolbar"><strong>낱말 카드 <span id="progress">0 / 16</span></strong><button id="reset" type="button">↻ 다시 섞기</button></div>
+<section id="tray" class="tray" tabindex="0" aria-label="낱말 카드 보관함. 선택한 카드를 다시 꺼내려면 누르세요"><div class="cards" id="source"></div></section>
+<div class="baskets">
+<section class="basket noun" data-type="명사" tabindex="0" role="button" aria-label="명사 바구니"><h2>명사</h2><p>사람이나 사물의 이름</p><div class="cards"></div></section>
+<section class="basket verb" data-type="동사" tabindex="0" role="button" aria-label="동사 바구니"><h2>동사</h2><p>움직임이나 행동을 나타내요</p><div class="cards"></div></section>
+<section class="basket adjective" data-type="형용사" tabindex="0" role="button" aria-label="형용사 바구니"><h2>형용사</h2><p>성질이나 상태를 나타내요</p><div class="cards"></div></section>
+<section class="basket adverb" data-type="부사" tabindex="0" role="button" aria-label="부사 바구니"><h2>부사</h2><p>움직임이나 상태를 꾸며 줘요</p><div class="cards"></div></section>
+</div>
+<p id="message" role="status" aria-live="polite">카드를 하나 골라 시작해 보세요!</p>
+<footer>바구니에 넣은 카드도 다시 옮길 수 있어요.</footer>
+</main>
+<script>
+const words=[['사과','명사'],['학교','명사'],['연필','명사'],['고양이','명사'],['달리다','동사'],['먹다','동사'],['읽다','동사'],['웃다','동사'],['예쁘다','형용사'],['크다','형용사'],['작다','형용사'],['춥다','형용사'],['매우','부사'],['아주','부사'],['빨리','부사'],['천천히','부사']];
+const source=document.querySelector('#source'),tray=document.querySelector('#tray'),message=document.querySelector('#message');
+let selected=null,drag=null,suppressClick=false;
+function select(card){if(selected)selected.classList.remove('selected');selected=card;document.querySelectorAll('.card').forEach(c=>c.setAttribute('aria-pressed',String(c===card)));if(card){card.classList.add('selected');message.textContent='「'+card.textContent+'」 선택! 옮길 바구니를 눌러 주세요.'}}
+function update(){const count=document.querySelectorAll('.basket .card').length;document.querySelector('#progress').textContent=count+' / 16';if(count===16){const correct=[...document.querySelectorAll('.basket .card')].every(c=>c.dataset.type===c.closest('.basket').dataset.type);if(correct)message.textContent='🎉 훌륭해요! 낱말 16장을 모두 알맞게 분류했어요!'}}
+function move(card,target){target.querySelector('.cards').append(card);select(null);if(target===tray)message.textContent='카드를 보관함으로 꺼냈어요.';else if(card.dataset.type===target.dataset.type)message.textContent='잘했어요! 「'+card.textContent+'」는 '+target.dataset.type+'예요.';else message.textContent='「'+card.textContent+'」의 뜻을 생각하며 다시 살펴보세요. 다른 바구니로 옮길 수 있어요.';update()}
+function reset(){select(null);source.replaceChildren();document.querySelectorAll('.basket .cards').forEach(c=>c.replaceChildren());const shuffled=words.slice();for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]}for(const [word,type]of shuffled){const card=document.createElement('button');card.type='button';card.className='card';card.textContent=word;card.dataset.type=type;card.setAttribute('aria-pressed','false');card.addEventListener('click',e=>{e.stopPropagation();if(!suppressClick)select(selected===card?null:card)});card.addEventListener('pointerdown',startDrag);source.append(card)}update();message.textContent='카드를 하나 골라 시작해 보세요!'}
+function startDrag(e){if(e.button!==0)return;drag={card:e.currentTarget,id:e.pointerId,x:e.clientX,y:e.clientY,ghost:null};e.currentTarget.setPointerCapture(e.pointerId)}
+document.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;if(!drag.ghost&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>8){drag.ghost=drag.card.cloneNode(true);drag.ghost.classList.add('ghost');drag.ghost.setAttribute('aria-hidden','true');document.body.append(drag.ghost);drag.card.classList.add('dragging')}if(drag.ghost){e.preventDefault();drag.ghost.style.left=(e.clientX-drag.ghost.offsetWidth/2)+'px';drag.ghost.style.top=(e.clientY-30)+'px';document.querySelectorAll('.over').forEach(x=>x.classList.remove('over'));document.elementFromPoint(e.clientX,e.clientY)?.closest('.basket,.tray')?.classList.add('over')}},{passive:false});
+function endDrag(e){if(!drag||drag.id!==e.pointerId)return;const current=drag;if(current.ghost){const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('.basket,.tray');current.ghost.remove();current.card.classList.remove('dragging');suppressClick=true;setTimeout(()=>suppressClick=false,0);if(e.type!=='pointercancel'&&target)move(current.card,target)}document.querySelectorAll('.over').forEach(x=>x.classList.remove('over'));drag=null}
+document.addEventListener('pointerup',endDrag);document.addEventListener('pointercancel',endDrag);
+document.querySelectorAll('.basket,.tray').forEach(target=>{target.addEventListener('click',e=>{if(!e.target.closest('.card')&&selected)move(selected,target)});target.addEventListener('keydown',e=>{if(e.target===target&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(selected)move(selected,target)}})});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){select(null);message.textContent='선택을 해제했어요.'}});
+document.querySelector('#reset').addEventListener('click',reset);reset();
+</script>
+</body>
+</html>

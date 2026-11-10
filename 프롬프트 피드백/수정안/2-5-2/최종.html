@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수행평가 루브릭 채점기</title>
+<style>
+:root{font-family:'Malgun Gothic',system-ui,sans-serif;color:#203048;background:#f3f6fb}*{box-sizing:border-box}body{margin:0}main{max-width:1160px;margin:auto;padding:40px 24px}header{margin-bottom:28px}h1{font-size:30px;margin:8px 0}p{color:#64748b;line-height:1.6}.tag{font-size:13px;font-weight:700;color:#4169d1}section{background:white;border:1px solid #dfe6f0;border-radius:18px;padding:24px;margin-bottom:24px;box-shadow:0 5px 20px #20304805}h2{font-size:20px;margin:0 0 8px}.hint{font-size:14px;margin:0 0 20px}.rubrics{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.element{border:1px solid #e1e7f0;border-radius:12px;padding:16px;background:#fcfdff}label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}input,textarea,select{font:inherit;color:inherit;border:1px solid #cbd5e1;border-radius:7px;padding:10px;background:#fff;width:100%}input:focus,textarea:focus,select:focus{outline:3px solid #dbe7ff;border-color:#5675cc}textarea{resize:vertical;min-height:72px;font-size:13px;line-height:1.5}.level{margin-top:18px}.levelhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}.levelhead label{margin:0}.score{width:84px;display:flex;align-items:center;gap:5px;font-size:12px}.score input{padding:7px;width:65px}.add{display:flex;gap:10px;margin:20px 0}.add input{max-width:360px}button{font:inherit;font-weight:700;border:0;border-radius:8px;padding:11px 18px;cursor:pointer;background:#365dce;color:white;white-space:nowrap}button:hover{filter:brightness(.94)}.delete{color:#b64242;background:#fff0f0;font-size:13px;padding:8px 12px}.tablewrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:700px}th,td{text-align:left;padding:14px 10px;border-bottom:1px solid #e7edf5}th{font-size:13px;background:#f6f8fc;color:#596a82}td select{min-width:145px;font-size:13px}.total{color:#365dce;font-size:20px;font-weight:800;white-space:nowrap}.empty{text-align:center;color:#8592a4;padding:36px}.summary{display:flex;justify-content:space-between;align-items:center;gap:12px}.badge{background:#edf2ff;color:#365dce;border-radius:20px;padding:7px 12px;font-size:13px;white-space:nowrap}.status{font-size:13px;color:#64748b;min-height:20px}footer{text-align:center;color:#8793a5;font-size:12px}@media(max-width:850px){.rubrics{grid-template-columns:1fr}main{padding:24px 14px}section{padding:18px}h1{font-size:25px}} 
+</style>
+</head>
+<body>
+<main>
+<header><span class="tag">TEACHER'S TOOL · 평가 도우미</span><h1>수행평가 루브릭 채점기</h1><p>평가 기준을 만들고 학생의 수준을 선택하세요. 총점은 자동으로 계산됩니다.</p></header>
+<section><h2>1. 평가 기준 설정</h2><p class="hint">평가 요소 3개의 이름과 상·중·하 기준 설명, 점수를 자유롭게 수정하세요. 점수는 0 이상의 수로 입력합니다.</p><div id="rubrics" class="rubrics"></div></section>
+<section><div class="summary"><h2>2. 학생별 채점</h2><span id="max" class="badge"></span></div><p class="hint">학생을 등록한 뒤 각 평가 요소의 수준을 선택하세요. 세 요소를 모두 채점하면 총점이 표시됩니다.</p><form id="addForm" class="add"><input id="studentName" aria-label="등록할 학생 이름" placeholder="학생 이름 입력" maxlength="50" required><button type="submit">+ 학생 등록</button></form><div id="status" class="status" role="status"></div><div class="tablewrap"><table><thead><tr><th>학생 이름</th><th class="elementTitle"></th><th class="elementTitle"></th><th class="elementTitle"></th><th>총점</th><th>관리</th></tr></thead><tbody id="students"></tbody></table></div></section>
+<footer>입력한 내용은 현재 브라우저에 자동 저장됩니다. 공용 기기에서는 사용에 유의하세요.</footer>
+</main>
+<script>
+const KEY='rubric-grader-v1';
+const levels=['상','중','하'];
+let state={rubrics:[
+{name:'내용 이해',levels:[{description:'핵심 개념을 정확히 이해하고 구체적으로 설명한다.',score:10},{description:'핵심 개념을 대체로 이해하고 설명한다.',score:7},{description:'핵심 개념의 이해와 설명에 보완이 필요하다.',score:4}]},
+{name:'자료 활용',levels:[{description:'적절한 자료를 다양하게 활용하고 근거를 명확히 제시한다.',score:10},{description:'관련 자료를 활용하여 근거를 제시한다.',score:7},{description:'자료 활용과 근거 제시가 부족하다.',score:4}]},
+{name:'표현 및 완성도',levels:[{description:'내용을 논리적으로 표현하고 결과물을 완성도 있게 구성한다.',score:10},{description:'내용을 대체로 명확히 표현하고 결과물을 완성한다.',score:7},{description:'내용 표현과 결과물 완성도에 보완이 필요하다.',score:4}]}],students:[]};
+try{const saved=JSON.parse(localStorage.getItem(KEY));if(saved&&Array.isArray(saved.rubrics)&&saved.rubrics.length===3&&saved.rubrics.every(r=>typeof r.name==='string'&&Array.isArray(r.levels)&&r.levels.length===3&&r.levels.every(l=>typeof l.description==='string'&&Number.isFinite(l.score)&&l.score>=0))&&Array.isArray(saved.students)&&saved.students.every(s=>typeof s.name==='string'&&Array.isArray(s.choices)&&s.choices.length===3&&s.choices.every(c=>[-1,0,1,2].includes(c))))state=saved;}catch(e){}
+const rubrics=document.getElementById('rubrics'),tbody=document.getElementById('students'),status=document.getElementById('status');
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));status.textContent='현재 브라우저에 자동 저장되었습니다.';}catch(e){status.textContent='브라우저 저장을 사용할 수 없습니다. 이 화면을 닫으면 내용이 사라질 수 있습니다.';}}
+function inputEl(tag,value){const el=document.createElement(tag);el.value=value;return el;}
+function renderRubrics(){rubrics.replaceChildren();state.rubrics.forEach((r,i)=>{const card=document.createElement('div');card.className='element';const label=document.createElement('label');label.textContent=`평가 요소 ${i+1}`;label.htmlFor=`name${i}`;const name=inputEl('input',r.name);name.id=`name${i}`;name.maxLength=60;name.addEventListener('input',()=>{r.name=name.value;renderStudents();save();});card.append(label,name);r.levels.forEach((l,j)=>{const block=document.createElement('div');block.className='level';const head=document.createElement('div');head.className='levelhead';const title=document.createElement('label');title.textContent=levels[j]+' 수준';title.htmlFor=`desc${i}${j}`;const scoreBox=document.createElement('div');scoreBox.className='score';const score=inputEl('input',l.score);score.type='number';score.min='0';score.step='any';score.required=true;score.setAttribute('aria-label',`평가 요소 ${i+1} ${levels[j]} 점수`);score.addEventListener('input',()=>{if(score.value!==''&&Number.isFinite(score.valueAsNumber)&&score.valueAsNumber>=0){l.score=score.valueAsNumber;renderStudents();save();}});score.addEventListener('blur',()=>{score.value=l.score;});scoreBox.append(score,document.createTextNode('점'));head.append(title,scoreBox);const desc=inputEl('textarea',l.description);desc.id=`desc${i}${j}`;desc.addEventListener('input',()=>{l.description=desc.value;renderStudents();save();});block.append(head,desc);card.append(block);});rubrics.append(card);});}
+function fmt(n){return Number(n.toFixed(6)).toString();}
+function renderStudents(){document.querySelectorAll('.elementTitle').forEach((th,i)=>th.textContent=state.rubrics[i].name||`평가 요소 ${i+1}`);const max=state.rubrics.reduce((sum,r)=>sum+Math.max(...r.levels.map(l=>l.score)),0);document.getElementById('max').textContent=`${state.students.length}명 · 만점 ${fmt(max)}점`;tbody.replaceChildren();if(!state.students.length){const tr=tbody.insertRow();const td=tr.insertCell();td.colSpan=6;td.className='empty';td.textContent='학생 이름을 등록하면 채점을 시작할 수 있습니다.';return;}state.students.forEach((s,index)=>{const tr=tbody.insertRow();tr.insertCell().textContent=s.name;s.choices.forEach((choice,i)=>{const cell=tr.insertCell();const select=document.createElement('select');select.setAttribute('aria-label',`${s.name} ${state.rubrics[i].name} 수준`);const blank=document.createElement('option');blank.value=-1;blank.textContent='미채점';select.append(blank);state.rubrics[i].levels.forEach((l,j)=>{const option=document.createElement('option');option.value=j;option.textContent=`${levels[j]} · ${fmt(l.score)}점`;option.title=l.description;select.append(option);});select.value=choice;select.title=choice<0?'수준을 선택하세요':state.rubrics[i].levels[choice].description;select.addEventListener('change',()=>{s.choices[i]=Number(select.value);renderStudents();save();});cell.append(select);});const sum=s.choices.reduce((total,c,i)=>total+(c<0?0:state.rubrics[i].levels[c].score),0);const total=tr.insertCell();const strong=document.createElement('div');strong.className='total';strong.textContent=`${fmt(sum)}점`;total.append(strong);const count=s.choices.filter(c=>c>=0).length;if(count<3){const note=document.createElement('small');note.textContent=`${count}/3 채점`;total.append(note);}const button=document.createElement('button');button.type='button';button.className='delete';button.textContent='삭제';button.setAttribute('aria-label',`${s.name} 삭제`);button.addEventListener('click',()=>{if(confirm(`${s.name} 학생의 채점 내용을 삭제할까요?`)){state.students.splice(index,1);renderStudents();save();}});tr.insertCell().append(button);});}
+document.getElementById('addForm').addEventListener('submit',e=>{e.preventDefault();const input=document.getElementById('studentName');const name=input.value.trim();if(!name){input.setCustomValidity('학생 이름을 입력하세요.');input.reportValidity();return;}state.students.push({name,choices:[-1,-1,-1]});input.value='';renderStudents();save();input.focus();});
+document.getElementById('studentName').addEventListener('input',e=>e.target.setCustomValidity(''));
+renderRubrics();renderStudents();
+</script>
+<style>
+.progress-panel{padding:16px;background:#f3f6fc;border-radius:12px;margin:18px 0}.progress-panel progress{width:100%;height:18px;margin-top:8px;accent-color:#365dce}.filter{display:flex;align-items:center;gap:8px;margin:20px 0}.filter input{width:18px;height:18px}.quick{border:1px solid #dbe3f2;border-radius:12px;padding:20px;margin-bottom:24px}.navigation{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.choice{width:100%;text-align:left;white-space:normal;background:#f3f6fc;color:#203048;border:2px solid transparent;margin:7px 0}.choice[aria-pressed="true"]{border-color:#365dce;background:#eaf0ff}.choice small{display:block;font-weight:400;line-height:1.5;margin-top:6px}button:disabled{opacity:.4;cursor:default}.quick-total{text-align:right;margin-top:16px;color:#365dce;font-weight:700}.student-link{padding:0;background:transparent;color:#365dce;white-space:normal;text-align:left}tr.current{background:#f2f6ff}@media(max-width:850px){.quick-grid{grid-template-columns:1fr}.navigation{flex-wrap:wrap}.navigation strong{order:-1;width:100%;text-align:center}}
+</style>
+<script>
+let currentStudent=null;
+const complete=s=>s.choices.every(c=>c>=0);
+const panel=document.createElement('div');
+panel.innerHTML='<div class="progress-panel" aria-live="polite"><div id="progressText"></div><progress id="gradingProgress" max="100" value="0" aria-label="전체 학생 채점 진행률"></progress></div><label class="filter"><input type="checkbox" id="incompleteOnly">아직 채점을 마치지 않은 학생만 보기 (부분 채점 포함)</label><div class="quick"><div class="navigation"><button type="button" id="prevStudent">← 이전 학생</button><strong id="currentStudent" aria-live="polite"></strong><button type="button" id="nextStudent">다음 학생 →</button></div><div id="quickChoices" class="quick-grid"></div><div id="quickTotal" class="quick-total" aria-live="polite"></div></div><p class="hint">학생 이름을 누르면 해당 학생의 채점 화면으로 이동합니다. 세 요소를 모두 선택하면 채점 완료로 집계됩니다.</p>';
+document.querySelector('.tablewrap').before(panel);
+function visibleStudents(){return state.students.filter(s=>!document.getElementById('incompleteOnly').checked||!complete(s));}
+const originalRenderStudents=renderStudents;
+renderStudents=function(){
+ originalRenderStudents();
+ const done=state.students.filter(complete).length;
+ const percent=state.students.length?Math.round(done/state.students.length*100):0;
+ document.getElementById('progressText').textContent=`채점 완료 ${done} / ${state.students.length}명 · 진행률 ${percent}% · 미완료 ${state.students.length-done}명`;
+ document.getElementById('gradingProgress').value=percent;
+ const list=visibleStudents();
+ if(!list.includes(currentStudent))currentStudent=list[0]||null;
+ const index=list.indexOf(currentStudent);
+ document.getElementById('prevStudent').disabled=index<=0;
+ document.getElementById('nextStudent').disabled=index<0||index>=list.length-1;
+ const title=document.getElementById('currentStudent'),grid=document.getElementById('quickChoices'),total=document.getElementById('quickTotal');
+ grid.replaceChildren();total.textContent='';
+ if(state.students.length){
+  [...tbody.rows].forEach((row,i)=>{const student=state.students[i];row.hidden=!list.includes(student);row.classList.toggle('current',student===currentStudent);const link=document.createElement('button');link.type='button';link.className='student-link';link.textContent=student.name;link.addEventListener('click',()=>{currentStudent=student;renderStudents();});row.cells[0].replaceChildren(link);});
+  if(!list.length){const cell=tbody.insertRow().insertCell();cell.colSpan=6;cell.className='empty';cell.textContent='모든 학생의 채점이 완료되었습니다.';}
+ }
+ if(!currentStudent){title.textContent=state.students.length?'표시할 미완료 학생이 없습니다.':'학생을 등록해 주세요.';return;}
+ const student=currentStudent;
+ title.textContent=`${student.name} · ${index+1} / ${list.length}명`;
+ state.rubrics.forEach((r,i)=>{
+  const group=document.createElement('div');const heading=document.createElement('label');heading.textContent=r.name||`평가 요소 ${i+1}`;group.append(heading);
+  r.levels.forEach((level,j)=>{const button=document.createElement('button');button.type='button';button.className='choice';button.setAttribute('aria-pressed',student.choices[i]===j);button.append(document.createTextNode(`${levels[j]} · ${fmt(level.score)}점`));const description=document.createElement('small');description.textContent=level.description;button.append(description);button.addEventListener('click',()=>{student.choices[i]=j;renderStudents();save();});group.append(button);});
+  const reset=document.createElement('button');reset.type='button';reset.className='delete';reset.textContent='선택 해제';reset.disabled=student.choices[i]<0;reset.addEventListener('click',()=>{student.choices[i]=-1;renderStudents();save();});group.append(reset);grid.append(group);
+ });
+ const sum=student.choices.reduce((n,c,i)=>n+(c<0?0:state.rubrics[i].levels[c].score),0);
+ total.textContent=`${complete(student)?'채점 완료':'채점 중'} · 총점 ${fmt(sum)}점`;
+};
+document.getElementById('incompleteOnly').addEventListener('change',()=>renderStudents());
+for(const [id,step] of [['prevStudent',-1],['nextStudent',1]])document.getElementById(id).addEventListener('click',()=>{const list=visibleStudents();const next=list[list.indexOf(currentStudent)+step];if(next){currentStudent=next;renderStudents();}});
+renderStudents();
+</script>
+<style>
+.closebar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:18px 0;padding:16px;border:1px solid #dce4f2;border-radius:12px}.closebar span{flex:1;min-width:200px;font-size:14px;color:#596a82}input:disabled,textarea:disabled,select:disabled{background:#f1f4f8;color:#64748b;cursor:not-allowed}.locked-note{color:#a34d18!important}
+</style>
+<script>
+state.closed=state.closed===true;
+const closebar=document.createElement('div');closebar.className='closebar';
+const closeMessage=document.createElement('span');closeMessage.setAttribute('role','status');
+const closeButton=document.createElement('button');closeButton.type='button';
+closebar.append(closeMessage,closeButton);
+document.getElementById('addForm').before(closebar);
+const renderBeforeClosing=renderStudents;
+function applyClosing(){
+ const locked=state.closed;
+ closeButton.textContent=locked?'마감 해제':'채점 마감';
+ closeMessage.textContent=locked?'채점 마감 상태입니다. 루브릭과 학생 등록·삭제, 모든 채점 결과가 잠겨 있습니다.':'채점 진행 중입니다. 마감하면 루브릭과 모든 채점 결과가 잠깁니다.';
+ closeMessage.classList.toggle('locked-note',locked);
+ document.querySelectorAll('#rubrics input,#rubrics textarea,#addForm input,#addForm button').forEach(el=>el.disabled=locked);
+ document.querySelectorAll('#students select,#students .delete').forEach(el=>el.disabled=locked);
+ document.querySelectorAll('#quickChoices button').forEach(el=>{if(locked)el.disabled=true;});
+}
+renderStudents=function(){
+ renderBeforeClosing();
+ if(state.students.length){[...tbody.rows].slice(0,state.students.length).forEach((row,i)=>{
+  const student=state.students[i];
+  [...row.querySelectorAll('select')].forEach((select,j)=>{if(student.choices[j]<0)select.title='미채점';});
+  if(!complete(student)){
+   const cell=row.cells[4];cell.replaceChildren();const mark=document.createElement('div');mark.className='total';mark.textContent='미채점';const note=document.createElement('small');note.textContent=`${student.choices.filter(c=>c>=0).length}/3 채점`;cell.append(mark,note);
+  }
+ });}
+ if(currentStudent&&!complete(currentStudent))document.getElementById('quickTotal').textContent=`미채점 · ${currentStudent.choices.filter(c=>c>=0).length}/3 채점`;
+ applyClosing();
+};
+closeButton.addEventListener('click',()=>{
+ if(state.closed){state.closed=false;renderRubrics();renderStudents();save();return;}
+ const pending=state.students.filter(s=>!complete(s)).length;
+ const message=pending?`아직 채점을 마치지 않은 학생이 ${pending}명 있습니다. 미채점 항목은 그대로 남습니다.\n\n채점을 마감하고 루브릭과 모든 결과를 잠글까요?`:'채점을 마감하고 루브릭과 모든 결과를 잠글까요?';
+ if(confirm(message)){state.closed=true;renderStudents();save();}
+});
+renderStudents();
+</script>
+</body>
+</html>

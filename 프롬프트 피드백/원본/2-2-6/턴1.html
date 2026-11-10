@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 반 청소 구역 점검판</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f6fa;color:#202b3c;font-family:"Malgun Gothic",system-ui,sans-serif}button{font:inherit}main{height:100vh;height:100dvh;min-height:560px;display:flex;flex-direction:column;padding:24px 32px;gap:20px;max-width:1800px;margin:auto}header{display:flex;align-items:center;justify-content:space-between;gap:20px}h1{font-size:26px;letter-spacing:-1px;margin:0 0 6px}header p{margin:0;color:#697588;font-size:14px}.presets{display:flex;padding:5px;border:1px solid #dce1e9;border-radius:14px;background:white;gap:4px}.presets button{border:0;background:transparent;padding:12px 18px;border-radius:10px;cursor:pointer;color:#596577;font-weight:700;white-space:nowrap}.presets button[aria-pressed="true"]{background:#273d59;color:white;box-shadow:0 3px 6px #273d5920}button:focus-visible{outline:3px solid #2968da;outline-offset:4px}.classroom{flex:1;min-height:0;display:grid;grid-template-columns:52px 1fr 52px;grid-template-rows:48px 1fr 26px;gap:10px 16px}.board{grid-column:2;display:flex;justify-content:center;align-items:center}.board span{display:block;width:46%;max-width:500px;text-align:center;background:#284f48;color:#fff;border:5px solid #d4c0a2;border-radius:5px;padding:7px;font-size:14px;letter-spacing:8px;box-shadow:0 2px 2px #172a3110}.side{grid-row:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;color:#697588;font-size:14px;font-weight:bold}.windows{grid-column:1}.hall{grid-column:3}.side .label{writing-mode:vertical-rl;letter-spacing:7px}.window{width:25px;height:65px;border:2px solid #a8cbd9;border-radius:4px;background:linear-gradient(90deg,transparent 46%,#a8cbd9 46%,#a8cbd9 54%,transparent 54%),#e3f2fa}.hall-mark{height:65px;width:6px;border-radius:6px;background:#d4dbe5}.floor{grid-column:2;grid-row:2;border:2px solid #cbd3de;background:white;border-radius:18px;padding:10px;display:grid;gap:10px;box-shadow:0 8px 30px #23395508}.floor.rows{grid-template-columns:1fr;grid-template-rows:repeat(3,minmax(0,1fr))}.floor.columns{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:1fr}.floor.six{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}.zone{border:2px solid var(--edge);border-radius:11px;background:var(--bg);color:var(--ink);display:flex;align-items:center;justify-content:center;flex-direction:column;padding:16px;gap:8px;min-width:0}.zone-number{font-size:12px;font-weight:700;letter-spacing:2px;opacity:.7}.zone h2{font-size:clamp(22px,2.7vw,40px);margin:0;letter-spacing:-1px}.zone p{margin:0;font-size:14px;opacity:.8}.back{grid-column:2;text-align:center;color:#8a94a3;font-size:12px;letter-spacing:4px;align-self:center}footer{display:flex;justify-content:space-between;color:#798393;font-size:12px;gap:12px}#summary{color:#4b5d73} @media(max-width:850px){main{padding:16px;gap:12px}header{flex-direction:column;align-items:stretch;gap:14px}h1{font-size:23px}.presets{justify-content:center}.presets button{flex:1;padding:11px 8px;font-size:13px}.classroom{grid-template-columns:26px 1fr 26px;gap:8px}.window{width:18px;height:48px}.floor{padding:7px;gap:7px}.zone{padding:8px}.zone h2{font-size:clamp(17px,3.5vw,28px)}.zone p{font-size:11px}.zone-number{font-size:10px;letter-spacing:0}.board span{width:65%}footer{font-size:11px}}@media print{main{height:95vh;min-height:0;padding:0}.presets{display:none}*{print-color-adjust:exact;-webkit-print-color-adjust:exact}.floor{box-shadow:none}}
+</style>
+</head>
+<body>
+<main>
+<header><div><h1>우리 반 청소 구역 점검판</h1><p>분할 방식을 선택하고, 우리 반 청소 구역을 한눈에 확인하세요.</p></div><nav class="presets" aria-label="청소 구역 분할 방식"><button type="button" data-preset="rows" aria-pressed="true">앞·중간·뒤 3분할</button><button type="button" data-preset="columns" aria-pressed="false">창가·가운데·복도 3분할</button><button type="button" data-preset="six" aria-pressed="false">6분할</button></nav></header>
+<section class="classroom" aria-label="교실 평면도: 칠판은 위쪽, 창가는 왼쪽, 복도는 오른쪽">
+<div class="board"><span>칠판 · 앞</span></div>
+<div class="side windows" aria-hidden="true"><span class="window"></span><span class="label">창가</span><span class="window"></span></div>
+<div id="floor" class="floor rows" aria-label="청소 구역"></div>
+<div class="side hall" aria-hidden="true"><span class="hall-mark"></span><span class="label">복도</span><span class="hall-mark"></span></div>
+<div class="back">교실 뒤쪽</div>
+</section>
+<footer><span id="summary" role="status" aria-live="polite"></span><span>인터넷 없이 사용 가능 · 선택한 분할 자동 저장</span></footer>
+</main>
+<script>
+(()=>{
+ 'use strict';
+ const colors=[['#e1f2ed','#a7d5c6','#245d4d'],['#fff1d6','#e8cd92','#7b571c'],['#e4edfd','#b1c7ed','#365781'],['#f9e7e1','#e4b9aa','#854e3e'],['#ede7f7','#c9b9e2','#644c87'],['#e0f1f6','#a3cddc','#326479']];
+ const presets={rows:{title:'앞·중간·뒤 3분할',zones:[['앞 구역','칠판 쪽'],['중간 구역','교실 중앙'],['뒤 구역','교실 뒤쪽']]},columns:{title:'창가·가운데·복도 3분할',zones:[['창가 구역','왼쪽'],['가운데 구역','교실 중앙'],['복도 구역','오른쪽']]},six:{title:'6분할',zones:[['앞 · 창가','앞쪽 왼편'],['앞 · 가운데','앞쪽 중앙'],['앞 · 복도','앞쪽 오른편'],['뒤 · 창가','뒤쪽 왼편'],['뒤 · 가운데','뒤쪽 중앙'],['뒤 · 복도','뒤쪽 오른편']]}};
+ const floor=document.getElementById('floor');
+ function render(key){
+  const preset=presets[key];floor.className='floor '+key;floor.replaceChildren();
+  preset.zones.forEach(([name,description],i)=>{
+   const zone=document.createElement('article');zone.className='zone';
+   ['--bg','--edge','--ink'].forEach((property,j)=>zone.style.setProperty(property,colors[i][j]));
+   const number=document.createElement('span');number.className='zone-number';number.textContent='구역 '+(i+1);
+   const heading=document.createElement('h2');heading.textContent=name;
+   const subtitle=document.createElement('p');subtitle.textContent=description;
+   zone.append(number,heading,subtitle);floor.append(zone);
+  });
+  document.querySelectorAll('[data-preset]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.preset===key)));
+  document.getElementById('summary').textContent=preset.title+' · 총 '+preset.zones.length+'개 구역';
+  try{localStorage.setItem('classroom-cleaning-preset',key)}catch(e){}
+ }
+ document.querySelectorAll('[data-preset]').forEach(button=>button.addEventListener('click',()=>render(button.dataset.preset)));
+ let initial='rows';try{const saved=localStorage.getItem('classroom-cleaning-preset');if(Object.hasOwn(presets,saved))initial=saved}catch(e){}
+ render(initial);
+})();
+</script>
+</body>
+</html>

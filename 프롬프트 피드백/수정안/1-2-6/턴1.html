@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 사용 내역 카드</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#203047;font-family:Arial,'Malgun Gothic',sans-serif;line-height:1.6}main{max-width:1120px;margin:auto;padding:46px 24px}header{margin-bottom:28px}.eyebrow{color:#4265bd;font-size:13px;font-weight:700;letter-spacing:2px}h1{font-size:32px;margin:6px 0}header p{color:#64748b;margin:0}.layout{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}.panel{background:white;border:1px solid #dfe6ef;border-radius:18px;padding:28px}h2{font-size:20px;margin:0 0 22px}label,.field-title{display:block;font-size:14px;font-weight:700;margin-bottom:7px}.field{margin-bottom:20px}input[type=text],textarea{width:100%;font:inherit;font-size:14px;padding:11px 13px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:#203047}textarea{min-height:90px;resize:vertical}input:focus,textarea:focus{outline:3px solid #dce7ff;border-color:#5476c9}fieldset{border:0;margin:0 0 23px;padding:0}legend{font-size:14px;font-weight:700;margin-bottom:9px}.choices{display:flex;gap:12px;flex-wrap:wrap}.choice{display:flex;align-items:center;gap:7px;padding:10px 14px;background:#f4f7fc;border:1px solid #dfe6ef;border-radius:9px;margin:0;cursor:pointer}input[type=radio]{accent-color:#4265bd}.hint{font-size:12px;color:#64748b;margin:6px 0 0}.preview-label{font-size:13px;color:#64748b;margin:0 0 12px}.card{background:white;border:1px solid #ccd8eb;border-top:6px solid #4265bd;border-radius:14px;padding:28px;box-shadow:0 8px 25px #263b6010;overflow-wrap:anywhere}.card h2{margin:0;font-size:25px}.card-subtitle{font-size:12px;color:#64748b;margin:3px 0 22px}.identity{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding-bottom:20px;border-bottom:1px solid #e2e8f0}.key{font-size:12px;color:#64748b;margin-bottom:4px}.value{font-weight:700;white-space:pre-wrap}.badge{display:inline-block;background:#eaf0ff;color:#3557a3;font-size:13px;font-weight:700;border-radius:6px;padding:6px 11px;margin:20px 0 3px}.card-section{margin-top:18px}.card-section h3{font-size:13px;color:#4265bd;margin:0 0 5px}.answer{white-space:pre-wrap;font-size:14px;margin:0}.empty{color:#94a3b8;font-weight:400}.no-ai{padding:28px 0 12px;font-size:19px;font-weight:700;color:#3557a3}.footer{font-size:11px;color:#7b8799;margin-top:24px;border-top:1px solid #e2e8f0;padding-top:12px}button{border:0;border-radius:9px;background:#4265bd;color:white;font:inherit;font-size:14px;font-weight:700;padding:12px 20px;cursor:pointer;margin-top:18px}button:hover{background:#31509d}[hidden]{display:none!important}@media(max-width:760px){main{padding:28px 16px}.layout{grid-template-columns:1fr}.panel,.card{padding:22px}h1{font-size:27px}}@media print{@page{size:A4;margin:20mm}body{background:white}main{padding:0;max-width:none}header,.panel,.preview-label,button{display:none}.layout{display:block}.card{box-shadow:none;break-inside:avoid;border:1px solid #a6b7d2;border-top:6px solid #4265bd;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+  </style>
+</head>
+<body>
+<main>
+  <header><span class="eyebrow">MY AI RECORD</span><h1>AI 사용 내역 카드</h1><p>과제를 완성하는 동안 AI를 어떻게 활용했는지 기록해 보세요.</p></header>
+  <div class="layout">
+    <form class="panel" id="recordForm" autocomplete="off">
+      <h2>나의 사용 내역 적기</h2>
+      <div class="field"><label for="student">이름</label><input id="student" type="text" placeholder="이름을 입력하세요"></div>
+      <div class="field"><label for="assignment">과제 이름</label><input id="assignment" type="text" placeholder="어떤 과제인가요?"></div>
+      <fieldset><legend>이 과제에 AI를 사용했나요?</legend><div class="choices"><label class="choice"><input type="radio" name="usage" value="yes" checked>사용했어요</label><label class="choice"><input type="radio" name="usage" value="no">사용하지 않았어요</label></div></fieldset>
+      <div id="aiFields">
+        <div class="field"><label for="tool">어떤 AI를 사용했나요?</label><input id="tool" type="text" placeholder="예: ChatGPT, Gemini"></div>
+        <div class="field"><label for="question">AI에게 무엇을 물었나요?</label><textarea id="question" placeholder="AI에게 한 질문이나 부탁을 적어 주세요."></textarea></div>
+        <div class="field"><label for="unchanged">AI의 답변 중 그대로 쓴 것은 무엇인가요?</label><textarea id="unchanged" placeholder="그대로 사용한 내용을 적어 주세요. 없으면 ‘없음’이라고 써 주세요."></textarea></div>
+        <div class="field"><label for="edited">내가 고치거나 보탠 것은 무엇인가요?</label><textarea id="edited" placeholder="내가 수정하거나 직접 덧붙인 내용을 적어 주세요."></textarea></div>
+      </div>
+      <p class="hint">입력한 내용은 카드에 바로 반영됩니다. 이 페이지는 입력 내용을 서버로 보내지 않으며, 새로고침하면 내용이 사라집니다.</p>
+    </form>
+    <section aria-label="완성된 AI 사용 내역 카드">
+      <p class="preview-label">과제에 붙일 카드 · 실시간 미리보기</p>
+      <article class="card" id="card">
+        <h2>AI 사용 내역 카드</h2><p class="card-subtitle">과제와 함께 제출하는 나의 AI 활용 기록</p>
+        <div class="identity"><div><div class="key">이름</div><div class="value" id="out-student"></div></div><div><div class="key">과제 이름</div><div class="value" id="out-assignment"></div></div></div>
+        <div id="usedCard"><span class="badge">AI를 사용함</span>
+          <section class="card-section"><h3>사용한 AI</h3><p class="answer" id="out-tool"></p></section>
+          <section class="card-section"><h3>AI에게 물어본 내용</h3><p class="answer" id="out-question"></p></section>
+          <section class="card-section"><h3>그대로 쓴 것</h3><p class="answer" id="out-unchanged"></p></section>
+          <section class="card-section"><h3>내가 고치거나 보탠 것</h3><p class="answer" id="out-edited"></p></section>
+        </div>
+        <div id="unusedCard" class="no-ai" hidden>AI를 사용하지 않음</div>
+        <div class="footer">이 카드는 학생이 직접 작성한 AI 사용 내역입니다.</div>
+      </article>
+      <button type="button" id="printButton">카드 인쇄 / PDF 저장</button>
+    </section>
+  </div>
+</main>
+<script>
+  const form = document.getElementById('recordForm');
+  const fields = ['student','assignment','tool','question','unchanged','edited'];
+  function updateCard() {
+    const used = form.elements.usage.value === 'yes';
+    document.getElementById('aiFields').hidden = !used;
+    document.getElementById('usedCard').hidden = !used;
+    document.getElementById('unusedCard').hidden = used;
+    fields.forEach(id => {
+      const value = document.getElementById(id).value.trim();
+      const output = document.getElementById('out-' + id);
+      output.textContent = value || ({student:'이름 미입력',assignment:'과제 이름 미입력'}[id] || '아직 작성하지 않았어요.');
+      output.classList.toggle('empty', !value);
+    });
+  }
+  form.addEventListener('input', updateCard);
+  form.addEventListener('change', updateCard);
+  form.addEventListener('submit', event => event.preventDefault());
+  document.getElementById('printButton').addEventListener('click', () => window.print());
+  updateCard();
+</script>
+</body>
+</html>

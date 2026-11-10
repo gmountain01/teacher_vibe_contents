@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수업 활동 타이머</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;background:#eef2f6;color:#192838}button,input,textarea{font:inherit}main{min-height:100vh;display:grid;grid-template-columns:350px 1fr}.editor{padding:36px 28px;background:#fff;display:flex;flex-direction:column;gap:20px;border-right:1px solid #dce3eb}.eyebrow{color:#51716d;font-size:12px;font-weight:800;letter-spacing:2px}h1{font-size:25px;margin:8px 0 0}label{display:block;font-weight:700;font-size:14px;margin-bottom:9px}input,textarea{width:100%;padding:13px;border:1px solid #bac7d3;border-radius:10px;color:#192838;background:#fbfcfd}textarea{height:240px;resize:vertical;line-height:1.9}input:focus,textarea:focus{outline:3px solid #b5e8df;border-color:#238574}.hint{font-size:12px;line-height:1.8;color:#627385;margin:8px 0 0}.buttons{display:flex;gap:8px;flex-wrap:wrap}button{cursor:pointer;border:0;border-radius:10px;padding:13px 16px;font-weight:700;background:#eaf0f5;color:#263f53}button.primary{background:#167d6c;color:white;width:100%;font-size:17px}button:hover{filter:brightness(.94)}button:disabled{opacity:.45;cursor:default}button:focus-visible{outline:3px solid #49bda9;outline-offset:3px}.error{white-space:pre-line;color:#ae2637;font-size:13px;line-height:1.7;margin:0}.screen{background:#101d2c;color:#f5f8fc;padding:38px 5vw;display:flex;flex-direction:column;min-width:0;min-height:100vh}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;color:#a9bacd}.class-name{font-size:20px;font-weight:700;overflow-wrap:anywhere}.badge{font-size:12px;border:1px solid #415367;padding:7px 12px;border-radius:20px;white-space:nowrap}.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 0}.caption{font-size:14px;letter-spacing:3px;color:#7cd8c4;margin:0 0 24px}.activity{font-size:clamp(36px,5vw,80px);line-height:1.3;margin:0;overflow-wrap:anywhere;max-width:100%}.time{font-size:clamp(80px,15vw,230px);line-height:1.25;font-weight:800;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:#8ce8ce;margin:16px 0}.bottom{border-top:1px solid #314256;padding-top:25px;display:flex;justify-content:space-between;gap:24px;align-items:center}.next{font-size:clamp(18px,2vw,27px);overflow-wrap:anywhere}.count{color:#a9bacd;font-size:23px;white-space:nowrap}.track{height:5px;background:#2b3d50;border-radius:5px;overflow:hidden;margin-bottom:26px}.fill{height:100%;background:#8ce8ce;width:0;transition:width .2s}.footer{margin-top:auto;font-size:12px;color:#7d8c9b;line-height:1.8}@media(max-width:800px){main{grid-template-columns:1fr}.editor{padding:24px}.screen{min-height:620px;padding:28px}.time{font-size:clamp(80px,22vw,170px)}textarea{height:170px}}
+</style>
+</head>
+<body>
+<main>
+<section class="editor" aria-label="수업 설정">
+<header><span class="eyebrow">CLASSROOM TIMER</span><h1>수업 활동 타이머</h1></header>
+<div><label for="lesson">수업 이름</label><input id="lesson" value="함께 생각하는 수업" maxlength="100"></div>
+<div><label for="activities">활동 입력</label><textarea id="activities" spellcheck="false" aria-describedby="help error">생각하기, 3분
+모둠 나누기, 7분
+함께 이야기하기, 10분
+정리하기, 1분 30초</textarea><p class="hint" id="help">한 줄에 ‘활동 이름, 시간’을 적으세요.<br>시간 예시: 3분 · 30초 · 1분 30초<br>빈 줄은 건너뜁니다.</p></div>
+<p id="error" class="error" role="alert"></p>
+<button id="start" class="primary">수업 시작</button>
+<div class="buttons"><button id="pause" disabled>일시 정지</button><button id="reset">처음으로</button></div>
+<p class="footer">인터넷 없이 사용할 수 있어요.<br>수업 중에는 이 탭을 열어 두세요.</p>
+</section>
+<section class="screen" aria-label="수업 전광판">
+<div class="top"><span class="class-name" id="boardTitle">함께 생각하는 수업</span><span class="badge" id="status">시작 대기</span></div>
+<div class="center"><p class="caption" id="caption">수업을 준비해 주세요</p><h2 class="activity" id="activity">준비됐나요?</h2><div class="time" id="time" role="timer" aria-label="남은 시간">00:00</div></div>
+<div class="track" aria-hidden="true"><div class="fill" id="fill"></div></div>
+<div class="bottom"><span class="next" id="next">활동을 입력하고 수업 시작을 누르세요</span><span class="count" id="count">0 / 0</span></div>
+</section>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+let items=[],index=0,running=false,paused=false,deadline=0,remaining=0,interval=null;
+function parseActivities(text){
+ const result=[],errors=[];
+ text.split(/\r?\n/).forEach((line,i)=>{
+  if(!line.trim())return;
+  const parts=line.split(',');
+  if(parts.length!==2||!parts[0].trim()){errors.push(`${i+1}번째 줄: ‘활동 이름, 시간’ 형식으로 적어 주세요.`);return;}
+  const match=parts[1].trim().match(/^(?:(\d+)\s*분\s*)?(?:(\d+)\s*초)?$/);
+  const seconds=match?(Number(match[1]||0)*60+Number(match[2]||0)):0;
+  if(!match||!Number.isSafeInteger(seconds)||seconds<=0||seconds>359999){errors.push(`${i+1}번째 줄: 시간을 3분, 30초, 1분 30초처럼 적어 주세요. (1초~99시간 59분 59초)`);return;}
+  result.push({name:parts[0].trim(),seconds});
+ });
+ if(!result.length&&!errors.length)errors.push('활동을 한 줄 이상 입력해 주세요.');
+ return {items:result,errors};
+}
+function duration(seconds){const m=Math.floor(seconds/60),s=seconds%60;return [m?`${m}분`:'',s?`${s}초`:''].filter(Boolean).join(' ');}
+function clock(seconds){const m=Math.floor(seconds/60),s=seconds%60;return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;}
+function controls(active){$('lesson').disabled=active;$('activities').disabled=active;$('start').disabled=active;$('pause').disabled=!active;}
+function render(){
+ $('activity').textContent=items[index].name;
+ $('time').textContent=clock(Math.ceil(remaining/1000));
+ $('count').textContent=`${index+1} / ${items.length}`;
+ $('next').textContent=index+1<items.length?`다음: ${items[index+1].name} · ${duration(items[index+1].seconds)}`:'다음: 수업 활동 끝';
+ $('fill').style.width=`${Math.max(0,Math.min(100,100*(1-remaining/(items[index].seconds*1000))))}%`;
+}
+function finish(){clearInterval(interval);running=false;paused=false;controls(false);$('pause').textContent='일시 정지';$('status').textContent='완료';$('caption').textContent='모든 활동을 마쳤어요';$('activity').textContent='수업 활동 끝';$('time').textContent='00:00';$('next').textContent='수고했어요!';$('count').textContent=`${items.length} / ${items.length}`;$('fill').style.width='100%';$('start').textContent='수업 다시 시작';}
+function tick(){if(!running||paused)return;const now=Date.now();while(now>=deadline){index++;if(index>=items.length){finish();return;}deadline+=items[index].seconds*1000;}remaining=Math.max(0,deadline-now);render();}
+$('start').addEventListener('click',()=>{const parsed=parseActivities($('activities').value);$('error').textContent=parsed.errors.join('\n');if(parsed.errors.length){$('activities').focus();return;}clearInterval(interval);items=parsed.items;index=0;running=true;paused=false;remaining=items[0].seconds*1000;deadline=Date.now()+remaining;controls(true);$('boardTitle').textContent=$('lesson').value.trim()||'수업 활동';$('status').textContent='진행 중';$('caption').textContent='지금 활동';$('pause').textContent='일시 정지';render();interval=setInterval(tick,100);});
+$('pause').addEventListener('click',()=>{if(!running)return;if(!paused){tick();if(!running)return;remaining=Math.max(0,deadline-Date.now());paused=true;$('status').textContent='일시 정지';$('pause').textContent='계속하기';}else{deadline=Date.now()+remaining;paused=false;$('status').textContent='진행 중';$('pause').textContent='일시 정지';tick();}});
+$('reset').addEventListener('click',()=>{clearInterval(interval);running=false;paused=false;index=0;controls(false);$('error').textContent='';$('start').textContent='수업 시작';$('pause').textContent='일시 정지';$('status').textContent='시작 대기';$('caption').textContent='수업을 준비해 주세요';$('activity').textContent='준비됐나요?';$('time').textContent='00:00';$('next').textContent='활동을 입력하고 수업 시작을 누르세요';$('count').textContent='0 / 0';$('fill').style.width='0';$('boardTitle').textContent=$('lesson').value.trim()||'수업 활동';});
+$('lesson').addEventListener('input',()=>{$('boardTitle').textContent=$('lesson').value.trim()||'수업 활동';});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
+</script>
+</body>
+</html>
