@@ -236,7 +236,7 @@ function openCompare(id){
  $('compareGoal').textContent=base.goal||''; $('compareTech').textContent=base.techniques||''; $('reviewQuestion').textContent=base.question||'';
  $('revision').value=base.revision||'';
  $('revisionReason').value=base.reason||'';$('reasonView').innerHTML=reasonHtml(base.reason||'');
- let who='';try{who=localStorage.getItem('ai-teacher-reviewer')||''}catch(e){}$('reviewer').value=who||w.author||'';
+ $('reviewer').value=w.author||'';
  const mine=FB.find(r=>r['작품키']===id&&r['작성자']===$('reviewer').value.trim());
  $('teacherOpinion').value=typeof saved.opinion==='string'&&saved.opinion.trim()?saved.opinion:(mine?mine['의견']:'');renderSubmitted();
  $('revisionStatus').textContent=$('revision').value.trim()?'검토안':'작성 전';
@@ -244,7 +244,7 @@ function openCompare(id){
  renderRevisionCards();$('revisionEditor').open=false;
  $('compareDialog').showModal();$('compareDialog').querySelector('.compare-body').scrollTop=0;
 }
-function saveReview(){if(!currentCompare)return;try{localStorage.setItem(reviewKey(currentCompare),JSON.stringify({opinion:$('teacherOpinion').value}));localStorage.setItem('ai-teacher-reviewer',$('reviewer').value.trim())}catch(e){}$('saveStatus').textContent='작성 중 · 아직 제출 전입니다. 이 기기에 임시 저장됩니다.'}
+function saveReview(){if(!currentCompare)return;try{localStorage.setItem(reviewKey(currentCompare),JSON.stringify({opinion:$('teacherOpinion').value}))}catch(e){}$('saveStatus').textContent='작성 중 · 아직 제출 전입니다. 이 기기에 임시 저장됩니다.'}
 async function loadFeedback(){if(!FEEDBACK_API)return;try{const j=await(await fetch(FEEDBACK_API,{cache:'no-store'})).json();if(!j.ok)throw new Error(j.error);FB=j.rows;fbState='ok'}catch(e){fbState='error'}fbAt=new Date().toTimeString().slice(0,5);render();if(currentCompare)renderSubmitted()}
 function renderSubmitted(){const box=$('submitted');if(fbState==='off'){box.innerHTML='<p class="sub-note">의견 수집 주소가 아직 연결되지 않아 제출할 수 없습니다. 작성한 의견은 이 기기에만 임시 저장됩니다.</p>';return}
  if(fbState==='loading'){box.innerHTML='<p class="sub-note">제출된 의견을 불러오는 중…</p>';return}
